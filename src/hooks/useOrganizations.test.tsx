@@ -1,5 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
-import { renderHook } from '@testing-library/react-hooks';
+import { render } from '@testing-library/react';
+import { waitFor } from '@testing-library/dom';
+import React from 'react';
 import { useOrganizations } from './useOrganizations';
 
 const mockOrganizationsResponse = {
@@ -44,13 +46,21 @@ global.fetch = vi.fn().mockImplementation(() =>
 );
 
 describe('useOrganizations', () => {
+  function HookTest({ onResult }: { onResult: (result: ReturnType<typeof useOrganizations>) => void }) {
+    const result = useOrganizations(config);
+    React.useEffect(() => {
+      onResult(result);
+    }, [result, onResult]);
+    return null;
+  }
+
   it('should fetch and return organizations data', async () => {
-    const { result, waitForNextUpdate } = renderHook(() => useOrganizations(config));
-    await waitForNextUpdate();
-    expect(result.current.data).toEqual(mockOrganizationsResponse.result);
-    expect(result.current.error).toBeUndefined();
-    expect(result.current.isLoading).toBe(false);
-    expect(result.current.response).toEqual(mockOrganizationsResponse);
+    let hookResult: ReturnType<typeof useOrganizations> | undefined;
+    render(<HookTest onResult={r => (hookResult = r)} />);
+    await waitFor(() => expect(hookResult?.isLoading).toBe(false));
+    expect(hookResult?.data).toEqual(mockOrganizationsResponse.result);
+    expect(hookResult?.error).toBeUndefined();
+    expect(hookResult?.response).toEqual(mockOrganizationsResponse);
   });
 
   it('should handle API error', async () => {
@@ -73,10 +83,10 @@ describe('useOrganizations', () => {
         text: () => Promise.resolve(''),
       } as Response)
     );
-    const { result, waitForNextUpdate } = renderHook(() => useOrganizations(config));
-    await waitForNextUpdate();
-    expect(result.current.data).toBeUndefined();
-    expect(result.current.error).toBeDefined();
-    expect(result.current.isLoading).toBe(false);
+    let hookResult: ReturnType<typeof useOrganizations> | undefined;
+    render(<HookTest onResult={r => (hookResult = r)} />);
+    await waitFor(() => expect(hookResult?.isLoading).toBe(false));
+    expect(hookResult?.data).toBeUndefined();
+    expect(hookResult?.error).toBeDefined();
   });
 });
