@@ -1,8 +1,21 @@
 {
   "name": "clickhouse-cloud-react-hooks",
-  "private": true,
-  "version": "0.0.0",
+  "private": false,
+  "version": "0.1.0",
+  "description": "A collection of reusable React hooks to easily interact with the ClickHouse Cloud API.",
   "type": "module",
+  "main": "./dist/clickhouse-cloud-react-hooks.umd.js",
+  "module": "./dist/clickhouse-cloud-react-hooks.es.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/clickhouse-cloud-react-hooks.es.js",
+      "require": "./dist/clickhouse-cloud-react-hooks.umd.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc -b && vite build",
     "lint": "eslint ."

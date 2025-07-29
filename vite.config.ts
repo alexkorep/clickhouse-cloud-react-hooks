@@ -14,15 +14,17 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, "src/main.ts"),
-      formats: ["es"],
+      name: "ClickhouseCloudReactHooks",
+      formats: ["es", "umd"],
+      fileName: (format) => `clickhouse-cloud-react-hooks.${format}.js`,
     },
     rollupOptions: {
       external: ["react", "react-dom", "react/jsx-runtime"],
       output: {
         globals: {
           react: "React",
-          "react-dom": "React-dom",
-          "react/jsx-runtime": "react/jsx-runtime",
+          "react-dom": "ReactDOM",
+          "react/jsx-runtime": "jsxRuntime",
         },
       },
     },
