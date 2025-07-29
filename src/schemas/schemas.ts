@@ -69,11 +69,11 @@ export const ByocConfigSchema = z.object({
 });
 
 export const OrganizationSchema = z.object({
-  id: z.string().uuid(),
-  createdAt: z.string().datetime(),
+  id: z.uuid(),
+  createdAt: z.iso.datetime(),
   name: z.string(),
-  privateEndpoints: z.array(OrganizationPrivateEndpointSchema),
-  byocConfig: z.array(ByocConfigSchema),
+  privateEndpoints: z.array(OrganizationPrivateEndpointSchema).default([]),
+  byocConfig: z.array(ByocConfigSchema).default([]),
 });
 
 // Activity schema
