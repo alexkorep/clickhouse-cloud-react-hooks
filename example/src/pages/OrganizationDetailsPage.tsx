@@ -1,25 +1,30 @@
-
-import React from 'react';
+import React from "react";
 import "../App.css";
-import { useParams, Link } from 'react-router-dom';
-import { useOrganizations, ClickHouseAPIError, type Organization } from 'clickhouse-cloud-react-hooks';
-import { useAtom } from 'jotai';
-import { configAtom } from '../configAtoms';
+import { useParams, Link } from "react-router-dom";
+import {
+  useOrganization,
+  ClickHouseAPIError,
+} from "clickhouse-cloud-react-hooks";
+import { useAtomValue } from "jotai";
+import { configAtom } from "../configAtoms";
 
 const OrganizationDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [config] = useAtom(configAtom);
+  const config = useAtomValue(configAtom);
   const {
-    data: organizations,
+    data: organization,
     error: orgError,
     isLoading: orgLoading,
-  } = useOrganizations(config || { keyId: '', keySecret: '' });
+  } = useOrganization(id || "", config || { keyId: "", keySecret: "" });
 
   if (!config) {
     return (
       <div>
         <h2>Not configured</h2>
-        <p>Please go to the <Link to="/config">Configuration</Link> page and enter your credentials.</p>
+        <p>
+          Please go to the <Link to="/config">Configuration</Link> page and
+          enter your credentials.
+        </p>
       </div>
     );
   }
@@ -44,18 +49,23 @@ const OrganizationDetailsPage: React.FC = () => {
     );
   }
 
-  const org = organizations?.find((o: Organization) => o.id === id);
-
-  if (!org) {
+  if (!organization) {
     return <div>Organization not found</div>;
   }
 
   return (
     <section className="organization-details-section">
       <h2>Organization Details</h2>
-      <p><strong>Name:</strong> {org.name}</p>
-      <p><strong>ID:</strong> {org.id}</p>
-      <p><strong>Created:</strong> {new Date(org.createdAt).toLocaleDateString()}</p>
+      <p>
+        <strong>Name:</strong> {organization.name}
+      </p>
+      <p>
+        <strong>ID:</strong> {organization.id}
+      </p>
+      <p>
+        <strong>Created:</strong>{" "}
+        {new Date(organization.createdAt).toLocaleDateString()}
+      </p>
       {/* Add more details as needed */}
       <Link to="/">Back to Organizations</Link>
     </section>
