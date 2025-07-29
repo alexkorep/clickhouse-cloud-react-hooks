@@ -18,7 +18,7 @@ import {
 } from "../schemas/schemas";
 
 export function useOrganizations(config: ClickHouseConfig) {
-  const { data, error, isLoading } = useSWR(
+  const { data, error, isLoading, mutate } = useSWR(
     ["/v1/organizations", config],
     ([url, cfg]: [string, ClickHouseConfig]) => 
       fetcher<OrganizationsResponse>(url, cfg, OrganizationsResponseSchema)
@@ -27,12 +27,13 @@ export function useOrganizations(config: ClickHouseConfig) {
     data: data?.result, 
     error, 
     isLoading,
-    response: data
+    response: data,
+    mutate
   };
 }
 
 export function useOrganization(organizationId: string, config: ClickHouseConfig) {
-  const { data, error, isLoading } = useSWR(
+  const { data, error, isLoading, mutate } = useSWR(
     [`/v1/organizations/${organizationId}`, config],
     ([url, cfg]: [string, ClickHouseConfig]) => 
       fetcher<OrganizationResponse>(url, cfg, OrganizationResponseSchema)
@@ -41,7 +42,8 @@ export function useOrganization(organizationId: string, config: ClickHouseConfig
     data: data?.result, 
     error, 
     isLoading,
-    response: data
+    response: data,
+    mutate
   };
 }
 

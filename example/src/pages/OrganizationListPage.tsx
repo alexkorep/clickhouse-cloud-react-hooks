@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useOrganizations, ClickHouseAPIError, type Organization } from 'clickhouse-cloud-react-hooks';
 import { useAtom } from 'jotai';
@@ -14,6 +13,7 @@ const OrganizationListPage: React.FC = () => {
     data: organizations,
     error: orgError,
     isLoading: orgLoading,
+    mutate,
   } = useOrganizations(config || { keyId: '', keySecret: '' });
 
   if (!config) {
@@ -28,6 +28,13 @@ const OrganizationListPage: React.FC = () => {
   return (
     <section className="organizations-section">
       <h2>Organizations</h2>
+      <button
+        onClick={() => mutate()}
+        className="refresh-button"
+        style={{ marginBottom: '1em' }}
+      >
+        Refresh
+      </button>
       {orgLoading ? (
         <div>Loading organizations...</div>
       ) : orgError ? (
