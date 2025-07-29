@@ -18,7 +18,10 @@
   ],
   "scripts": {
     "build": "tsc -b && vite build",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "example": "cd example && yarn dev",
+    "example:install": "cd example && yarn install",
+    "example:build": "cd example && yarn build"
   },
   "dependencies": {
     "react": "^19.1.0",
