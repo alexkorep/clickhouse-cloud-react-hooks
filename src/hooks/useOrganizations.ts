@@ -1,25 +1,52 @@
 import useSWR from "swr";
 import { fetcher } from "../api/fetcher";
 import type { ClickHouseConfig } from "../api/fetcher";
+import {
+  OrganizationsResponseSchema,
+  OrganizationResponseSchema,
+  ActivitiesResponseSchema,
+  ActivityResponseSchema,
+  UsageCostResponseSchema,
+  PrivateEndpointConfigResponseSchema,
+  type OrganizationsResponse,
+  type OrganizationResponse,
+  type ActivitiesResponse,
+  type ActivityResponse,
+  type UsageCostResponse,
+  type PrivateEndpointConfigResponse,
+  type Organization,
+} from "../schemas/clickhouse";
 
 export function useOrganizations(config: ClickHouseConfig) {
   const { data, error, isLoading } = useSWR(
     ["/v1/organizations", config],
-    ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
+    ([url, cfg]: [string, ClickHouseConfig]) => 
+      fetcher<OrganizationsResponse>(url, cfg, OrganizationsResponseSchema)
   );
-  return { data, error, isLoading };
+  return { 
+    data: data?.result, 
+    error, 
+    isLoading,
+    response: data
+  };
 }
 
 export function useOrganization(organizationId: string, config: ClickHouseConfig) {
   const { data, error, isLoading } = useSWR(
     [`/v1/organizations/${organizationId}`, config],
-    ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
+    ([url, cfg]: [string, ClickHouseConfig]) => 
+      fetcher<OrganizationResponse>(url, cfg, OrganizationResponseSchema)
   );
-  return { data, error, isLoading };
+  return { 
+    data: data?.result, 
+    error, 
+    isLoading,
+    response: data
+  };
 }
 
 export function useUpdateOrganization(organizationId: string, config: ClickHouseConfig) {
-  const updateOrganization = async (updateData: any) => {
+  const updateOrganization = async (updateData: any): Promise<Organization> => {
     const { keyId, keySecret, baseUrl = "https://api.clickhouse.cloud" } = config;
     const auth = btoa(`${keyId}:${keySecret}`);
     const response = await fetch(`${baseUrl}/v1/organizations/${organizationId}`, {
@@ -31,7 +58,11 @@ export function useUpdateOrganization(organizationId: string, config: ClickHouse
       body: JSON.stringify(updateData),
     });
     if (!response.ok) throw new Error(await response.text());
-    return response.json();
+    const responseData = await response.json();
+    
+    // Validate the response
+    const validatedResponse = OrganizationResponseSchema.parse(responseData);
+    return validatedResponse.result;
   };
 
   return { updateOrganization };
@@ -40,17 +71,29 @@ export function useUpdateOrganization(organizationId: string, config: ClickHouse
 export function useOrganizationActivities(organizationId: string, config: ClickHouseConfig) {
   const { data, error, isLoading } = useSWR(
     [`/v1/organizations/${organizationId}/activities`, config],
-    ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
+    ([url, cfg]: [string, ClickHouseConfig]) => 
+      fetcher<ActivitiesResponse>(url, cfg, ActivitiesResponseSchema)
   );
-  return { data, error, isLoading };
+  return { 
+    data: data?.result, 
+    error, 
+    isLoading,
+    response: data
+  };
 }
 
 export function useOrganizationActivity(organizationId: string, activityId: string, config: ClickHouseConfig) {
   const { data, error, isLoading } = useSWR(
     [`/v1/organizations/${organizationId}/activities/${activityId}`, config],
-    ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
+    ([url, cfg]: [string, ClickHouseConfig]) => 
+      fetcher<ActivityResponse>(url, cfg, ActivityResponseSchema)
   );
-  return { data, error, isLoading };
+  return { 
+    data: data?.result, 
+    error, 
+    isLoading,
+    response: data
+  };
 }
 
 export function useOrganizationUsageCost(
@@ -66,9 +109,15 @@ export function useOrganizationUsageCost(
   
   const { data, error, isLoading } = useSWR(
     [url, config],
-    ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
+    ([url, cfg]: [string, ClickHouseConfig]) => 
+      fetcher<UsageCostResponse>(url, cfg, UsageCostResponseSchema)
   );
-  return { data, error, isLoading };
+  return { 
+    data: data?.result, 
+    error, 
+    isLoading,
+    response: data
+  };
 }
 
 export function useOrganizationPrivateEndpointConfig(
@@ -84,7 +133,13 @@ export function useOrganizationPrivateEndpointConfig(
   
   const { data, error, isLoading } = useSWR(
     [url, config],
-    ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
+    ([url, cfg]: [string, ClickHouseConfig]) => 
+      fetcher<PrivateEndpointConfigResponse>(url, cfg, PrivateEndpointConfigResponseSchema)
   );
-  return { data, error, isLoading };
+  return { 
+    data: data?.result, 
+    error, 
+    isLoading,
+    response: data
+  };
 }
