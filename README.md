@@ -1,69 +1,75 @@
-# React + TypeScript + Vite
+# ClickHouse Cloud React Hooks
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A collection of reusable React hooks to easily interact with the ClickHouse Cloud API. Simplifies authentication, querying, and managing resources via the official OpenAPI interface.
 
-Currently, two official plugins are available:
+## Installation
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install clickhouse-cloud-react-hooks
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+or
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+yarn add clickhouse-cloud-react-hooks
 ```
+
+## Usage
+
+Here's a basic example of how to use the `useServices` hook to fetch a list of services:
+
+```tsx
+import { ClickHouseProvider, useServices } from "clickhouse-cloud-react-hooks";
+
+const ServicesList = () => {
+  const { data: services, error, isLoading } = useServices();
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  return (
+    <div>
+      <h1>Services</h1>
+      <ul>
+        {services?.map((service) => (
+          <li key={service.id}>{service.name}</li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+const App = () => {
+  return <ServicesList />;
+};
+
+export default App;
+```
+
+## Available Hooks
+
+This package provides a set of hooks to interact with different resources of the ClickHouse Cloud API:
+
+- `useApiKeys`: Manage API keys.
+- `useBackups`: Manage backups.
+- `useClickpipes`: Manage ClickPipes.
+- `useOrganizations`: Fetch organization details.
+- `useServices`: Manage services.
+- `useUserManagement`: Manage users and roles.
+
+## Authentication
+
+TBD
+
+## Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request.
+
+## License
+
+This project is licensed under the MIT License.
