@@ -49,9 +49,16 @@ function App() {
         {!config ? (
           <section className="config-section">
             <h2>Configuration</h2>
-            <p>
-              Enter your ClickHouse Cloud API credentials to test the hooks:
-            </p>
+            <div className="config-info">
+              Enter your <span className="chc-blue">ClickHouse Cloud API credentials</span> to test the hooks.<br /><br />
+              <span className="config-desc">You can find your <b>API Key ID</b> and <b>Secret</b> in your ClickHouse Cloud Console:</span>
+              <br />
+              <span className="config-console-url">
+                https://console.clickhouse.cloud/organizations/[your-organization-id]/keys
+              </span>
+              <br />
+              <span className="config-org-id">Replace <b>[your-organization-id]</b> with your actual organization ID.</span>
+            </div>
             <div className="config-form">
               <div>
                 <label>
@@ -83,8 +90,7 @@ function App() {
               </button>
             </div>
             <p className="warning">
-              <strong>Note:</strong> This is a demo. Never hardcode credentials
-              in production!
+              <span className="warning-text">Warning: This demo may destroy or modify data in your ClickHouse Cloud account. Do NOT use production credentials.</span>
             </p>
           </section>
         ) : (

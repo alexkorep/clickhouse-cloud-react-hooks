@@ -1,3 +1,43 @@
+/* Config Info Section (moved from inline styles in App.tsx) */
+.config-info {
+  background: #f5f7fa;
+  border: 1px solid #dbe2ea;
+  border-radius: 8px;
+  padding: 1em;
+  margin-bottom: 1em;
+  color: #222;
+  max-width: 500px;
+}
+
+.chc-blue {
+  color: #0057b8;
+}
+
+.config-desc {
+  font-size: 0.95em;
+}
+
+.config-console-url {
+  display: inline-block;
+  background: #fff;
+  border: 1px dashed #b3c2d4;
+  border-radius: 4px;
+  padding: 0.4em 0.7em;
+  margin-top: 0.5em;
+  font-family: monospace;
+  font-size: 0.97em;
+  color: #0057b8;
+}
+
+.config-org-id {
+  font-size: 0.9em;
+  color: #666;
+}
+
+.warning-text {
+  color: #b80000;
+  font-weight: bold;
+}
 #root {
   max-width: 1280px;
   margin: 0 auto;
