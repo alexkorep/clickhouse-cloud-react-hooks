@@ -53,23 +53,56 @@ const OrganizationDetailsPage: React.FC = () => {
     return <div>Organization not found</div>;
   }
 
-  return (
-    <section className="organization-details-section">
-      <h2>Organization Details</h2>
-      <p>
-        <strong>Name:</strong> {organization.name}
-      </p>
-      <p>
-        <strong>ID:</strong> {organization.id}
-      </p>
-      <p>
-        <strong>Created:</strong>{" "}
-        {new Date(organization.createdAt).toLocaleDateString()}
-      </p>
-      {/* Add more details as needed */}
-      <Link to="/">Back to Organizations</Link>
-    </section>
-  );
+    return (
+      <section className="organization-details-section">
+        <h2>Organization Details</h2>
+        <p>
+          <strong>Name:</strong> {organization.name}
+        </p>
+        <p>
+          <strong>ID:</strong> {organization.id}
+        </p>
+        <p>
+          <strong>Created:</strong> {new Date(organization.createdAt).toLocaleString()}
+        </p>
+        <div>
+          <strong>Private Endpoints:</strong>
+          {organization.privateEndpoints.length === 0 ? (
+            <span> None</span>
+          ) : (
+            <ul>
+              {organization.privateEndpoints.map((pe) => (
+                <li key={pe.id}>
+                  <div><strong>ID:</strong> {pe.id}</div>
+                  <div><strong>Description:</strong> {pe.description}</div>
+                  <div><strong>Cloud Provider:</strong> {pe.cloudProvider}</div>
+                  <div><strong>Region:</strong> {pe.region}</div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+        <div>
+          <strong>BYOC Config:</strong>
+          {organization.byocConfig.length === 0 ? (
+            <span> None</span>
+          ) : (
+            <ul>
+              {organization.byocConfig.map((byoc) => (
+                <li key={byoc.id}>
+                  <div><strong>ID:</strong> {byoc.id}</div>
+                  <div><strong>State:</strong> {byoc.state}</div>
+                  <div><strong>Account Name:</strong> {byoc.accountName}</div>
+                  <div><strong>Region ID:</strong> {byoc.regionId}</div>
+                  <div><strong>Cloud Provider:</strong> {byoc.cloudProvider}</div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+        <Link to="/">Back to Organizations</Link>
+      </section>
+    );
 };
 
 export default OrganizationDetailsPage;
