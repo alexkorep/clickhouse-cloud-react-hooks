@@ -15,7 +15,7 @@ import {
   type UsageCostResponse,
   type PrivateEndpointConfigResponse,
   type Organization,
-} from "../schemas/clickhouse";
+} from "../schemas/schemas";
 
 export function useOrganizations(config: ClickHouseConfig) {
   const { data, error, isLoading } = useSWR(

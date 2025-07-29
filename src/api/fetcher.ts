@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ClickHouseErrorResponseSchema } from "../schemas/clickhouse";
+import { ClickHouseErrorResponseSchema } from "../schemas/schemas";
 
 export type ClickHouseConfig = {
   keyId: string;

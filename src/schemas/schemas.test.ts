@@ -6,7 +6,7 @@ import {
   ActivitiesResponseSchema,
   UsageCostSchema,
   ClickHouseErrorResponseSchema
-} from '../src/schemas/clickhouse';
+} from './schemas';
 
 describe('ClickHouse Schemas', () => {
   describe('OrganizationSchema', () => {
