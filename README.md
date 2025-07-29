@@ -1,15 +1,79 @@
 # ClickHouse Cloud React Hooks
 
-A collection of reusable React hooks to easily interact with the ClickHouse Cloud API. Simplifies authentication, querying, and managing resources via the official OpenAPI interface with **built-in Zod validation** for runtime type safety.
+A collection of reusable React hooks to interact with the ClickHouse Cloud API: https://clickhouse.com/docs/cloud/manage/api/api-overview
 
 ## Features
 
-- 🚀 **Easy-to-use React hooks** for ClickHouse Cloud API
-- 🛡️ **Runtime type validation** with Zod schemas
-- 📝 **Full TypeScript support** with auto-generated types
-- 🔍 **Automatic error handling** with structured error responses
-- ⚡ **SWR integration** for efficient data fetching and caching
-- 📊 **Complete API coverage** for all ClickHouse Cloud endpoints
+The project is under active development and aims to cover the following features:
+
+### Organization
+
+- [x] List all organizations
+- [ ] Fetch organization details
+- [ ] Update organization details
+- [ ] List organization activities
+- [ ] Fetch single activity
+- [ ] Fetch usage costs
+- [ ] Fetch private endpoint config
+- [ ] List organization members
+- [ ] Fetch member details
+- [ ] Update member role
+- [ ] Remove member
+- [ ] List invitations
+- [ ] Create invitation
+- [ ] Fetch invitation details
+- [ ] Delete invitation
+
+### Services
+
+- [ ] List all services in organization
+- [ ] Create new service
+- [ ] Fetch service details
+- [ ] Update service details
+- [ ] Delete service
+- [ ] Get private endpoint configuration
+- [ ] Manage service query endpoints
+- [ ] Update service state (start/stop)
+- [ ] Update service scaling settings
+- [ ] Update service password
+- [ ] Create private endpoint
+- [ ] Get service metrics
+
+### Backups
+
+- [ ] List all backups for a service
+- [ ] Fetch backup details
+- [ ] Get backup configuration
+- [ ] Update backup configuration
+
+### API Keys
+
+- [ ] List all API keys
+- [ ] Create API key
+- [ ] Fetch API key details
+- [ ] Update API key
+- [ ] Delete API key
+
+### User Management
+
+- [ ] List organization members
+- [ ] Manage member roles
+- [ ] Remove members
+- [ ] Manage invitations
+
+### ClickPipes
+
+- [ ] List ClickPipes
+- [ ] Create ClickPipe
+- [ ] Fetch ClickPipe details
+- [ ] Update ClickPipe
+- [ ] Delete ClickPipe
+- [ ] Manage ClickPipe scaling and state
+
+### Prometheus Metrics
+
+- [ ] Fetch organization metrics
+- [ ] Fetch service metrics
 
 ## Installation
 
@@ -28,11 +92,11 @@ yarn add clickhouse-cloud-react-hooks
 ### Basic Example
 
 ```tsx
-import { 
+import {
   useOrganizations,
   type ClickHouseConfig,
   type Organization,
-  ClickHouseAPIError 
+  ClickHouseAPIError,
 } from "clickhouse-cloud-react-hooks";
 
 const OrganizationsList = () => {
@@ -49,7 +113,11 @@ const OrganizationsList = () => {
 
   if (error) {
     if (error instanceof ClickHouseAPIError) {
-      return <div>ClickHouse API Error: {error.error} (Status: {error.status})</div>;
+      return (
+        <div>
+          ClickHouse API Error: {error.error} (Status: {error.status})
+        </div>
+      );
     }
     return <div>Error: {error.message}</div>;
   }
@@ -76,10 +144,10 @@ export default OrganizationsList;
 ### Advanced Usage with Activities
 
 ```tsx
-import { 
+import {
   useOrganizationActivities,
   type Activity,
-  type ClickHouseConfig 
+  type ClickHouseConfig,
 } from "clickhouse-cloud-react-hooks";
 
 const ActivityLog = ({ organizationId }: { organizationId: string }) => {
@@ -88,10 +156,11 @@ const ActivityLog = ({ organizationId }: { organizationId: string }) => {
     keySecret: process.env.REACT_APP_CLICKHOUSE_KEY_SECRET!,
   };
 
-  const { data: activities, error, isLoading } = useOrganizationActivities(
-    organizationId, 
-    config
-  );
+  const {
+    data: activities,
+    error,
+    isLoading,
+  } = useOrganizationActivities(organizationId, config);
 
   if (isLoading) return <div>Loading activities...</div>;
   if (error) return <div>Error: {error.message}</div>;
@@ -103,7 +172,10 @@ const ActivityLog = ({ organizationId }: { organizationId: string }) => {
         {activities?.map((activity: Activity) => (
           <li key={activity.id}>
             <strong>{activity.type}</strong> - {activity.actorType}
-            <small> ({new Date(activity.createdAt).toLocaleDateString()})</small>
+            <small>
+              {" "}
+              ({new Date(activity.createdAt).toLocaleDateString()})
+            </small>
           </li>
         ))}
       </ul>
@@ -115,6 +187,7 @@ const ActivityLog = ({ organizationId }: { organizationId: string }) => {
 ## Available Hooks
 
 ### Organizations
+
 - `useOrganizations(config)` - Fetch all organizations
 - `useOrganization(organizationId, config)` - Fetch single organization
 - `useUpdateOrganization(organizationId, config)` - Update organization
@@ -124,61 +197,29 @@ const ActivityLog = ({ organizationId }: { organizationId: string }) => {
 - `useOrganizationPrivateEndpointConfig(organizationId, config, params?)` - Fetch private endpoint config
 
 ### Services
+
 - `useServices(organizationId, config)` - Manage services
 - (Additional service hooks to be documented)
 
 ### API Keys
+
 - `useApiKeys(organizationId, config)` - Manage API keys
 - (Additional API key hooks to be documented)
 
 ### Backups
+
 - `useBackups(organizationId, serviceId, config)` - Manage backups
 - (Additional backup hooks to be documented)
 
 ### ClickPipes
+
 - `useClickpipes(organizationId, serviceId, config)` - Manage ClickPipes
 - (Additional ClickPipe hooks to be documented)
 
 ### User Management
+
 - `useUserManagement(organizationId, config)` - Manage users and roles
 - (Additional user management hooks to be documented)
-
-## Zod Validation
-
-This library uses Zod schemas to validate all API responses at runtime, providing:
-
-- **Type Safety**: Ensures data matches expected TypeScript types
-- **Runtime Validation**: Catches API changes or unexpected responses
-- **Error Logging**: Logs validation failures to console for debugging
-- **Graceful Fallback**: Returns raw data if validation fails (with warnings)
-
-### Validation Benefits
-
-```tsx
-import { OrganizationSchema } from "clickhouse-cloud-react-hooks";
-
-// The response is automatically validated against this schema:
-const OrganizationSchema = z.object({
-  id: z.string().uuid(),
-  createdAt: z.string().datetime(),
-  name: z.string(),
-  privateEndpoints: z.array(OrganizationPrivateEndpointSchema),
-  byocConfig: z.array(ByocConfigSchema),
-});
-```
-
-### Error Handling
-
-The library provides structured error handling:
-
-```tsx
-import { ClickHouseAPIError } from "clickhouse-cloud-react-hooks";
-
-// Errors are properly typed and include:
-// - status: HTTP status code
-// - error: Detailed error message
-// - requestId: Optional request ID for debugging
-```
 
 ## Configuration
 
@@ -186,34 +227,10 @@ import { ClickHouseAPIError } from "clickhouse-cloud-react-hooks";
 
 ```typescript
 type ClickHouseConfig = {
-  keyId: string;        // Your ClickHouse API Key ID
-  keySecret: string;    // Your ClickHouse API Key Secret
-  baseUrl?: string;     // Optional: Custom API base URL (defaults to https://api.clickhouse.cloud)
+  keyId: string; // Your ClickHouse API Key ID
+  keySecret: string; // Your ClickHouse API Key Secret
+  baseUrl?: string; // Optional: Custom API base URL (defaults to https://api.clickhouse.cloud)
 };
-```
-
-### Environment Variables
-
-```bash
-# .env.local
-REACT_APP_CLICKHOUSE_KEY_ID=your_key_id_here
-REACT_APP_CLICKHOUSE_KEY_SECRET=your_key_secret_here
-```
-
-## Types
-
-All types are automatically exported and available for use:
-
-```tsx
-import type {
-  Organization,
-  Activity,
-  UsageCost,
-  UsageCostRecord,
-  OrganizationPrivateEndpoint,
-  ByocConfig,
-  // ... and many more
-} from "clickhouse-cloud-react-hooks";
 ```
 
 ## Development
@@ -222,16 +239,17 @@ To run the example application:
 
 ```bash
 # Install dependencies
-npm install
+yarn
 
-# Run the example
-npm run example
+# Navigate to the example directory
+cd example
 
-# Build the library
-npm run build
+# Install example dependencies
+yarn
+
+# Start the development server
+yarn dev
 ```
-
-The example application demonstrates all features including Zod validation, error handling, and proper TypeScript usage.
 
 ## Contributing
 
