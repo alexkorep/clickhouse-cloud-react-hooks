@@ -1,10 +1,10 @@
 
 import React from 'react';
-import "./App.css";
+import "../App.css";
 import { useAtom } from 'jotai';
 
 import { useNavigate } from 'react-router-dom';
-import { keyIdAtom, keySecretAtom } from './configAtoms';
+import { keyIdAtom, keySecretAtom } from '../configAtoms';
 
 const ConfigurationPage: React.FC = () => {
 

@@ -1,10 +1,10 @@
 
 import React from 'react';
-import "./App.css";
+import "../App.css";
 import { useParams, Link } from 'react-router-dom';
 import { useOrganizations, ClickHouseAPIError, type Organization } from 'clickhouse-cloud-react-hooks';
 import { useAtom } from 'jotai';
-import { configAtom } from './configAtoms';
+import { configAtom } from '../configAtoms';
 
 const OrganizationDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();

@@ -2,9 +2,9 @@
 
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import OrganizationListPage from "./OrganizationListPage";
-import ConfigurationPage from "./ConfigurationPage";
-import OrganizationDetailsPage from "./OrganizationDetailsPage";
+import OrganizationListPage from "./pages/OrganizationListPage";
+import ConfigurationPage from "./pages/ConfigurationPage";
+import OrganizationDetailsPage from "./pages/OrganizationDetailsPage";
 
 function App() {
   return (

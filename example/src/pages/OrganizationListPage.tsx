@@ -2,8 +2,8 @@
 import React from 'react';
 import { useOrganizations, ClickHouseAPIError, type Organization } from 'clickhouse-cloud-react-hooks';
 import { useAtom } from 'jotai';
-import { configAtom, keyIdAtom, keySecretAtom } from './configAtoms';
-import "./App.css";
+import { configAtom, keyIdAtom, keySecretAtom } from '../configAtoms';
+import "../App.css";
 import { Link } from 'react-router-dom';
 
 const OrganizationListPage: React.FC = () => {
