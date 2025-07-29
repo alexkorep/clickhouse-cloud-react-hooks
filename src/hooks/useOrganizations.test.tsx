@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render } from '@testing-library/react';
 import { waitFor } from '@testing-library/dom';
 import React from 'react';
@@ -24,6 +24,12 @@ const config = {
   baseUrl: 'https://api.clickhouse.cloud',
 };
 
+const errorConfig = {
+  keyId: 'error-key-id',
+  keySecret: 'error-key-secret',
+  baseUrl: 'https://api.clickhouse.cloud',
+};
+
 // Mock fetch with proper type
 global.fetch = vi.fn().mockImplementation(() =>
   Promise.resolve({
@@ -46,8 +52,38 @@ global.fetch = vi.fn().mockImplementation(() =>
 );
 
 describe('useOrganizations', () => {
-  function HookTest({ onResult }: { onResult: (result: ReturnType<typeof useOrganizations>) => void }) {
-    const result = useOrganizations(config);
+  beforeEach(() => {
+    vi.clearAllMocks();
+    // Reset fetch mock to default successful response
+    vi.mocked(global.fetch).mockImplementation(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockOrganizationsResponse),
+        status: 200,
+        statusText: 'OK',
+        headers: new Headers(),
+        redirected: false,
+        type: 'basic',
+        url: '',
+        clone: () => ({} as Response),
+        body: null,
+        bodyUsed: false,
+        arrayBuffer: () => Promise.resolve(new ArrayBuffer(0)),
+        blob: () => Promise.resolve(new Blob()),
+        formData: () => Promise.resolve(new FormData()),
+        text: () => Promise.resolve(''),
+      } as Response)
+    );
+  });
+
+  function HookTest({ 
+    onResult, 
+    config: testConfig 
+  }: { 
+    onResult: (result: ReturnType<typeof useOrganizations>) => void;
+    config: typeof config;
+  }) {
+    const result = useOrganizations(testConfig);
     React.useEffect(() => {
       onResult(result);
     }, [result, onResult]);
@@ -56,7 +92,7 @@ describe('useOrganizations', () => {
 
   it('should fetch and return organizations data', async () => {
     let hookResult: ReturnType<typeof useOrganizations> | undefined;
-    render(<HookTest onResult={r => (hookResult = r)} />);
+    render(<HookTest config={config} onResult={r => (hookResult = r)} />);
     await waitFor(() => expect(hookResult?.isLoading).toBe(false));
     expect(hookResult?.data).toEqual(mockOrganizationsResponse.result);
     expect(hookResult?.error).toBeUndefined();
@@ -84,7 +120,7 @@ describe('useOrganizations', () => {
       } as Response)
     );
     let hookResult: ReturnType<typeof useOrganizations> | undefined;
-    render(<HookTest onResult={r => (hookResult = r)} />);
+    render(<HookTest config={errorConfig} onResult={r => (hookResult = r)} />);
     await waitFor(() => expect(hookResult?.isLoading).toBe(false));
     expect(hookResult?.data).toBeUndefined();
     expect(hookResult?.error).toBeDefined();
