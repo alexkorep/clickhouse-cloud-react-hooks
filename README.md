@@ -4,78 +4,83 @@ A collection of reusable React hooks to interact with the ClickHouse Cloud API: 
 
 ## Features
 
-The project is under active development and aims to cover the following features:
+The project is under active development and aims to cover the following features. Each feature lists the hook that implements it (if available):
 
 ### Organization
 
-- [x] List all organizations
-- [x] Fetch organization details
-  - [ ] Private Endpoints
+- [x] List all organizations (`useOrganizations`)
+- [x] Fetch organization details (`useOrganization`)
+  - [ ] Private Endpoints (`useOrganizationPrivateEndpointConfig`)
   - [ ] BYOC Config
-- [x] Update organization details
-- [ ] List organization activities
-- [ ] Fetch single activity
-- [ ] Fetch usage costs
-- [ ] Fetch private endpoint config
-- [ ] List organization members
-- [ ] Fetch member details
-- [ ] Update member role
-- [ ] Remove member
-- [ ] List invitations
-- [ ] Create invitation
-- [ ] Fetch invitation details
-- [ ] Delete invitation
+- [x] Update organization details (`useUpdateOrganization`)
+- [ ] List organization activities (`useOrganizationActivities`)
+- [ ] Fetch single activity (`useOrganizationActivity`)
+- [ ] Fetch usage costs (`useOrganizationUsageCost`)
+- [ ] Fetch private endpoint config (`useOrganizationPrivateEndpointConfig`)
+- [ ] List organization members (`useOrganizationMembers`)
+- [ ] Fetch member details (`useOrganizationMember`)
+- [ ] Update member role (`useUpdateOrganizationMember`)
+- [ ] Remove member (`useDeleteOrganizationMember`)
 
 ### Services
 
-- [ ] List all services in organization
-- [ ] Create new service
-- [ ] Fetch service details
-- [ ] Update service details
-- [ ] Delete service
-- [ ] Get private endpoint configuration
-- [ ] Manage service query endpoints
-- [ ] Update service state (start/stop)
-- [ ] Update service scaling settings
-- [ ] Update service password
-- [ ] Create private endpoint
-- [ ] Get service metrics
+- [ ] List all services in organization (`useServices`)
+- [ ] Create new service (`useCreateService`)
+- [ ] Fetch service details (`useService`)
+- [ ] Update service details (`useUpdateService`)
+- [ ] Delete service (`useDeleteService`)
+- [ ] Get private endpoint configuration (`useServicePrivateEndpointConfig`)
+- [ ] Create private endpoint (`useCreateServicePrivateEndpoint`)
+- [ ] Manage service query endpoints (`useServiceQueryEndpoint`)
+- [ ] Update service state (start/stop) (`useServiceState`)
+- [ ] Update service scaling settings (`useServiceScaling`, `useServiceReplicaScaling`)
+- [ ] Update service password (`useServicePassword`)
+- [ ] Get service metrics (`useServicePrometheus`)
 
 ### Backups
 
-- [ ] List all backups for a service
-- [ ] Fetch backup details
-- [ ] Get backup configuration
-- [ ] Update backup configuration
+- [ ] List all backups for a service (`useServiceBackups`)
+- [ ] Fetch backup details (`useServiceBackup`)
+- [ ] Delete backup (`useDeleteServiceBackup`)
+- [ ] Get backup configuration (`useServiceBackupConfiguration`)
+- [ ] Update backup configuration (`useUpdateServiceBackupConfiguration`)
 
 ### API Keys
 
-- [ ] List all API keys
-- [ ] Create API key
-- [ ] Fetch API key details
-- [ ] Update API key
-- [ ] Delete API key
+- [ ] List all API keys (`useApiKeys`)
+- [ ] Create API key (`useCreateApiKey`)
+- [ ] Fetch API key details (`useApiKey`)
+- [ ] Update API key (`useUpdateApiKey`)
+- [ ] Delete API key (`useDeleteApiKey`)
 
 ### User Management
 
-- [ ] List organization members
-- [ ] Manage member roles
-- [ ] Remove members
-- [ ] Manage invitations
+- [ ] List organization members (`useOrganizationMembers`)
+- [ ] Fetch member details (`useOrganizationMember`)
+- [ ] Update member role (`useUpdateOrganizationMember`)
+- [ ] Remove member (`useDeleteOrganizationMember`)
+
+### Invitations
+
+- [ ] List invitations (`useInvitations`)
+- [ ] Create invitation (`useCreateInvitation`)
+- [ ] Fetch invitation details (`useInvitation`)
+- [ ] Delete invitation (`useDeleteInvitation`)
 
 ### ClickPipes
 
-- [ ] List ClickPipes
-- [ ] Create ClickPipe
-- [ ] Fetch ClickPipe details
-- [ ] Update ClickPipe
-- [ ] Delete ClickPipe
-- [ ] Manage ClickPipe scaling and state
+- [ ] List ClickPipes (`useClickpipes`)
+- [ ] Create ClickPipe (`useCreateClickpipe`)
+- [ ] Fetch ClickPipe details (`useClickpipe`)
+- [ ] Update ClickPipe (`useUpdateClickpipe`)
+- [ ] Delete ClickPipe (`useDeleteClickpipe`)
+- [ ] Update ClickPipe scaling (`useClickpipeScaling`)
+- [ ] Update ClickPipe state (`useClickpipeState`)
 
 ### Prometheus Metrics
 
-- [ ] Fetch organization metrics
-- [ ] Fetch service metrics
+- [ ] Fetch organization metrics (`useOrganizationPrometheusMetrics`)
+- [ ] Fetch service metrics (`useServicePrometheusMetrics`)
 
 ## Installation
 
