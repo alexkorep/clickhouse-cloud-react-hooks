@@ -4,14 +4,22 @@ A collection of reusable React hooks to interact with the ClickHouse Cloud API: 
 
 ## Features
 
-The project is under active development and aims to cover the following features. Each feature lists the hook that implements it (if available):
+The project is under active development and aims to cover the following features. Each feature lists the hook that implements it (if available). Missing endpoints from the OpenAPI spec are listed below with their URLs for completeness:
 
 ### Organization
 
 - [x] List all organizations (`useOrganizations`)
 - [x] Fetch organization details (`useOrganization`)
   - [ ] Private Endpoints (`useOrganizationPrivateEndpointConfig`)
+    - `/v1/organizations/{organizationId}/privateEndpointConfig`
   - [ ] BYOC Config
+    - `/v1/organizations/{organizationId}/byocConfig`
+  - [ ] Organization Cloud Region Private Endpoint Config
+    - `/v1/organizations/{organizationId}/privateEndpointConfig`
+  - [ ] Patch Organization Private Endpoint
+    - `/v1/organizations/{organizationId}/privateEndpointConfig` (PATCH)
+  - [ ] Organization Private Endpoints Patch
+    - `/v1/organizations/{organizationId}/privateEndpointConfig` (PATCH)
 - [x] Update organization details (`useUpdateOrganization`)
 - [ ] List organization activities (`useOrganizationActivities`)
 - [ ] Fetch single activity (`useOrganizationActivity`)
@@ -31,7 +39,14 @@ The project is under active development and aims to cover the following features
 - [ ] Delete service (`useDeleteService`)
 - [ ] Get private endpoint configuration (`useServicePrivateEndpointConfig`)
 - [ ] Create private endpoint (`useCreateServicePrivateEndpoint`)
-- [ ] Manage service query endpoints (`useServiceQueryEndpoint`)
+  - [ ] Manage service query endpoints (`useServiceQueryEndpoint`)
+    - `/v1/organizations/{organizationId}/services/{serviceId}/serviceQueryEndpoint` (GET, POST, DELETE)
+  - [ ] Service Endpoint Change
+    - `/v1/organizations/{organizationId}/services/{serviceId}/serviceEndpointChange`
+  - [ ] Instance Private Endpoints Patch
+    - `/v1/organizations/{organizationId}/services/{serviceId}/privateEndpointConfig` (PATCH)
+  - [ ] Instance Private Endpoint
+    - `/v1/organizations/{organizationId}/services/{serviceId}/privateEndpointConfig` (GET)
 - [ ] Update service state (start/stop) (`useServiceState`)
 - [ ] Update service scaling settings (`useServiceScaling`, `useServiceReplicaScaling`)
 - [ ] Update service password (`useServicePassword`)
@@ -44,6 +59,11 @@ The project is under active development and aims to cover the following features
 - [ ] Delete backup (`useDeleteServiceBackup`)
 - [ ] Get backup configuration (`useServiceBackupConfiguration`)
 - [ ] Update backup configuration (`useUpdateServiceBackupConfiguration`)
+- [ ] Manage backup buckets (AWS/GCP/Azure)
+  - `/v1/organizations/{organizationId}/services/{serviceId}/backupBucket` (GET, POST, PATCH)
+  - `/v1/organizations/{organizationId}/services/{serviceId}/backupBucket/aws` (GET, POST, PATCH)
+  - `/v1/organizations/{organizationId}/services/{serviceId}/backupBucket/gcp` (GET, POST, PATCH)
+  - `/v1/organizations/{organizationId}/services/{serviceId}/backupBucket/azure` (GET, POST, PATCH)
 
 ### API Keys
 
@@ -76,11 +96,21 @@ The project is under active development and aims to cover the following features
 - [ ] Delete ClickPipe (`useDeleteClickpipe`)
 - [ ] Update ClickPipe scaling (`useClickpipeScaling`)
 - [ ] Update ClickPipe state (`useClickpipeState`)
+- [ ] Manage reverse private endpoints for ClickPipes
+  - `/v1/organizations/{organizationId}/services/{serviceId}/clickpipesReversePrivateEndpoints` (GET, POST)
+  - `/v1/organizations/{organizationId}/services/{serviceId}/clickpipesReversePrivateEndpoints/{reversePrivateEndpointId}` (GET, DELETE)
 
 ### Prometheus Metrics
 
 - [ ] Fetch organization metrics (`useOrganizationPrometheusMetrics`)
 - [ ] Fetch service metrics (`useServicePrometheusMetrics`)
+
+### Miscellaneous
+
+- [ ] Organization Activity by ID
+  - `/v1/organizations/{organizationId}/activities/{activityId}` (GET)
+- [ ] Usage Cost Metrics/Records
+  - `/v1/organizations/{organizationId}/usageCost` (GET)
 
 ## Installation
 
