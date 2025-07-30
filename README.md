@@ -12,7 +12,7 @@ The project is under active development and aims to cover the following features
 - [x] Fetch organization details
   - [ ] Private Endpoints
   - [ ] BYOC Config
-- [ ] Update organization details
+- [x] Update organization details
 - [ ] List organization activities
 - [ ] Fetch single activity
 - [ ] Fetch usage costs
