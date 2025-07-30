@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "../App.css";
 import { useParams, Link } from "react-router-dom";
 import {
   useOrganization,
+  useUpdateOrganization,
   ClickHouseAPIError,
 } from "clickhouse-cloud-react-hooks";
 import { useAtomValue } from "jotai";
@@ -17,6 +18,26 @@ const OrganizationDetailsPage: React.FC = () => {
     isLoading: orgLoading,
     mutate,
   } = useOrganization(id || "", config || { keyId: "", keySecret: "" });
+
+  const { updateOrganization } = useUpdateOrganization(
+    id || "",
+    config || { keyId: "", keySecret: "" }
+  );
+
+  // State for editing organization name
+  const [editName, setEditName] = useState<string>("");
+  const [isEditing, setIsEditing] = useState(false);
+
+  const [updateLoading, setUpdateLoading] = useState(false);
+  const [updateError, setUpdateError] = useState<string | null>(null);
+  const [updateSuccess, setUpdateSuccess] = useState(false);
+
+  // Set initial editName when organization loads
+  useEffect(() => {
+    if (organization && !isEditing) {
+      setEditName(organization.name);
+    }
+  }, [organization, isEditing]);
 
   if (!config) {
     return (
@@ -58,20 +79,103 @@ const OrganizationDetailsPage: React.FC = () => {
     <section className="organization-details-section">
       <h2>Organization Details</h2>
       <button
-        onClick={() => mutate()}
+        onClick={() => {
+          mutate();
+          setUpdateSuccess(false);
+        }}
         className="refresh-button"
-        style={{ marginBottom: '1em' }}
+        style={{ marginBottom: "1em" }}
       >
         Refresh
       </button>
-      <p>
-        <strong>Name:</strong> {organization.name}
-      </p>
+
+      {/* Editable Name Form */}
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault();
+          setUpdateLoading(true);
+          setUpdateError(null);
+          setUpdateSuccess(false);
+          try {
+            await updateOrganization({ name: editName });
+            setUpdateSuccess(true);
+            setIsEditing(false);
+            mutate(); // Refresh organization data
+          } catch (err: unknown) {
+            setUpdateError(
+              err && typeof err === "object" && "message" in err
+                ? String((err as { message?: unknown }).message)
+                : "Failed to update organization"
+            );
+          } finally {
+            setUpdateLoading(false);
+          }
+        }}
+        style={{ marginBottom: "1em" }}
+      >
+        <label>
+          <strong>Name:</strong>{" "}
+          {isEditing ? (
+            <input
+              type="text"
+              value={editName}
+              onChange={(e) => setEditName(e.target.value)}
+              disabled={updateLoading}
+              style={{ marginRight: "0.5em" }}
+            />
+          ) : (
+            <span style={{ marginRight: "0.5em" }}>{organization.name}</span>
+          )}
+        </label>
+        {isEditing ? (
+          <>
+            <button
+              type="submit"
+              disabled={updateLoading || editName.trim() === ""}
+              style={{ marginRight: "0.5em" }}
+            >
+              {updateLoading ? "Saving..." : "Save"}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setIsEditing(false);
+                setEditName(organization.name);
+              }}
+              disabled={updateLoading}
+            >
+              Cancel
+            </button>
+          </>
+        ) : (
+          <button
+            type="button"
+            onClick={() => {
+              setIsEditing(true);
+              setUpdateSuccess(false);
+            }}
+          >
+            Edit
+          </button>
+        )}
+        {updateError && (
+          <div className="error" style={{ marginTop: "0.5em" }}>
+            Error: {updateError}
+          </div>
+        )}
+        {updateSuccess && (
+          <div style={{ color: "green", marginTop: "0.5em" }}>
+            Organization updated!
+          </div>
+        )}
+      </form>
+
       <p>
         <strong>ID:</strong> {organization.id}
       </p>
       <p>
-        <strong>Created:</strong> {new Date(organization.createdAt).toLocaleString()}
+        <strong>Created:</strong>{" "}
+        {new Date(organization.createdAt).toLocaleString()}
       </p>
       <div>
         <strong>Private Endpoints:</strong>
@@ -81,10 +185,18 @@ const OrganizationDetailsPage: React.FC = () => {
           <ul>
             {organization.privateEndpoints.map((pe) => (
               <li key={pe.id}>
-                <div><strong>ID:</strong> {pe.id}</div>
-                <div><strong>Description:</strong> {pe.description}</div>
-                <div><strong>Cloud Provider:</strong> {pe.cloudProvider}</div>
-                <div><strong>Region:</strong> {pe.region}</div>
+                <div>
+                  <strong>ID:</strong> {pe.id}
+                </div>
+                <div>
+                  <strong>Description:</strong> {pe.description}
+                </div>
+                <div>
+                  <strong>Cloud Provider:</strong> {pe.cloudProvider}
+                </div>
+                <div>
+                  <strong>Region:</strong> {pe.region}
+                </div>
               </li>
             ))}
           </ul>
@@ -98,11 +210,21 @@ const OrganizationDetailsPage: React.FC = () => {
           <ul>
             {organization.byocConfig.map((byoc) => (
               <li key={byoc.id}>
-                <div><strong>ID:</strong> {byoc.id}</div>
-                <div><strong>State:</strong> {byoc.state}</div>
-                <div><strong>Account Name:</strong> {byoc.accountName}</div>
-                <div><strong>Region ID:</strong> {byoc.regionId}</div>
-                <div><strong>Cloud Provider:</strong> {byoc.cloudProvider}</div>
+                <div>
+                  <strong>ID:</strong> {byoc.id}
+                </div>
+                <div>
+                  <strong>State:</strong> {byoc.state}
+                </div>
+                <div>
+                  <strong>Account Name:</strong> {byoc.accountName}
+                </div>
+                <div>
+                  <strong>Region ID:</strong> {byoc.regionId}
+                </div>
+                <div>
+                  <strong>Cloud Provider:</strong> {byoc.cloudProvider}
+                </div>
               </li>
             ))}
           </ul>
