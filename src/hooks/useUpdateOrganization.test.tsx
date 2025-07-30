@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import { mockFetch } from "../utils/testUtils";
 import { useUpdateOrganization } from "./useOrganizations";
 
 const organizationId = "550e8400-e29b-41d4-a716-446655440001";
@@ -24,25 +25,9 @@ const config = {
 // Mock fetch
 beforeEach(() => {
   vi.clearAllMocks();
-  vi.spyOn(global, "fetch").mockImplementation(() =>
-    Promise.resolve({
-      ok: true,
-      json: () => Promise.resolve(mockOrganizationResponse),
-      status: 200,
-      statusText: "OK",
-      headers: new Headers(),
-      redirected: false,
-      type: "basic",
-      url: "",
-      clone: () => ({} as Response),
-      body: null,
-      bodyUsed: false,
-      arrayBuffer: () => Promise.resolve(new ArrayBuffer(0)),
-      blob: () => Promise.resolve(new Blob()),
-      formData: () => Promise.resolve(new FormData()),
-      text: () => Promise.resolve(""),
-    } as Response)
-  );
+  mockFetch<typeof mockOrganizationResponse>({
+    response: mockOrganizationResponse,
+  });
 });
 
 describe("useUpdateOrganization", () => {
@@ -61,25 +46,13 @@ describe("useUpdateOrganization", () => {
   });
 
   it("should throw error on API failure", async () => {
-    vi.spyOn(global, "fetch").mockImplementationOnce(() =>
-      Promise.resolve({
-        ok: false,
-        status: 400,
-        statusText: "Bad Request",
-        json: () => Promise.resolve({ status: 400, error: "Bad request" }),
-        text: () => Promise.resolve("Bad request"),
-        headers: new Headers(),
-        redirected: false,
-        type: "basic",
-        url: "",
-        clone: () => ({} as Response),
-        body: null,
-        bodyUsed: false,
-        arrayBuffer: () => Promise.resolve(new ArrayBuffer(0)),
-        blob: () => Promise.resolve(new Blob()),
-        formData: () => Promise.resolve(new FormData()),
-      } as Response)
-    );
+    mockFetch<{ status: number; error: string }>({
+      response: { status: 400, error: "Bad request" },
+      ok: false,
+      status: 400,
+      statusText: "Bad Request",
+      text: "Bad request",
+    });
     const { updateOrganization } = useUpdateOrganization(
       organizationId,
       config
