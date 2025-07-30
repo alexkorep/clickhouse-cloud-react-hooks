@@ -9,7 +9,9 @@ The project is under active development and aims to cover the following features
 ### Organization
 
 - [x] List all organizations
-- [ ] Fetch organization details
+- [x] Fetch organization details
+  - [ ] Private Endpoints
+  - [ ] BYOC Config
 - [ ] Update organization details
 - [ ] List organization activities
 - [ ] Fetch single activity
