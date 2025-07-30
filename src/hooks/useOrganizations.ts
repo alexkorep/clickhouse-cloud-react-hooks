@@ -4,14 +4,10 @@ import type { ClickHouseConfig } from "../api/fetcher";
 import {
   OrganizationsResponseSchema,
   OrganizationResponseSchema,
-  ActivitiesResponseSchema,
-  ActivityResponseSchema,
   UsageCostResponseSchema,
   PrivateEndpointConfigResponseSchema,
   type OrganizationsResponse,
   type OrganizationResponse,
-  type ActivitiesResponse,
-  type ActivityResponse,
   type UsageCostResponse,
   type PrivateEndpointConfigResponse,
   type Organization,
@@ -81,41 +77,6 @@ export function useUpdateOrganization(
   };
 
   return { updateOrganization };
-}
-
-export function useOrganizationActivities(
-  organizationId: string,
-  config: ClickHouseConfig
-) {
-  const { data, error, isLoading } = useSWR(
-    [`/v1/organizations/${organizationId}/activities`, config],
-    ([url, cfg]: [string, ClickHouseConfig]) =>
-      fetcher<ActivitiesResponse>(url, cfg, ActivitiesResponseSchema)
-  );
-  return {
-    data: data?.result,
-    error,
-    isLoading,
-    response: data,
-  };
-}
-
-export function useOrganizationActivity(
-  organizationId: string,
-  activityId: string,
-  config: ClickHouseConfig
-) {
-  const { data, error, isLoading } = useSWR(
-    [`/v1/organizations/${organizationId}/activities/${activityId}`, config],
-    ([url, cfg]: [string, ClickHouseConfig]) =>
-      fetcher<ActivityResponse>(url, cfg, ActivityResponseSchema)
-  );
-  return {
-    data: data?.result,
-    error,
-    isLoading,
-    response: data,
-  };
 }
 
 export function useOrganizationUsageCost(

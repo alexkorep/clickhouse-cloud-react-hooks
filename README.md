@@ -9,139 +9,139 @@ The project is under active development and aims to cover the following ClickHou
 ### src/hooks/useOrganizations.ts
 
 - [ ] `GET /v1/organizations` — `useOrganizations`  
-      _Returns a list with a single organization associated with the API key in the request._
+       _Returns a list with a single organization associated with the API key in the request._
 - [ ] `GET /v1/organizations/{organizationId}` — `useOrganization`  
-      _Returns details of a single organization. In order to get the details, the auth key must belong to the organization._
+       _Returns details of a single organization. In order to get the details, the auth key must belong to the organization._
 - [ ] `PATCH /v1/organizations/{organizationId}` — `useUpdateOrganization`  
-      _Updates organization fields. Requires ADMIN auth key role._
-- [!] `GET /v1/organizations/{organizationId}/privateEndpointConfig` — `useOrganizationPrivateEndpointConfig`
+       _Updates organization fields. Requires ADMIN auth key role._
+- [ ] `GET /v1/organizations/{organizationId}/privateEndpointConfig` — `useOrganizationPrivateEndpointConfig`
       _Information required to set up a private endpoint for region within cloud provider for an organization._
+- [ ] `GET /v1/organizations/{organizationId}/usageCost` — `useOrganizationUsageCost`
+      _Returns a grand total and a list of daily, per-entity organization usage cost records for the organization in the queried time period (maximum 31 days)._
+
+### src/hooks/useOrganizationActivities.ts
+
+- [!] `GET /v1/organizations/{organizationId}/activities` — `useOrganizationActivities`  
+   _Returns a list of all organization activities._
+- [!] `GET /v1/organizations/{organizationId}/activities/{activityId}` — `useOrganizationActivity`
+  _Returns a single organization activity by ID._
 
 ### src/hooks/usePrometheusMetrics.ts
 
 - [ ] `GET /v1/organizations/{organizationId}/prometheus` — `useOrganizationPrometheusMetrics`  
-      _Returns prometheus metrics for all services in an organization._
+       _Returns prometheus metrics for all services in an organization._
 
 ### src/hooks/useServices.ts
 
 - [ ] `GET /v1/organizations/{organizationId}/services` — `useServices`  
-      _Returns a list of all services in the organization._
+       _Returns a list of all services in the organization._
 - [ ] `POST /v1/organizations/{organizationId}/services` — `useCreateService`  
-      _Creates a new service in the organization, and returns the current service state and a password to access the service. The service is started asynchronously._
+       _Creates a new service in the organization, and returns the current service state and a password to access the service. The service is started asynchronously._
 - [ ] `GET /v1/organizations/{organizationId}/services/{serviceId}` — `useService`  
-      _Returns a service that belongs to the organization._
+       _Returns a service that belongs to the organization._
 - [ ] `PATCH /v1/organizations/{organizationId}/services/{serviceId}` — `useUpdateService`  
-      _Updates basic service details like service name or IP access list._
+       _Updates basic service details like service name or IP access list._
 - [ ] `DELETE /v1/organizations/{organizationId}/services/{serviceId}` — `useDeleteService`  
-      _Deletes the service. The service must be in stopped state and is deleted asynchronously after this method call._
+       _Deletes the service. The service must be in stopped state and is deleted asynchronously after this method call._
 - [!] `GET /v1/organizations/{organizationId}/services/{serviceId}/privateEndpointConfig` — (no hook)  
-      _Information required to set up a private endpoint._
+   _Information required to set up a private endpoint._
 - [!] `GET /v1/organizations/{organizationId}/services/{serviceId}/serviceQueryEndpoint` — (no hook)  
-      _Get the service query endpoint for a given instance. Experimental feature._
+   _Get the service query endpoint for a given instance. Experimental feature._
 - [!] `DELETE /v1/organizations/{organizationId}/services/{serviceId}/serviceQueryEndpoint` — (no hook)  
-      _Delete the service query endpoint for a given instance. Experimental feature._
+   _Delete the service query endpoint for a given instance. Experimental feature._
 - [!] `POST /v1/organizations/{organizationId}/services/{serviceId}/serviceQueryEndpoint` — (no hook)  
-      _Upsert the service query endpoint for a given instance. Experimental feature._
+   _Upsert the service query endpoint for a given instance. Experimental feature._
 - [!] `PATCH /v1/organizations/{organizationId}/services/{serviceId}/state` — `useUpdateServiceState`  
-      _Starts or stops service._
+   _Starts or stops service._
 - [!] `PATCH /v1/organizations/{organizationId}/services/{serviceId}/scaling` — `useUpdateServiceTier`  
-      _Updates minimum and maximum total memory limits and idle mode scaling behavior for the service. Deprecated._
+   _Updates minimum and maximum total memory limits and idle mode scaling behavior for the service. Deprecated._
 - [!] `PATCH /v1/organizations/{organizationId}/services/{serviceId}/replicaScaling` — (no hook)  
-      _Updates minimum and maximum memory limits per replica and idle mode scaling behavior for the service._
+   _Updates minimum and maximum memory limits per replica and idle mode scaling behavior for the service._
 - [!] `PATCH /v1/organizations/{organizationId}/services/{serviceId}/password` — `useResetServicePassword`  
-      _Sets a new password for the service._
+   _Sets a new password for the service._
 - [!] `POST /v1/organizations/{organizationId}/services/{serviceId}/privateEndpoint` — (no hook)  
-      _Create a new private endpoint. The private endpoint will be associated with this service and organization._
+   _Create a new private endpoint. The private endpoint will be associated with this service and organization._
 
 ### src/hooks/usePrometheusMetrics.ts
 
 - [ ] `GET /v1/organizations/{organizationId}/services/{serviceId}/prometheus` — `useServicePrometheusMetrics`  
-      _Returns prometheus metrics for a service._
+       _Returns prometheus metrics for a service._
 
 ### src/hooks/useBackups.ts
 
 - [ ] `GET /v1/organizations/{organizationId}/services/{serviceId}/backups` — `useServiceBackups`  
-      _Returns a list of all backups for the service. The most recent backups comes first in the list._
+       _Returns a list of all backups for the service. The most recent backups comes first in the list._
 - [ ] `GET /v1/organizations/{organizationId}/services/{serviceId}/backups/{backupId}` — `useServiceBackup`  
-      _Returns a single backup info._
+       _Returns a single backup info._
 - [ ] `DELETE /v1/organizations/{organizationId}/services/{serviceId}/backups/{backupId}` — `useDeleteServiceBackup`  
-      _Deletes a backup._
+       _Deletes a backup._
 - [ ] `GET /v1/organizations/{organizationId}/services/{serviceId}/backupConfiguration` — `useServiceBackupConfiguration`  
-      _Returns the service backup configuration._
+       _Returns the service backup configuration._
 - [ ] `PATCH /v1/organizations/{organizationId}/services/{serviceId}/backupConfiguration` — `useUpdateServiceBackupConfiguration`  
-      _Updates service backup configuration. Requires ADMIN auth key role. Setting the properties with null value will reset the properties to their default values._
+       _Updates service backup configuration. Requires ADMIN auth key role. Setting the properties with null value will reset the properties to their default values._
 
 ### src/hooks/useApiKeys.ts
 
 - [ ] `GET /v1/organizations/{organizationId}/keys` — `useApiKeys`  
-      _Returns a list of all keys in the organization._
+       _Returns a list of all keys in the organization._
 - [ ] `POST /v1/organizations/{organizationId}/keys` — `useCreateApiKey`  
-      _Creates new API key._
+       _Creates new API key._
 - [ ] `GET /v1/organizations/{organizationId}/keys/{keyId}` — `useApiKey`  
-      _Returns a single key details._
+       _Returns a single key details._
 - [ ] `PATCH /v1/organizations/{organizationId}/keys/{keyId}` — `useUpdateApiKey`  
-      _Updates API key properties._
+       _Updates API key properties._
 - [ ] `DELETE /v1/organizations/{organizationId}/keys/{keyId}` — `useDeleteApiKey`  
-      _Deletes API key. Only a key not used to authenticate the active request can be deleted._
+       _Deletes API key. Only a key not used to authenticate the active request can be deleted._
 
 ### src/hooks/useMembers.ts
 
 - [!] `GET /v1/organizations/{organizationId}/members` — `useMembers`  
-      _Returns a list of all members in the organization._
+   _Returns a list of all members in the organization._
 - [!] `GET /v1/organizations/{organizationId}/members/{userId}` — (no hook)  
-      _Returns a single organization member details._
+   _Returns a single organization member details._
 - [!] `PATCH /v1/organizations/{organizationId}/members/{userId}` — (no hook)  
-      _Updates organization member role._
+   _Updates organization member role._
 - [!] `DELETE /v1/organizations/{organizationId}/members/{userId}` — `useDeleteMember`  
-      _Removes a user from the organization._
+   _Removes a user from the organization._
 
 ### src/hooks/useInvitations.ts
 
 - [ ] `GET /v1/organizations/{organizationId}/invitations` — `useInvitations`  
-      _Returns list of all organization invitations._
+       _Returns list of all organization invitations._
 - [ ] `POST /v1/organizations/{organizationId}/invitations` — `useCreateInvitation`  
-      _Creates organization invitation._
+       _Creates organization invitation._
 - [ ] `GET /v1/organizations/{organizationId}/invitations/{invitationId}` — `useInvitation`  
-      _Returns details for a single organization invitation._
+       _Returns details for a single organization invitation._
 - [ ] `DELETE /v1/organizations/{organizationId}/invitations/{invitationId}` — `useDeleteInvitation`  
-      _Deletes a single organization invitation._
-
-### src/hooks/useActivities.ts
-
-- [!] `GET /v1/organizations/{organizationId}/activities` — (no hook)  
-      _Returns a list of all organization activities._
-- [!] `GET /v1/organizations/{organizationId}/activities/{activityId}` — (no hook)  
-      _Returns a single organization activity by ID._
-- [!] `GET /v1/organizations/{organizationId}/usageCost` — (no hook)  
-      _Returns a grand total and a list of daily, per-entity organization usage cost records for the organization in the queried time period (maximum 31 days)._
+       _Deletes a single organization invitation._
 
 ### src/hooks/useClickpipesReversePrivateEndpoints.ts
 
 - [!] `GET /v1/organizations/{organizationId}/services/{serviceId}/clickpipesReversePrivateEndpoints` — (no hook)  
-      _Returns a list of reverse private endpoints for the specified service._  
+   _Returns a list of reverse private endpoints for the specified service._
 - [!] `POST /v1/organizations/{organizationId}/services/{serviceId}/clickpipesReversePrivateEndpoints` — (no hook)  
-      _Create a new reverse private endpoint._
+   _Create a new reverse private endpoint._
 - [!] `GET /v1/organizations/{organizationId}/services/{serviceId}/clickpipesReversePrivateEndpoints/{reversePrivateEndpointId}` — (no hook)  
-      _Returns the reverse private endpoint with the specified ID._
+   _Returns the reverse private endpoint with the specified ID._
 - [!] `DELETE /v1/organizations/{organizationId}/services/{serviceId}/clickpipesReversePrivateEndpoints/{reversePrivateEndpointId}` — (no hook)  
-      _Delete the reverse private endpoint with the specified ID._
+   _Delete the reverse private endpoint with the specified ID._
 
 ### src/hooks/useClickpipes.ts
 
 - [ ] `GET /v1/organizations/{organizationId}/services/{serviceId}/clickpipes` — `useClickpipes`  
-      _Returns a list of ClickPipes._
+       _Returns a list of ClickPipes._
 - [ ] `POST /v1/organizations/{organizationId}/services/{serviceId}/clickpipes` — `useCreateClickpipe`  
-      _Create a new ClickPipe._
+       _Create a new ClickPipe._
 - [ ] `GET /v1/organizations/{organizationId}/services/{serviceId}/clickpipes/{clickPipeId}` — `useClickpipe`  
-      _Returns the specified ClickPipe._
+       _Returns the specified ClickPipe._
 - [ ] `PATCH /v1/organizations/{organizationId}/services/{serviceId}/clickpipes/{clickPipeId}` — `useUpdateClickpipe`  
-      _Update the specified ClickPipe._
+       _Update the specified ClickPipe._
 - [ ] `DELETE /v1/organizations/{organizationId}/services/{serviceId}/clickpipes/{clickPipeId}` — `useDeleteClickpipe`  
-      _Delete the specified ClickPipe._
+       _Delete the specified ClickPipe._
 - [!] `PATCH /v1/organizations/{organizationId}/services/{serviceId}/clickpipes/{clickPipeId}/scaling` — `useUpdateClickpipeTier`  
-      _Change scaling settings for the specified ClickPipe._
+   _Change scaling settings for the specified ClickPipe._
 - [!] `PATCH /v1/organizations/{organizationId}/services/{serviceId}/clickpipes/{clickPipeId}/state` — `useUpdateClickpipeState`  
-      _Start, stop or resync ClickPipe._
+   _Start, stop or resync ClickPipe._
 
 ## Installation
 
