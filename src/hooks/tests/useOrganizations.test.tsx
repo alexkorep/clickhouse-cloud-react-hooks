@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { mockFetch } from "../utils/testUtils";
+import { mockFetch } from "../../utils/testUtils";
 import { render } from "@testing-library/react";
 import { waitFor } from "@testing-library/dom";
 import React from "react";
-import { useOrganizations } from "./useOrganizations";
+import { useOrganizations } from "../useOrganizations";
 
 const mockOrganizationsResponse = {
   status: 200,
