@@ -1,4 +1,5 @@
 import useSWR from "swr";
+import { z } from "zod";
 import { fetcher } from "../api/fetcher";
 import type { ClickHouseConfig } from "../api/fetcher";
 import {
@@ -13,11 +14,14 @@ import {
   type Organization,
 } from "../schemas/schemas";
 
-export function useOrganizations(config: ClickHouseConfig) {
-  const { data, error, isLoading, mutate } = useSWR(
-    ["/v1/organizations", config],
-    ([url, cfg]: [string, ClickHouseConfig]) =>
-      fetcher<OrganizationsResponse>(url, cfg, OrganizationsResponseSchema)
+function useClickHouseSWR<T extends { result: unknown }>(
+  url: string,
+  config: ClickHouseConfig,
+  schema: z.ZodSchema<T>
+) {
+  const key = `${url}:${config.baseUrl}:${config.keyId}`;
+  const { data, error, isLoading, mutate } = useSWR(key, () =>
+    fetcher<T>(url, config, schema)
   );
   return {
     data: data?.result,
@@ -28,22 +32,23 @@ export function useOrganizations(config: ClickHouseConfig) {
   };
 }
 
+export function useOrganizations(config: ClickHouseConfig) {
+  return useClickHouseSWR<OrganizationsResponse>(
+    "/v1/organizations",
+    config,
+    OrganizationsResponseSchema
+  );
+}
+
 export function useOrganization(
   organizationId: string,
   config: ClickHouseConfig
 ) {
-  const { data, error, isLoading, mutate } = useSWR(
-    [`/v1/organizations/${organizationId}`, config],
-    ([url, cfg]: [string, ClickHouseConfig]) =>
-      fetcher<OrganizationResponse>(url, cfg, OrganizationResponseSchema)
+  return useClickHouseSWR<OrganizationResponse>(
+    `/v1/organizations/${organizationId}`,
+    config,
+    OrganizationResponseSchema
   );
-  return {
-    data: data?.result,
-    error,
-    isLoading,
-    response: data,
-    mutate,
-  };
 }
 
 export function useUpdateOrganization(
