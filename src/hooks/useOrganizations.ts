@@ -1,4 +1,4 @@
-import useSWR from "swr";
+import useSWR, { useSWRConfig } from "swr";
 import { z } from "zod";
 import { fetcher } from "../api/fetcher";
 import type { ClickHouseConfig } from "../api/fetcher";
@@ -55,6 +55,8 @@ export function useUpdateOrganization(
   organizationId: string,
   config: ClickHouseConfig
 ) {
+  const { mutate: globalMutate } = useSWRConfig();
+
   const updateOrganization = async (updateData: any): Promise<Organization> => {
     const {
       keyId,
@@ -78,6 +80,13 @@ export function useUpdateOrganization(
 
     // Validate the response
     const validatedResponse = OrganizationResponseSchema.parse(responseData);
+
+    // Invalidate related cache entries
+    await Promise.all([
+        (`/v1/organizations:${config.baseUrl}:${config.keyId}`),
+      globalMutate(`/v1/organizations/${organizationId}:${config.baseUrl}:${config.keyId}`),
+    ]);
+
     return validatedResponse.result;
   };
 
