@@ -8,11 +8,11 @@ The project is under active development and aims to cover the following ClickHou
 
 ### src/hooks/useOrganizations.ts
 
-- [ ] `GET /v1/organizations` — `useOrganizations`  
+- [x] `GET /v1/organizations` — `useOrganizations`  
        _Returns a list with a single organization associated with the API key in the request._
-- [ ] `GET /v1/organizations/{organizationId}` — `useOrganization`  
+- [x] `GET /v1/organizations/{organizationId}` — `useOrganization`  
        _Returns details of a single organization. In order to get the details, the auth key must belong to the organization._
-- [ ] `PATCH /v1/organizations/{organizationId}` — `useUpdateOrganization`  
+- [x] `PATCH /v1/organizations/{organizationId}` — `useUpdateOrganization`  
        _Updates organization fields. Requires ADMIN auth key role._
 - [ ] `GET /v1/organizations/{organizationId}/privateEndpointConfig` — `useOrganizationPrivateEndpointConfig`
       _Information required to set up a private endpoint for region within cloud provider for an organization._
