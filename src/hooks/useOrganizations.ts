@@ -105,18 +105,11 @@ export function useOrganizationUsageCost(
   const url = `/v1/organizations/${organizationId}/usageCost${
     queryString ? `?${queryString}` : ""
   }`;
-
-  const { data, error, isLoading } = useSWR(
-    [url, config],
-    ([url, cfg]: [string, ClickHouseConfig]) =>
-      fetcher<UsageCostResponse>(url, cfg, UsageCostResponseSchema)
+  return useClickHouseSWR<UsageCostResponse>(
+    url,
+    config,
+    UsageCostResponseSchema
   );
-  return {
-    data: data?.result,
-    error,
-    isLoading,
-    response: data,
-  };
 }
 
 export function useOrganizationPrivateEndpointConfig(
@@ -132,20 +125,9 @@ export function useOrganizationPrivateEndpointConfig(
   const url = `/v1/organizations/${organizationId}/privateEndpointConfig${
     queryString ? `?${queryString}` : ""
   }`;
-
-  const { data, error, isLoading } = useSWR(
-    [url, config],
-    ([url, cfg]: [string, ClickHouseConfig]) =>
-      fetcher<PrivateEndpointConfigResponse>(
-        url,
-        cfg,
-        PrivateEndpointConfigResponseSchema
-      )
+  return useClickHouseSWR<PrivateEndpointConfigResponse>(
+    url,
+    config,
+    PrivateEndpointConfigResponseSchema
   );
-  return {
-    data: data?.result,
-    error,
-    isLoading,
-    response: data,
-  };
 }
