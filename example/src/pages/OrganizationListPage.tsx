@@ -13,6 +13,7 @@ const OrganizationListPage: React.FC = () => {
     data: organizations,
     error: orgError,
     isLoading: orgLoading,
+    isValidating,
     mutate,
   } = useOrganizations(config || { keyId: '', keySecret: '' });
 
@@ -32,8 +33,9 @@ const OrganizationListPage: React.FC = () => {
         onClick={() => mutate()}
         className="refresh-button"
         style={{ marginBottom: '1em' }}
+        disabled={isValidating}
       >
-        Refresh
+        {isValidating ? 'Loading...' : 'Refresh'}
       </button>
       {orgLoading ? (
         <div>Loading organizations...</div>

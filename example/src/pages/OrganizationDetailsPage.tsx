@@ -16,6 +16,7 @@ const OrganizationDetailsPage: React.FC = () => {
     data: organization,
     error: orgError,
     isLoading: orgLoading,
+    isValidating,
     mutate,
   } = useOrganization(id || "", config || { keyId: "", keySecret: "" });
 
@@ -85,8 +86,9 @@ const OrganizationDetailsPage: React.FC = () => {
         }}
         className="refresh-button"
         style={{ marginBottom: "1em" }}
+        disabled={isValidating}
       >
-        Refresh
+        {isValidating ? "Loading..." : "Refresh"}
       </button>
 
       {/* Editable Name Form */}

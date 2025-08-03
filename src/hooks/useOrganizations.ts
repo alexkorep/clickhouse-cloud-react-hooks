@@ -20,13 +20,14 @@ function useClickHouseSWR<T extends { result: unknown }>(
   schema: z.ZodSchema<T>
 ) {
   const key = `${url}:${config.baseUrl}:${config.keyId}`;
-  const { data, error, isLoading, mutate } = useSWR(key, () =>
+  const { data, error, isLoading, isValidating, mutate } = useSWR(key, () =>
     fetcher<T>(url, config, schema)
   );
   return {
     data: data?.result,
     error,
     isLoading,
+    isValidating,
     response: data,
     mutate,
   };
@@ -83,8 +84,10 @@ export function useUpdateOrganization(
 
     // Invalidate related cache entries
     await Promise.all([
-        (`/v1/organizations:${config.baseUrl}:${config.keyId}`),
-      globalMutate(`/v1/organizations/${organizationId}:${config.baseUrl}:${config.keyId}`),
+      `/v1/organizations:${config.baseUrl}:${config.keyId}`,
+      globalMutate(
+        `/v1/organizations/${organizationId}:${config.baseUrl}:${config.keyId}`
+      ),
     ]);
 
     return validatedResponse.result;
