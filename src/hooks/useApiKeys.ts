@@ -1,19 +1,31 @@
 import useSWR from "swr";
 import { fetcher } from "../api/fetcher";
 import type { ClickHouseConfig } from "../api/fetcher";
+import { useClickHouseSWR } from "./useClickHouseSWR";
+import {
+  ApiKeysResponseSchema,
+  ApiKeyCreateResponseSchema,
+  type ApiKeysResponse,
+} from "../schemas/schemas";
 
 export function useApiKeys(organizationId: string, config: ClickHouseConfig) {
-  const { data, error, isLoading } = useSWR(
-    [`/v1/organizations/${organizationId}/keys`, config],
-    ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
+  return useClickHouseSWR<ApiKeysResponse>(
+    `/v1/organizations/${organizationId}/keys`,
+    config,
+    ApiKeysResponseSchema
   );
-  return { data, error, isLoading };
 }
 
 export function useCreateApiKey(
   organizationId: string,
   config: ClickHouseConfig
 ) {
+  const { mutate } = useClickHouseSWR<ApiKeysResponse>(
+    `/v1/organizations/${organizationId}/keys`,
+    config,
+    ApiKeysResponseSchema
+  );
+
   const createApiKey = async (keyData: any) => {
     const {
       keyId,
@@ -33,7 +45,13 @@ export function useCreateApiKey(
       }
     );
     if (!response.ok) throw new Error(await response.text());
-    return response.json();
+    const responseData = await response.json();
+
+    const validatedResponse = ApiKeyCreateResponseSchema.parse(responseData);
+
+    await mutate();
+
+    return validatedResponse.result;
   };
 
   return { createApiKey };

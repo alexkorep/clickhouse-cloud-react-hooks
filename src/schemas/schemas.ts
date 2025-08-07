@@ -133,6 +133,24 @@ export const ActivitySchema = z.object({
   serviceId: z.string().optional(),
 });
 
+// API Key schemas
+export const IpAccessListEntrySchema = z.object({
+  source: z.string(),
+  description: z.string(),
+});
+
+export const ApiKeySchema = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  state: z.enum(["enabled", "disabled"]),
+  roles: z.array(z.enum(["admin", "developer", "query_endpoints"])),
+  keySuffix: z.string(),
+  createdAt: z.string().datetime(),
+  expireAt: z.string().datetime().nullable().optional(),
+  usedAt: z.string().datetime().nullable().optional(),
+  ipAccessList: z.array(IpAccessListEntrySchema).default([]),
+});
+
 // Usage Cost schemas
 export const UsageCostMetricsSchema = z.object({
   storageCHC: z.number().optional(),
@@ -169,6 +187,21 @@ export const OrganizationCloudRegionPrivateEndpointConfigSchema = z.object({
 });
 
 // Response schemas
+export const ApiKeysResponseSchema = ClickHouseBaseResponseSchema.extend({
+  result: z.array(ApiKeySchema),
+});
+
+export const ApiKeyResponseSchema = ClickHouseBaseResponseSchema.extend({
+  result: ApiKeySchema,
+});
+
+export const ApiKeyCreateResponseSchema = ClickHouseBaseResponseSchema.extend({
+  result: z.object({
+    key: ApiKeySchema,
+    keyId: z.string().optional(),
+    keySecret: z.string().optional(),
+  }),
+});
 export const OrganizationsResponseSchema = ClickHouseBaseResponseSchema.extend({
   result: z.array(OrganizationSchema),
 });
@@ -197,6 +230,7 @@ export const PrivateEndpointConfigResponseSchema =
 // Type exports
 export type Organization = z.infer<typeof OrganizationSchema>;
 export type Activity = z.infer<typeof ActivitySchema>;
+export type ApiKey = z.infer<typeof ApiKeySchema>;
 export type UsageCost = z.infer<typeof UsageCostSchema>;
 export type UsageCostRecord = z.infer<typeof UsageCostRecordSchema>;
 export type UsageCostMetrics = z.infer<typeof UsageCostMetricsSchema>;
@@ -209,6 +243,9 @@ export type OrganizationCloudRegionPrivateEndpointConfig = z.infer<
 >;
 
 // Response types
+export type ApiKeysResponse = z.infer<typeof ApiKeysResponseSchema>;
+export type ApiKeyResponse = z.infer<typeof ApiKeyResponseSchema>;
+export type ApiKeyCreateResponse = z.infer<typeof ApiKeyCreateResponseSchema>;
 export type OrganizationsResponse = z.infer<typeof OrganizationsResponseSchema>;
 export type OrganizationResponse = z.infer<typeof OrganizationResponseSchema>;
 export type ActivitiesResponse = z.infer<typeof ActivitiesResponseSchema>;
