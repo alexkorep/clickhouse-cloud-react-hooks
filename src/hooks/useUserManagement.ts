@@ -30,7 +30,7 @@ export function useUpdateOrganizationMember(
   userId: string,
   config: ClickHouseConfig
 ) {
-  const updateMember = async (updateData: any) => {
+  const updateMember = async (updateData: unknown) => {
     const {
       keyId,
       keySecret,
@@ -99,7 +99,7 @@ export function useCreateOrganizationInvitation(
   organizationId: string,
   config: ClickHouseConfig
 ) {
-  const createInvitation = async (invitationData: any) => {
+  const createInvitation = async (invitationData: unknown) => {
     const {
       keyId,
       keySecret,
