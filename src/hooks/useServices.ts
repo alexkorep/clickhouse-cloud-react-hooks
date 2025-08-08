@@ -7,7 +7,7 @@ export function useServices(organizationId: string, config: ClickHouseConfig) {
     [`/v1/organizations/${organizationId}/services`, config],
     ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
   );
-  return { data, error, isLoading };
+  return { data: data?.result, error, isLoading, response: data };
 }
 
 export function useService(
@@ -19,14 +19,14 @@ export function useService(
     [`/v1/organizations/${organizationId}/services/${serviceId}`, config],
     ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
   );
-  return { data, error, isLoading };
+  return { data: data?.result, error, isLoading, response: data };
 }
 
 export function useCreateService(
   organizationId: string,
   config: ClickHouseConfig
 ) {
-  const createService = async (serviceData: any) => {
+  const createService = async (serviceData: unknown) => {
     const {
       keyId,
       keySecret,
@@ -56,7 +56,7 @@ export function useUpdateService(
   serviceId: string,
   config: ClickHouseConfig
 ) {
-  const updateService = async (updateData: any) => {
+  const updateService = async (updateData: unknown) => {
     const {
       keyId,
       keySecret,
@@ -147,7 +147,7 @@ export function useServiceReplicaScaling(
   serviceId: string,
   config: ClickHouseConfig
 ) {
-  const updateServiceScaling = async (scalingData: any) => {
+  const updateServiceScaling = async (scalingData: unknown) => {
     const {
       keyId,
       keySecret,
@@ -216,7 +216,7 @@ export function useServicePrivateEndpointConfig(
     ],
     ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
   );
-  return { data, error, isLoading };
+  return { data: data?.result, error, isLoading, response: data };
 }
 
 export function useServiceQueryEndpoint(
@@ -232,7 +232,7 @@ export function useServiceQueryEndpoint(
     ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
   );
 
-  const createQueryEndpoint = async (endpointData: any) => {
+  const createQueryEndpoint = async (endpointData: unknown) => {
     const {
       keyId,
       keySecret,
@@ -275,20 +275,37 @@ export function useServiceQueryEndpoint(
     return response.json();
   };
 
-  return { data, error, isLoading, createQueryEndpoint, deleteQueryEndpoint };
+  return {
+    data: data?.result,
+    error,
+    isLoading,
+    response: data,
+    createQueryEndpoint,
+    deleteQueryEndpoint,
+  };
 }
 
 export function useServicePrometheus(
   organizationId: string,
   serviceId: string,
-  config: ClickHouseConfig
+  config: ClickHouseConfig,
+  params?: { filteredMetrics?: boolean }
 ) {
+  const query = params?.filteredMetrics ? "?filtered_metrics=true" : "";
   const { data, error, isLoading } = useSWR(
-    [
-      `/v1/organizations/${organizationId}/services/${serviceId}/prometheus`,
-      config,
-    ],
-    ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
+    [`/v1/organizations/${organizationId}/services/${serviceId}/prometheus${query}`, config],
+    async ([url, cfg]: [string, ClickHouseConfig]) => {
+      const { keyId, keySecret, baseUrl = "https://api.clickhouse.cloud" } = cfg;
+      const auth = btoa(`${keyId}:${keySecret}`);
+      const res = await fetch(`${baseUrl}${url}`, {
+        headers: {
+          Authorization: `Basic ${auth}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      return res.text();
+    }
   );
   return { data, error, isLoading };
 }
@@ -297,7 +314,7 @@ export function useCreateServicePrivateEndpoint(
   serviceId: string,
   config: ClickHouseConfig
 ) {
-  const createPrivateEndpoint = async (endpointData: any) => {
+  const createPrivateEndpoint = async (endpointData: unknown) => {
     const {
       keyId,
       keySecret,
@@ -326,7 +343,7 @@ export function useServiceScaling(
   serviceId: string,
   config: ClickHouseConfig
 ) {
-  const updateServiceScaling = async (scalingData: any) => {
+  const updateServiceScaling = async (scalingData: unknown) => {
     const {
       keyId,
       keySecret,
