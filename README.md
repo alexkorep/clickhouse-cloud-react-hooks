@@ -43,23 +43,23 @@ The project is under active development and aims to cover the following ClickHou
        _Updates basic service details like service name or IP access list._
 - [ ] `DELETE /v1/organizations/{organizationId}/services/{serviceId}` — `useDeleteService`  
        _Deletes the service. The service must be in stopped state and is deleted asynchronously after this method call._
-- [!] `GET /v1/organizations/{organizationId}/services/{serviceId}/privateEndpointConfig` — (no hook)  
+- [!] `GET /v1/organizations/{organizationId}/services/{serviceId}/privateEndpointConfig` — `useServicePrivateEndpointConfig`  
    _Information required to set up a private endpoint._
-- [!] `GET /v1/organizations/{organizationId}/services/{serviceId}/serviceQueryEndpoint` — (no hook)  
+- [!] `GET /v1/organizations/{organizationId}/services/{serviceId}/serviceQueryEndpoint` — `useServiceQueryEndpoint`  
    _Get the service query endpoint for a given instance. Experimental feature._
-- [!] `DELETE /v1/organizations/{organizationId}/services/{serviceId}/serviceQueryEndpoint` — (no hook)  
+- [!] `DELETE /v1/organizations/{organizationId}/services/{serviceId}/serviceQueryEndpoint` — `useServiceQueryEndpoint`  
    _Delete the service query endpoint for a given instance. Experimental feature._
-- [!] `POST /v1/organizations/{organizationId}/services/{serviceId}/serviceQueryEndpoint` — (no hook)  
+- [!] `POST /v1/organizations/{organizationId}/services/{serviceId}/serviceQueryEndpoint` — `useServiceQueryEndpoint`  
    _Upsert the service query endpoint for a given instance. Experimental feature._
 - [!] `PATCH /v1/organizations/{organizationId}/services/{serviceId}/state` — `useUpdateServiceState`  
    _Starts or stops service._
 - [!] `PATCH /v1/organizations/{organizationId}/services/{serviceId}/scaling` — `useUpdateServiceTier`  
    _Updates minimum and maximum total memory limits and idle mode scaling behavior for the service. Deprecated._
-- [!] `PATCH /v1/organizations/{organizationId}/services/{serviceId}/replicaScaling` — (no hook)  
+- [!] `PATCH /v1/organizations/{organizationId}/services/{serviceId}/replicaScaling` — `useServiceReplicaScaling`  
    _Updates minimum and maximum memory limits per replica and idle mode scaling behavior for the service._
 - [!] `PATCH /v1/organizations/{organizationId}/services/{serviceId}/password` — `useResetServicePassword`  
    _Sets a new password for the service._
-- [!] `POST /v1/organizations/{organizationId}/services/{serviceId}/privateEndpoint` — (no hook)  
+- [!] `POST /v1/organizations/{organizationId}/services/{serviceId}/privateEndpoint` — `useCreateServicePrivateEndpoint`  
    _Create a new private endpoint. The private endpoint will be associated with this service and organization._
 
 ### src/hooks/usePrometheusMetrics.ts
@@ -90,19 +90,8 @@ The project is under active development and aims to cover the following ClickHou
        _Returns a single key details._
 - [ ] `PATCH /v1/organizations/{organizationId}/keys/{keyId}` — `useUpdateApiKey`  
        _Updates API key properties._
-- [ ] `DELETE /v1/organizations/{organizationId}/keys/{keyId}` — `useDeleteApiKey`  
+- [ ] `DELETE /v1/organizations/{organizationId}/keys/{keyId}` — `useDeleteApiKey`
        _Deletes API key. Only a key not used to authenticate the active request can be deleted._
-
-### src/hooks/useMembers.ts
-
-- [!] `GET /v1/organizations/{organizationId}/members` — `useMembers`  
-   _Returns a list of all members in the organization._
-- [!] `GET /v1/organizations/{organizationId}/members/{userId}` — (no hook)  
-   _Returns a single organization member details._
-- [!] `PATCH /v1/organizations/{organizationId}/members/{userId}` — (no hook)  
-   _Updates organization member role._
-- [!] `DELETE /v1/organizations/{organizationId}/members/{userId}` — `useDeleteMember`  
-   _Removes a user from the organization._
 
 ### src/hooks/useInvitations.ts
 
@@ -117,13 +106,13 @@ The project is under active development and aims to cover the following ClickHou
 
 ### src/hooks/useClickpipesReversePrivateEndpoints.ts
 
-- [!] `GET /v1/organizations/{organizationId}/services/{serviceId}/clickpipesReversePrivateEndpoints` — (no hook)  
+- [!] `GET /v1/organizations/{organizationId}/services/{serviceId}/clickpipesReversePrivateEndpoints` — `useClickpipesReversePrivateEndpoints`  
    _Returns a list of reverse private endpoints for the specified service._
-- [!] `POST /v1/organizations/{organizationId}/services/{serviceId}/clickpipesReversePrivateEndpoints` — (no hook)  
+- [!] `POST /v1/organizations/{organizationId}/services/{serviceId}/clickpipesReversePrivateEndpoints` — `useCreateClickpipesReversePrivateEndpoint`  
    _Create a new reverse private endpoint._
-- [!] `GET /v1/organizations/{organizationId}/services/{serviceId}/clickpipesReversePrivateEndpoints/{reversePrivateEndpointId}` — (no hook)  
+- [!] `GET /v1/organizations/{organizationId}/services/{serviceId}/clickpipesReversePrivateEndpoints/{reversePrivateEndpointId}` — `useClickpipesReversePrivateEndpoint`  
    _Returns the reverse private endpoint with the specified ID._
-- [!] `DELETE /v1/organizations/{organizationId}/services/{serviceId}/clickpipesReversePrivateEndpoints/{reversePrivateEndpointId}` — (no hook)  
+- [!] `DELETE /v1/organizations/{organizationId}/services/{serviceId}/clickpipesReversePrivateEndpoints/{reversePrivateEndpointId}` — `useDeleteClickpipesReversePrivateEndpoint`  
    _Delete the reverse private endpoint with the specified ID._
 
 ### src/hooks/useClickpipes.ts
