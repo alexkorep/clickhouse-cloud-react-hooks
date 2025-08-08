@@ -53,7 +53,7 @@ export function useUpdateServiceBackupConfiguration(
   serviceId: string,
   config: ClickHouseConfig
 ) {
-  const updateBackupConfiguration = async (configData: any) => {
+  const updateBackupConfiguration = async (configData: unknown) => {
     const {
       keyId,
       keySecret,

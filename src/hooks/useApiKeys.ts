@@ -1,12 +1,26 @@
-import useSWR from "swr";
-import { fetcher } from "../api/fetcher";
+import { useSWRConfig } from "swr";
 import type { ClickHouseConfig } from "../api/fetcher";
 import { useClickHouseSWR } from "./useClickHouseSWR";
 import {
   ApiKeysResponseSchema,
+  ApiKeyResponseSchema,
   ApiKeyCreateResponseSchema,
+  ClickHouseBaseResponseSchema,
   type ApiKeysResponse,
+  type ApiKeyResponse,
+  type ApiKey,
+  type ClickHouseBaseResponse,
 } from "../schemas/schemas";
+
+type ApiKeyCreateRequest = {
+  name: string;
+  roles: ("admin" | "developer" | "query_endpoints")[];
+  expireAt?: string | null;
+  state?: "enabled" | "disabled";
+  ipAccessList?: { source: string; description: string }[];
+};
+
+type ApiKeyUpdateRequest = Partial<ApiKeyCreateRequest>;
 
 export function useApiKeys(organizationId: string, config: ClickHouseConfig) {
   return useClickHouseSWR<ApiKeysResponse>(
@@ -26,7 +40,7 @@ export function useCreateApiKey(
     ApiKeysResponseSchema
   );
 
-  const createApiKey = async (keyData: any) => {
+  const createApiKey = async (keyData: ApiKeyCreateRequest) => {
     const {
       keyId,
       keySecret,
@@ -62,11 +76,11 @@ export function useApiKey(
   keyId: string,
   config: ClickHouseConfig
 ) {
-  const { data, error, isLoading } = useSWR(
-    [`/v1/organizations/${organizationId}/keys/${keyId}`, config],
-    ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
+  return useClickHouseSWR<ApiKeyResponse>(
+    `/v1/organizations/${organizationId}/keys/${keyId}`,
+    config,
+    ApiKeyResponseSchema
   );
-  return { data, error, isLoading };
 }
 
 export function useUpdateApiKey(
@@ -74,7 +88,11 @@ export function useUpdateApiKey(
   keyId: string,
   config: ClickHouseConfig
 ) {
-  const updateApiKey = async (updateData: any) => {
+  const { mutate: globalMutate } = useSWRConfig();
+
+  const updateApiKey = async (
+    updateData: ApiKeyUpdateRequest
+  ): Promise<ApiKey> => {
     const {
       keyId: configKeyId,
       keySecret,
@@ -93,7 +111,20 @@ export function useUpdateApiKey(
       }
     );
     if (!response.ok) throw new Error(await response.text());
-    return response.json();
+    const responseData = await response.json();
+
+    const validatedResponse = ApiKeyResponseSchema.parse(responseData);
+
+    await Promise.all([
+      globalMutate(
+        `/v1/organizations/${organizationId}/keys:${config.baseUrl}:${config.keyId}`
+      ),
+      globalMutate(
+        `/v1/organizations/${organizationId}/keys/${keyId}:${config.baseUrl}:${config.keyId}`
+      ),
+    ]);
+
+    return validatedResponse.result;
   };
 
   return { updateApiKey };
@@ -104,7 +135,9 @@ export function useDeleteApiKey(
   keyId: string,
   config: ClickHouseConfig
 ) {
-  const deleteApiKey = async () => {
+  const { mutate: globalMutate } = useSWRConfig();
+
+  const deleteApiKey = async (): Promise<ClickHouseBaseResponse> => {
     const {
       keyId: configKeyId,
       keySecret,
@@ -122,7 +155,20 @@ export function useDeleteApiKey(
       }
     );
     if (!response.ok) throw new Error(await response.text());
-    return response.json();
+    const responseData = await response.json();
+
+    const validatedResponse = ClickHouseBaseResponseSchema.parse(responseData);
+
+    await Promise.all([
+      globalMutate(
+        `/v1/organizations/${organizationId}/keys:${config.baseUrl}:${config.keyId}`
+      ),
+      globalMutate(
+        `/v1/organizations/${organizationId}/keys/${keyId}:${config.baseUrl}:${config.keyId}`
+      ),
+    ]);
+
+    return validatedResponse;
   };
 
   return { deleteApiKey };
