@@ -26,7 +26,7 @@ export function useCreateApiKey(
     ApiKeysResponseSchema
   );
 
-  const createApiKey = async (keyData: any) => {
+  const createApiKey = async (keyData: unknown) => {
     const {
       keyId,
       keySecret,
@@ -74,7 +74,7 @@ export function useUpdateApiKey(
   keyId: string,
   config: ClickHouseConfig
 ) {
-  const updateApiKey = async (updateData: any) => {
+  const updateApiKey = async (updateData: unknown) => {
     const {
       keyId: configKeyId,
       keySecret,
