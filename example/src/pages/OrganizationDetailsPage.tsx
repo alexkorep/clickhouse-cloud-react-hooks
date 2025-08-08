@@ -4,6 +4,10 @@ import { useParams, Link } from "react-router-dom";
 import {
   useOrganization,
   useUpdateOrganization,
+  useInvitations,
+  useCreateInvitation,
+  useInvitation,
+  useDeleteInvitation,
   ClickHouseAPIError,
 } from "clickhouse-cloud-react-hooks";
 import { useAtomValue } from "jotai";
@@ -25,6 +29,24 @@ const OrganizationDetailsPage: React.FC = () => {
     config || { keyId: "", keySecret: "" }
   );
 
+  const {
+    data: invitations,
+    error: invitationsError,
+    isLoading: invitationsLoading,
+    mutate: invitationsMutate,
+  } = useInvitations(id || "", config || { keyId: "", keySecret: "" });
+
+  const { createInvitation } = useCreateInvitation(
+    id || "",
+    config || { keyId: "", keySecret: "" }
+  );
+
+  const [invEmail, setInvEmail] = useState("");
+  const [invRole, setInvRole] = useState("developer");
+  const [invLoading, setInvLoading] = useState(false);
+  const [invError, setInvError] = useState<string | null>(null);
+  const [selectedInvitationId, setSelectedInvitationId] = useState<string | null>(null);
+
   // State for editing organization name
   const [editName, setEditName] = useState<string>("");
   const [isEditing, setIsEditing] = useState(false);
@@ -39,6 +61,56 @@ const OrganizationDetailsPage: React.FC = () => {
       setEditName(organization.name);
     }
   }, [organization, isEditing]);
+
+  function InvitationDetails({ invitationId }: { invitationId: string }) {
+    const {
+      data: invitation,
+      error,
+      isLoading,
+    } = useInvitation(id || "", invitationId, config || { keyId: "", keySecret: "" });
+    const { deleteInvitation } = useDeleteInvitation(
+      id || "",
+      invitationId,
+      config || { keyId: "", keySecret: "" }
+    );
+    if (isLoading) return <div>Loading invitation...</div>;
+    if (error)
+      return (
+        <div className="error">Error loading invitation details</div>
+      );
+    if (!invitation) return null;
+    return (
+      <div className="invitation-details" style={{ marginTop: "1em" }}>
+        <p>
+          <strong>Email:</strong> {invitation.email}
+        </p>
+        <p>
+          <strong>Role:</strong> {invitation.role}
+        </p>
+        <p>
+          <strong>Created:</strong> {new Date(invitation.createdAt).toLocaleString()}
+        </p>
+        <p>
+          <strong>Expires:</strong> {new Date(invitation.expireAt).toLocaleString()}
+        </p>
+        <button
+          onClick={async () => {
+            await deleteInvitation();
+            setSelectedInvitationId(null);
+            invitationsMutate();
+          }}
+        >
+          Delete Invitation
+        </button>
+        <button
+          style={{ marginLeft: "0.5em" }}
+          onClick={() => setSelectedInvitationId(null)}
+        >
+          Close
+        </button>
+      </div>
+    );
+  }
 
   if (!config) {
     return (
@@ -230,6 +302,81 @@ const OrganizationDetailsPage: React.FC = () => {
               </li>
             ))}
           </ul>
+        )}
+      </div>
+      <div style={{ marginTop: "2em" }}>
+        <h3>Invitations</h3>
+        {invitationsLoading ? (
+          <div>Loading invitations...</div>
+        ) : invitationsError ? (
+          <div className="error">Error loading invitations</div>
+        ) : invitations && invitations.length > 0 ? (
+          <ul>
+            {invitations.map((inv) => (
+              <li key={inv.id}>
+                {inv.email} - {inv.role}
+                <button
+                  style={{ marginLeft: "0.5em" }}
+                  onClick={() => setSelectedInvitationId(inv.id)}
+                >
+                  View Details
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No invitations</p>
+        )}
+
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            setInvError(null);
+            setInvLoading(true);
+            try {
+              await createInvitation({ email: invEmail, role: invRole });
+              setInvEmail("");
+              setInvRole("developer");
+              invitationsMutate();
+            } catch (err: unknown) {
+              setInvError(
+                err && typeof err === "object" && "message" in err
+                  ? String((err as { message?: unknown }).message)
+                  : "Failed to create invitation"
+              );
+            } finally {
+              setInvLoading(false);
+            }
+          }}
+          style={{ marginTop: "1em" }}
+        >
+          <input
+            type="email"
+            placeholder="Email"
+            value={invEmail}
+            onChange={(e) => setInvEmail(e.target.value)}
+            required
+            style={{ marginRight: "0.5em" }}
+          />
+          <select
+            value={invRole}
+            onChange={(e) => setInvRole(e.target.value)}
+            style={{ marginRight: "0.5em" }}
+          >
+            <option value="admin">admin</option>
+            <option value="developer">developer</option>
+          </select>
+          <button type="submit" disabled={invLoading}>
+            {invLoading ? "Sending..." : "Invite"}
+          </button>
+        </form>
+        {invError && (
+          <div className="error" style={{ marginTop: "0.5em" }}>
+            Error: {invError}
+          </div>
+        )}
+        {selectedInvitationId && (
+          <InvitationDetails invitationId={selectedInvitationId} />
         )}
       </div>
       <Link to="/">Back to Organizations</Link>

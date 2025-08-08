@@ -133,6 +133,23 @@ export const ActivitySchema = z.object({
   serviceId: z.string().optional(),
 });
 
+// Invitation schemas
+export const InvitationSchema = z.object({
+  role: z.enum(["admin", "developer"]),
+  id: z.string().uuid(),
+  email: z.string().email(),
+  createdAt: z.string().datetime(),
+  expireAt: z.string().datetime(),
+});
+
+export const InvitationsResponseSchema = ClickHouseBaseResponseSchema.extend({
+  result: z.array(InvitationSchema),
+});
+
+export const InvitationResponseSchema = ClickHouseBaseResponseSchema.extend({
+  result: InvitationSchema,
+});
+
 // API Key schemas
 export const IpAccessListEntrySchema = z.object({
   source: z.string(),
@@ -230,6 +247,7 @@ export const PrivateEndpointConfigResponseSchema =
 // Type exports
 export type Organization = z.infer<typeof OrganizationSchema>;
 export type Activity = z.infer<typeof ActivitySchema>;
+export type Invitation = z.infer<typeof InvitationSchema>;
 export type ApiKey = z.infer<typeof ApiKeySchema>;
 export type UsageCost = z.infer<typeof UsageCostSchema>;
 export type UsageCostRecord = z.infer<typeof UsageCostRecordSchema>;
@@ -250,6 +268,8 @@ export type OrganizationsResponse = z.infer<typeof OrganizationsResponseSchema>;
 export type OrganizationResponse = z.infer<typeof OrganizationResponseSchema>;
 export type ActivitiesResponse = z.infer<typeof ActivitiesResponseSchema>;
 export type ActivityResponse = z.infer<typeof ActivityResponseSchema>;
+export type InvitationsResponse = z.infer<typeof InvitationsResponseSchema>;
+export type InvitationResponse = z.infer<typeof InvitationResponseSchema>;
 export type UsageCostResponse = z.infer<typeof UsageCostResponseSchema>;
 export type PrivateEndpointConfigResponse = z.infer<
   typeof PrivateEndpointConfigResponseSchema
