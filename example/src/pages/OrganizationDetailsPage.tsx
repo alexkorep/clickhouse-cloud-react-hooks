@@ -4,6 +4,11 @@ import { useParams, Link } from "react-router-dom";
 import {
   useOrganization,
   useUpdateOrganization,
+  useApiKeys,
+  useCreateApiKey,
+  useUpdateApiKey,
+  useDeleteApiKey,
+  type ApiKey,
   ClickHouseAPIError,
 } from "clickhouse-cloud-react-hooks";
 import { useAtomValue } from "jotai";
@@ -25,6 +30,27 @@ const OrganizationDetailsPage: React.FC = () => {
     config || { keyId: "", keySecret: "" }
   );
 
+  const {
+    data: apiKeys,
+    error: keysError,
+    isLoading: keysLoading,
+    mutate: mutateKeys,
+  } = useApiKeys(id || "", config || { keyId: "", keySecret: "" });
+
+  const { createApiKey } = useCreateApiKey(
+    id || "",
+    config || { keyId: "", keySecret: "" }
+  );
+
+  // State for creating API keys
+  const [newKeyName, setNewKeyName] = useState("");
+  const [newKeyRoles, setNewKeyRoles] = useState("developer");
+  const [createLoading, setCreateLoading] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
+  const [createdKey, setCreatedKey] = useState<
+    { keyId?: string; keySecret?: string } | null
+  >(null);
+
   // State for editing organization name
   const [editName, setEditName] = useState<string>("");
   const [isEditing, setIsEditing] = useState(false);
@@ -32,6 +58,47 @@ const OrganizationDetailsPage: React.FC = () => {
   const [updateLoading, setUpdateLoading] = useState(false);
   const [updateError, setUpdateError] = useState<string | null>(null);
   const [updateSuccess, setUpdateSuccess] = useState(false);
+
+  function ApiKeyItem({ apiKey }: { apiKey: ApiKey }) {
+    const { updateApiKey } = useUpdateApiKey(
+      id || "",
+      apiKey.id,
+      config || { keyId: "", keySecret: "" }
+    );
+    const { deleteApiKey } = useDeleteApiKey(
+      id || "",
+      apiKey.id,
+      config || { keyId: "", keySecret: "" }
+    );
+
+    return (
+      <li key={apiKey.id} style={{ marginBottom: "0.5em" }}>
+        <span>
+          <strong>{apiKey.name}</strong> ({apiKey.state})
+        </span>
+        <button
+          style={{ marginLeft: "0.5em" }}
+          onClick={async () => {
+            await updateApiKey({
+              state: apiKey.state === "enabled" ? "disabled" : "enabled",
+            });
+            mutateKeys();
+          }}
+        >
+          Toggle State
+        </button>
+        <button
+          style={{ marginLeft: "0.5em" }}
+          onClick={async () => {
+            await deleteApiKey();
+            mutateKeys();
+          }}
+        >
+          Delete
+        </button>
+      </li>
+    );
+  }
 
   // Set initial editName when organization loads
   useEffect(() => {
@@ -231,6 +298,88 @@ const OrganizationDetailsPage: React.FC = () => {
             ))}
           </ul>
         )}
+      </div>
+      <div style={{ marginTop: "1em" }}>
+        <h3>API Keys</h3>
+        {keysLoading ? (
+          <div>Loading API keys...</div>
+        ) : keysError ? (
+          <div className="error">Failed to load API keys</div>
+        ) : (
+          <ul>
+            {apiKeys?.map((k) => (
+              <ApiKeyItem apiKey={k} key={k.id} />
+            ))}
+          </ul>
+        )}
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            setCreateLoading(true);
+            setCreateError(null);
+            setCreatedKey(null);
+            try {
+              const result = await createApiKey({
+                name: newKeyName,
+                roles: newKeyRoles
+                  .split(",")
+                  .map((r) => r.trim())
+                  .filter(Boolean),
+              });
+              setCreatedKey(result);
+              setNewKeyName("");
+              setNewKeyRoles("developer");
+              mutateKeys();
+            } catch (err: unknown) {
+              setCreateError(
+                err && typeof err === "object" && "message" in err
+                  ? String((err as { message?: unknown }).message)
+                  : "Failed to create key"
+              );
+            } finally {
+              setCreateLoading(false);
+            }
+          }}
+          style={{ marginTop: "1em" }}
+        >
+          <div>
+            <input
+              type="text"
+              placeholder="Key name"
+              value={newKeyName}
+              onChange={(e) => setNewKeyName(e.target.value)}
+              style={{ marginRight: "0.5em" }}
+            />
+            <input
+              type="text"
+              placeholder="Roles (comma separated)"
+              value={newKeyRoles}
+              onChange={(e) => setNewKeyRoles(e.target.value)}
+              style={{ marginRight: "0.5em" }}
+            />
+            <button
+              type="submit"
+              disabled={createLoading || newKeyName.trim() === ""}
+            >
+              {createLoading ? "Creating..." : "Create Key"}
+            </button>
+          </div>
+          {createError && (
+            <div className="error" style={{ marginTop: "0.5em" }}>
+              Error: {createError}
+            </div>
+          )}
+          {createdKey && createdKey.keySecret && (
+            <div style={{ marginTop: "0.5em" }}>
+              <div>
+                <strong>Key ID:</strong> {createdKey.keyId}
+              </div>
+              <div>
+                <strong>Key Secret:</strong> {createdKey.keySecret}
+              </div>
+            </div>
+          )}
+        </form>
       </div>
       <Link to="/">Back to Organizations</Link>
     </section>
