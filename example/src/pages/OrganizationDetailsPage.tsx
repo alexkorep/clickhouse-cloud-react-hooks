@@ -5,6 +5,14 @@ import {
   useOrganization,
   useUpdateOrganization,
   ClickHouseAPIError,
+  useOrganizationMembers,
+  useUpdateOrganizationMember,
+  useDeleteOrganizationMember,
+  useOrganizationInvitations,
+  useCreateOrganizationInvitation,
+  useDeleteOrganizationInvitation,
+  type Member,
+  type Invitation,
 } from "clickhouse-cloud-react-hooks";
 import { useAtomValue } from "jotai";
 import { configAtom } from "../configAtoms";
@@ -24,6 +32,148 @@ const OrganizationDetailsPage: React.FC = () => {
     id || "",
     config || { keyId: "", keySecret: "" }
   );
+
+  const {
+    data: members,
+    error: membersError,
+    isLoading: membersLoading,
+    mutate: mutateMembers,
+  } = useOrganizationMembers(id || "", config || { keyId: "", keySecret: "" });
+
+  const {
+    data: invitations,
+    error: invitationsError,
+    isLoading: invitationsLoading,
+    mutate: mutateInvitations,
+  } = useOrganizationInvitations(
+    id || "",
+    config || { keyId: "", keySecret: "" }
+  );
+
+  const { createInvitation } = useCreateOrganizationInvitation(
+    id || "",
+    config || { keyId: "", keySecret: "" }
+  );
+
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState<"admin" | "developer">(
+    "developer"
+  );
+  const [inviteLoading, setInviteLoading] = useState(false);
+  const [inviteError, setInviteError] = useState<string | null>(null);
+
+  function MemberItem({ member }: { member: Member }) {
+    const { updateMember } = useUpdateOrganizationMember(
+      id || "",
+      member.userId,
+      config || { keyId: "", keySecret: "" }
+    );
+    const { deleteMember } = useDeleteOrganizationMember(
+      id || "",
+      member.userId,
+      config || { keyId: "", keySecret: "" }
+    );
+    const [role, setRole] = useState<"admin" | "developer">(member.role);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    return (
+      <li key={member.userId} style={{ marginBottom: "0.5em" }}>
+        <span style={{ marginRight: "0.5em" }}>{member.email}</span>
+        <select
+          value={role}
+          onChange={(e) => setRole(e.target.value as "admin" | "developer")}
+          disabled={loading}
+          style={{ marginRight: "0.5em" }}
+        >
+          <option value="admin">admin</option>
+          <option value="developer">developer</option>
+        </select>
+        <button
+          onClick={async () => {
+            setLoading(true);
+            setError(null);
+            try {
+              await updateMember({ role });
+              mutateMembers();
+            } catch (err: unknown) {
+              setError(
+                err && typeof err === "object" && "message" in err
+                  ? String((err as { message?: unknown }).message)
+                  : "Failed to update member"
+              );
+            } finally {
+              setLoading(false);
+            }
+          }}
+          disabled={loading}
+          style={{ marginRight: "0.5em" }}
+        >
+          {loading ? "Saving..." : "Save"}
+        </button>
+        <button
+          onClick={async () => {
+            setLoading(true);
+            setError(null);
+            try {
+              await deleteMember();
+              mutateMembers();
+            } catch (err: unknown) {
+              setError(
+                err && typeof err === "object" && "message" in err
+                  ? String((err as { message?: unknown }).message)
+                  : "Failed to delete member"
+              );
+            } finally {
+              setLoading(false);
+            }
+          }}
+          disabled={loading}
+        >
+          Delete
+        </button>
+        {error && <div className="error">Error: {error}</div>}
+      </li>
+    );
+  }
+
+  function InvitationItem({ invitation }: { invitation: Invitation }) {
+    const { deleteInvitation } = useDeleteOrganizationInvitation(
+      id || "",
+      invitation.id,
+      config || { keyId: "", keySecret: "" }
+    );
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    return (
+      <li key={invitation.id} style={{ marginBottom: "0.5em" }}>
+        <span style={{ marginRight: "0.5em" }}>
+          {invitation.email} - {invitation.role}
+        </span>
+        <button
+          onClick={async () => {
+            setLoading(true);
+            setError(null);
+            try {
+              await deleteInvitation();
+              mutateInvitations();
+            } catch (err: unknown) {
+              setError(
+                err && typeof err === "object" && "message" in err
+                  ? String((err as { message?: unknown }).message)
+                  : "Failed to delete invitation"
+              );
+            } finally {
+              setLoading(false);
+            }
+          }}
+          disabled={loading}
+        >
+          Delete
+        </button>
+        {error && <div className="error">Error: {error}</div>}
+      </li>
+    );
+  }
 
   // State for editing organization name
   const [editName, setEditName] = useState<string>("");
@@ -202,6 +352,97 @@ const OrganizationDetailsPage: React.FC = () => {
               </li>
             ))}
           </ul>
+        )}
+      </div>
+      <div>
+        <strong>Members:</strong>
+        {membersLoading ? (
+          <div>Loading members...</div>
+        ) : membersError ? (
+          <div className="error">Error loading members</div>
+        ) : !members || members.length === 0 ? (
+          <span> None</span>
+        ) : (
+          <ul>
+            {members.map((m) => (
+              <MemberItem key={m.userId} member={m} />
+            ))}
+          </ul>
+        )}
+      </div>
+      <div>
+        <strong>Invitations:</strong>
+        {invitationsLoading ? (
+          <div>Loading invitations...</div>
+        ) : invitationsError ? (
+          <div className="error">Error loading invitations</div>
+        ) : (
+          <>
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setInviteLoading(true);
+                setInviteError(null);
+                try {
+                  await createInvitation({
+                    email: inviteEmail,
+                    role: inviteRole,
+                  });
+                  setInviteEmail("");
+                  mutateInvitations();
+                } catch (err: unknown) {
+                  setInviteError(
+                    err && typeof err === "object" && "message" in err
+                      ? String((err as { message?: unknown }).message)
+                      : "Failed to create invitation"
+                  );
+                } finally {
+                  setInviteLoading(false);
+                }
+              }}
+              style={{ marginBottom: "1em" }}
+            >
+              <input
+                type="email"
+                value={inviteEmail}
+                onChange={(e) => setInviteEmail(e.target.value)}
+                placeholder="Email"
+                disabled={inviteLoading}
+                style={{ marginRight: "0.5em" }}
+              />
+              <select
+                value={inviteRole}
+                onChange={(e) =>
+                  setInviteRole(e.target.value as "admin" | "developer")
+                }
+                disabled={inviteLoading}
+                style={{ marginRight: "0.5em" }}
+              >
+                <option value="developer">developer</option>
+                <option value="admin">admin</option>
+              </select>
+              <button
+                type="submit"
+                disabled={inviteLoading || inviteEmail.trim() === ""}
+              >
+                {inviteLoading ? "Inviting..." : "Invite"}
+              </button>
+              {inviteError && (
+                <div className="error" style={{ marginTop: "0.5em" }}>
+                  Error: {inviteError}
+                </div>
+              )}
+            </form>
+            {(!invitations || invitations.length === 0) ? (
+              <span>No invitations</span>
+            ) : (
+              <ul>
+                {invitations.map((inv) => (
+                  <InvitationItem key={inv.id} invitation={inv} />
+                ))}
+              </ul>
+            )}
+          </>
         )}
       </div>
       <div>
