@@ -7,7 +7,7 @@
   - `schemas/` – Zod schemas and accompanying tests.
   - `utils/` – Shared helpers for tests and examples.
   - `main.ts` – Library entry point.
-- `doc/` – OpenAPI specification.
+- `doc/` – OpenAPI specification. The hooks located in `src/hooks` should follow this specification for the API calls.
 - `example/` – Vite example app demonstrating library usage.
 - `eslint.config.js`, `vite.config.ts`, `vitest.config.ts`, and `tsconfig*.json` configure linting, build, and tests.
 - `README.md` – Project overview and usage.
