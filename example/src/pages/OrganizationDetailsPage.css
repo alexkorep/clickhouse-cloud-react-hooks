@@ -1,0 +1,20 @@
+.mr-sm {
+  margin-right: 0.5em;
+}
+
+.error-spacing {
+  margin-top: 0.5em;
+}
+
+.success-message {
+  color: green;
+  margin-top: 0.5em;
+}
+
+.link-container {
+  margin-top: 1em;
+}
+
+.link-container a:not(:last-child) {
+  margin-right: 1em;
+}

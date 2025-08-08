@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../App.css";
+import "./OrganizationDetailsPage.css";
 import { useParams, Link } from "react-router-dom";
 import {
   useOrganization,
@@ -85,7 +86,6 @@ const OrganizationDetailsPage: React.FC = () => {
           setUpdateSuccess(false);
         }}
         className="refresh-button"
-        style={{ marginBottom: "1em" }}
         disabled={isValidating}
       >
         {isValidating ? "Loading..." : "Refresh"}
@@ -113,7 +113,7 @@ const OrganizationDetailsPage: React.FC = () => {
             setUpdateLoading(false);
           }
         }}
-        style={{ marginBottom: "1em" }}
+        className="form-inline"
       >
         <label>
           <strong>Name:</strong>{" "}
@@ -123,10 +123,10 @@ const OrganizationDetailsPage: React.FC = () => {
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
               disabled={updateLoading}
-              style={{ marginRight: "0.5em" }}
+              className="mr-sm"
             />
           ) : (
-            <span style={{ marginRight: "0.5em" }}>{organization.name}</span>
+            <span className="mr-sm">{organization.name}</span>
           )}
         </label>
         {isEditing ? (
@@ -134,7 +134,7 @@ const OrganizationDetailsPage: React.FC = () => {
             <button
               type="submit"
               disabled={updateLoading || editName.trim() === ""}
-              style={{ marginRight: "0.5em" }}
+              className="mr-sm"
             >
               {updateLoading ? "Saving..." : "Save"}
             </button>
@@ -161,14 +161,10 @@ const OrganizationDetailsPage: React.FC = () => {
           </button>
         )}
         {updateError && (
-          <div className="error" style={{ marginTop: "0.5em" }}>
-            Error: {updateError}
-          </div>
+          <div className="error error-spacing">Error: {updateError}</div>
         )}
         {updateSuccess && (
-          <div style={{ color: "green", marginTop: "0.5em" }}>
-            Organization updated!
-          </div>
+          <div className="success-message">Organization updated!</div>
         )}
       </form>
 
@@ -231,6 +227,12 @@ const OrganizationDetailsPage: React.FC = () => {
             ))}
           </ul>
         )}
+      </div>
+      <div className="link-container">
+        <Link to={`/org/${id}/usage-cost`}>Usage Cost</Link>
+        <Link to={`/org/${id}/private-endpoint-config`}>
+          Private Endpoint Config
+        </Link>
       </div>
       <Link to="/">Back to Organizations</Link>
     </section>
