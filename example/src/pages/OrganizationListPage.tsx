@@ -32,7 +32,6 @@ const OrganizationListPage: React.FC = () => {
       <button
         onClick={() => mutate()}
         className="refresh-button"
-        style={{ marginBottom: '1em' }}
         disabled={isValidating}
       >
         {isValidating ? 'Loading...' : 'Refresh'}
