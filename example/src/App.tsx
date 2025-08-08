@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import OrganizationListPage from "./pages/OrganizationListPage";
 import ConfigurationPage from "./pages/ConfigurationPage";
 import OrganizationDetailsPage from "./pages/OrganizationDetailsPage";
+import ClickpipesPage from "./pages/ClickpipesPage";
 
 function App() {
   return (
@@ -16,12 +17,16 @@ function App() {
         </header>
         <nav style={{ padding: "1rem", borderBottom: "1px solid #eee" }}>
           <Link to="/" style={{ marginRight: "1rem" }}>Organizations</Link>
+          <Link to="/clickpipes" style={{ marginRight: "1rem" }}>
+            ClickPipes
+          </Link>
           <Link to="/config">Configuration</Link>
         </nav>
         <main>
           <Routes>
             <Route path="/" element={<OrganizationListPage />} />
             <Route path="/config" element={<ConfigurationPage />} />
+            <Route path="/clickpipes" element={<ClickpipesPage />} />
             <Route path="/org/:id" element={<OrganizationDetailsPage />} />
           </Routes>
         </main>

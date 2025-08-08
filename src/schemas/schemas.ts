@@ -181,6 +181,24 @@ export const UsageCostSchema = z.object({
   costs: UsageCostRecordSchema,
 });
 
+// ClickPipe schemas
+export const ClickPipeSchema = z
+  .object({
+    id: z.string().uuid(),
+    serviceId: z.string().uuid(),
+    name: z.string(),
+    state: z.string(),
+  })
+  .passthrough();
+
+export const ClickPipesResponseSchema = ClickHouseBaseResponseSchema.extend({
+  result: z.array(ClickPipeSchema),
+});
+
+export const ClickPipeResponseSchema = ClickHouseBaseResponseSchema.extend({
+  result: ClickPipeSchema,
+});
+
 // Private Endpoint Config schemas
 export const OrganizationCloudRegionPrivateEndpointConfigSchema = z.object({
   endpointServiceId: z.string(),
@@ -241,6 +259,7 @@ export type ByocConfig = z.infer<typeof ByocConfigSchema>;
 export type OrganizationCloudRegionPrivateEndpointConfig = z.infer<
   typeof OrganizationCloudRegionPrivateEndpointConfigSchema
 >;
+export type ClickPipe = z.infer<typeof ClickPipeSchema>;
 
 // Response types
 export type ApiKeysResponse = z.infer<typeof ApiKeysResponseSchema>;
@@ -257,3 +276,5 @@ export type PrivateEndpointConfigResponse = z.infer<
 export type ClickHouseErrorResponse = z.infer<
   typeof ClickHouseErrorResponseSchema
 >;
+export type ClickPipesResponse = z.infer<typeof ClickPipesResponseSchema>;
+export type ClickPipeResponse = z.infer<typeof ClickPipeResponseSchema>;
