@@ -18,6 +18,7 @@
 - Two-space indentation, double quotes, and semicolons.
 - Prefer named exports; React hooks must start with `use`.
 - Use Yarn for dependency management.
+- In the example app do not use inline CSS. Put all CSS into `example/src/App.css` if element is used in more than one page, or into the page-specific CSS files (create them if needed).
 
 ## Testing
 - Unit tests use [Vitest](https://vitest.dev) and React Testing Library.
