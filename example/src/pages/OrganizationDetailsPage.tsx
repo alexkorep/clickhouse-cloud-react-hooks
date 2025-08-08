@@ -4,7 +4,9 @@ import { useParams, Link } from "react-router-dom";
 import {
   useOrganization,
   useUpdateOrganization,
+  useOrganizationActivities,
   ClickHouseAPIError,
+  type Activity,
 } from "clickhouse-cloud-react-hooks";
 import { useAtomValue } from "jotai";
 import { configAtom } from "../configAtoms";
@@ -19,6 +21,17 @@ const OrganizationDetailsPage: React.FC = () => {
     isValidating,
     mutate,
   } = useOrganization(id || "", config || { keyId: "", keySecret: "" });
+
+  const {
+    data: activities,
+    error: activitiesError,
+    isLoading: activitiesLoading,
+    isValidating: activitiesValidating,
+    mutate: refreshActivities,
+  } = useOrganizationActivities(
+    id || "",
+    config || { keyId: "", keySecret: "" }
+  );
 
   const { updateOrganization } = useUpdateOrganization(
     id || "",
@@ -230,6 +243,44 @@ const OrganizationDetailsPage: React.FC = () => {
               </li>
             ))}
           </ul>
+        )}
+      </div>
+      <div>
+        <h3>Activities</h3>
+        <button
+          onClick={() => refreshActivities()}
+          className="refresh-button"
+          style={{ marginBottom: "1em" }}
+          disabled={activitiesValidating}
+        >
+          {activitiesValidating ? "Loading..." : "Refresh"}
+        </button>
+        {activitiesLoading ? (
+          <div>Loading activities...</div>
+        ) : activitiesError ? (
+          <div className="error">
+            {activitiesError instanceof ClickHouseAPIError ? (
+              <div>
+                <strong>ClickHouse API Error:</strong> {activitiesError.error}
+                <br />
+                <small>Status: {activitiesError.status}</small>
+              </div>
+            ) : (
+              <div>Error: {activitiesError.message}</div>
+            )}
+          </div>
+        ) : activities && activities.length > 0 ? (
+          <ul>
+            {activities.map((act: Activity) => (
+              <li key={act.id}>
+                <Link to={`/org/${id}/activities/${act.id}`}>
+                  {act.type} - {new Date(act.createdAt).toLocaleString()}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div>No activities found</div>
         )}
       </div>
       <Link to="/">Back to Organizations</Link>

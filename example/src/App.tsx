@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import OrganizationListPage from "./pages/OrganizationListPage";
 import ConfigurationPage from "./pages/ConfigurationPage";
 import OrganizationDetailsPage from "./pages/OrganizationDetailsPage";
+import ActivityDetailsPage from "./pages/ActivityDetailsPage";
 
 function App() {
   return (
@@ -23,6 +24,10 @@ function App() {
             <Route path="/" element={<OrganizationListPage />} />
             <Route path="/config" element={<ConfigurationPage />} />
             <Route path="/org/:id" element={<OrganizationDetailsPage />} />
+            <Route
+              path="/org/:id/activities/:activityId"
+              element={<ActivityDetailsPage />}
+            />
           </Routes>
         </main>
       </div>
