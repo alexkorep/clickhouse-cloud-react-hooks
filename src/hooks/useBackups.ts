@@ -1,20 +1,26 @@
-import useSWR from "swr";
-import { fetcher } from "../api/fetcher";
+import { useSWRConfig } from "swr";
 import type { ClickHouseConfig } from "../api/fetcher";
+import { useClickHouseSWR } from "./useClickHouseSWR";
+import {
+  BackupsResponseSchema,
+  BackupResponseSchema,
+  BackupConfigurationResponseSchema,
+  type BackupsResponse,
+  type BackupResponse,
+  type BackupConfigurationResponse,
+  type BackupConfiguration,
+} from "../schemas/schemas";
 
 export function useServiceBackups(
   organizationId: string,
   serviceId: string,
   config: ClickHouseConfig
 ) {
-  const { data, error, isLoading } = useSWR(
-    [
-      `/v1/organizations/${organizationId}/services/${serviceId}/backups`,
-      config,
-    ],
-    ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
+  return useClickHouseSWR<BackupsResponse>(
+    `/v1/organizations/${organizationId}/services/${serviceId}/backups`,
+    config,
+    BackupsResponseSchema
   );
-  return { data, error, isLoading };
 }
 
 export function useServiceBackup(
@@ -23,14 +29,11 @@ export function useServiceBackup(
   backupId: string,
   config: ClickHouseConfig
 ) {
-  const { data, error, isLoading } = useSWR(
-    [
-      `/v1/organizations/${organizationId}/services/${serviceId}/backups/${backupId}`,
-      config,
-    ],
-    ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
+  return useClickHouseSWR<BackupResponse>(
+    `/v1/organizations/${organizationId}/services/${serviceId}/backups/${backupId}`,
+    config,
+    BackupResponseSchema
   );
-  return { data, error, isLoading };
 }
 
 export function useServiceBackupConfiguration(
@@ -38,14 +41,11 @@ export function useServiceBackupConfiguration(
   serviceId: string,
   config: ClickHouseConfig
 ) {
-  const { data, error, isLoading } = useSWR(
-    [
-      `/v1/organizations/${organizationId}/services/${serviceId}/backupConfiguration`,
-      config,
-    ],
-    ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
+  return useClickHouseSWR<BackupConfigurationResponse>(
+    `/v1/organizations/${organizationId}/services/${serviceId}/backupConfiguration`,
+    config,
+    BackupConfigurationResponseSchema
   );
-  return { data, error, isLoading };
 }
 
 export function useUpdateServiceBackupConfiguration(
@@ -53,12 +53,12 @@ export function useUpdateServiceBackupConfiguration(
   serviceId: string,
   config: ClickHouseConfig
 ) {
-  const updateBackupConfiguration = async (configData: any) => {
-    const {
-      keyId,
-      keySecret,
-      baseUrl = "https://api.clickhouse.cloud",
-    } = config;
+  const { mutate: globalMutate } = useSWRConfig();
+
+  const updateBackupConfiguration = async (
+    configData: Partial<BackupConfiguration>
+  ): Promise<BackupConfiguration> => {
+    const { keyId, keySecret, baseUrl = "https://api.clickhouse.cloud" } = config;
     const auth = btoa(`${keyId}:${keySecret}`);
     const response = await fetch(
       `${baseUrl}/v1/organizations/${organizationId}/services/${serviceId}/backupConfiguration`,
@@ -72,7 +72,14 @@ export function useUpdateServiceBackupConfiguration(
       }
     );
     if (!response.ok) throw new Error(await response.text());
-    return response.json();
+    const responseData = await response.json();
+    const validated = BackupConfigurationResponseSchema.parse(responseData);
+
+    await globalMutate(
+      `/v1/organizations/${organizationId}/services/${serviceId}/backupConfiguration:${config.baseUrl}:${config.keyId}`
+    );
+
+    return validated.result;
   };
 
   return { updateBackupConfiguration };
@@ -81,15 +88,12 @@ export function useUpdateServiceBackupConfiguration(
 export function useDeleteServiceBackup(
   organizationId: string,
   serviceId: string,
-  backupId: string,
   config: ClickHouseConfig
 ) {
-  const deleteBackup = async () => {
-    const {
-      keyId,
-      keySecret,
-      baseUrl = "https://api.clickhouse.cloud",
-    } = config;
+  const { mutate: globalMutate } = useSWRConfig();
+
+  const deleteBackup = async (backupId: string) => {
+    const { keyId, keySecret, baseUrl = "https://api.clickhouse.cloud" } = config;
     const auth = btoa(`${keyId}:${keySecret}`);
     const response = await fetch(
       `${baseUrl}/v1/organizations/${organizationId}/services/${serviceId}/backups/${backupId}`,
@@ -102,7 +106,10 @@ export function useDeleteServiceBackup(
       }
     );
     if (!response.ok) throw new Error(await response.text());
-    return response.json();
+    await response.json().catch(() => undefined);
+    await globalMutate(
+      `/v1/organizations/${organizationId}/services/${serviceId}/backups:${config.baseUrl}:${config.keyId}`
+    );
   };
 
   return { deleteBackup };

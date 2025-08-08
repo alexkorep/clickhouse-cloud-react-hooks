@@ -1,12 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { 
-  OrganizationSchema, 
+import {
+  OrganizationSchema,
   OrganizationsResponseSchema,
   ActivitySchema,
-  ActivitiesResponseSchema,
   UsageCostSchema,
-  ClickHouseErrorResponseSchema
-} from './schemas';
+  ClickHouseErrorResponseSchema,
+} from "./schemas";
 
 describe('ClickHouse Schemas', () => {
   describe('OrganizationSchema', () => {

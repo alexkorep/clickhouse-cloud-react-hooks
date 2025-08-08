@@ -5,6 +5,7 @@ import {
   useOrganization,
   useUpdateOrganization,
   ClickHouseAPIError,
+  useServices,
 } from "clickhouse-cloud-react-hooks";
 import { useAtomValue } from "jotai";
 import { configAtom } from "../configAtoms";
@@ -19,6 +20,12 @@ const OrganizationDetailsPage: React.FC = () => {
     isValidating,
     mutate,
   } = useOrganization(id || "", config || { keyId: "", keySecret: "" });
+
+  const {
+    data: servicesData,
+    error: servicesError,
+    isLoading: servicesLoading,
+  } = useServices(id || "", config || { keyId: "", keySecret: "" });
 
   const { updateOrganization } = useUpdateOrganization(
     id || "",
@@ -230,6 +237,27 @@ const OrganizationDetailsPage: React.FC = () => {
               </li>
             ))}
           </ul>
+        )}
+      </div>
+      <div>
+        <strong>Services:</strong>
+        {servicesLoading ? (
+          <span> Loading services...</span>
+        ) : servicesError ? (
+          <span className="error">Failed to load services</span>
+        ) : servicesData && servicesData.result.length > 0 ? (
+          <ul>
+            {servicesData.result.map((svc: { id: string; name: string }) => (
+              <li key={svc.id}>
+                {svc.name} - {""}
+                <Link to={`/org/${id}/service/${svc.id}/backups`}>
+                  Backups
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <span> None</span>
         )}
       </div>
       <Link to="/">Back to Organizations</Link>
