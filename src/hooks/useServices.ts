@@ -7,7 +7,7 @@ export function useServices(organizationId: string, config: ClickHouseConfig) {
     [`/v1/organizations/${organizationId}/services`, config],
     ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
   );
-  return { data, error, isLoading };
+  return { data: data?.result, error, isLoading, response: data };
 }
 
 export function useService(
@@ -19,7 +19,7 @@ export function useService(
     [`/v1/organizations/${organizationId}/services/${serviceId}`, config],
     ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
   );
-  return { data, error, isLoading };
+  return { data: data?.result, error, isLoading, response: data };
 }
 
 export function useCreateService(
@@ -216,7 +216,7 @@ export function useServicePrivateEndpointConfig(
     ],
     ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
   );
-  return { data, error, isLoading };
+  return { data: data?.result, error, isLoading, response: data };
 }
 
 export function useServiceQueryEndpoint(
@@ -275,20 +275,37 @@ export function useServiceQueryEndpoint(
     return response.json();
   };
 
-  return { data, error, isLoading, createQueryEndpoint, deleteQueryEndpoint };
+  return {
+    data: data?.result,
+    error,
+    isLoading,
+    response: data,
+    createQueryEndpoint,
+    deleteQueryEndpoint,
+  };
 }
 
 export function useServicePrometheus(
   organizationId: string,
   serviceId: string,
-  config: ClickHouseConfig
+  config: ClickHouseConfig,
+  params?: { filteredMetrics?: boolean }
 ) {
+  const query = params?.filteredMetrics ? "?filtered_metrics=true" : "";
   const { data, error, isLoading } = useSWR(
-    [
-      `/v1/organizations/${organizationId}/services/${serviceId}/prometheus`,
-      config,
-    ],
-    ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
+    [`/v1/organizations/${organizationId}/services/${serviceId}/prometheus${query}`, config],
+    async ([url, cfg]: [string, ClickHouseConfig]) => {
+      const { keyId, keySecret, baseUrl = "https://api.clickhouse.cloud" } = cfg;
+      const auth = btoa(`${keyId}:${keySecret}`);
+      const res = await fetch(`${baseUrl}${url}`, {
+        headers: {
+          Authorization: `Basic ${auth}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      return res.text();
+    }
   );
   return { data, error, isLoading };
 }
