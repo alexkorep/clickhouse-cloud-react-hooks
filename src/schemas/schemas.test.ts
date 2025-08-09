@@ -3,7 +3,6 @@ import {
   OrganizationSchema, 
   OrganizationsResponseSchema,
   ActivitySchema,
-  ActivitiesResponseSchema,
   UsageCostSchema,
   ClickHouseErrorResponseSchema
 } from './schemas';
