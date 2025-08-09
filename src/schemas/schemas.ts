@@ -245,6 +245,48 @@ export const PrivateEndpointConfigResponseSchema =
     result: OrganizationCloudRegionPrivateEndpointConfigSchema,
   });
 
+// User management schemas
+export const MemberSchema = z.object({
+  userId: z.string(),
+  name: z.string(),
+  email: z.string().email(),
+  role: z.enum(["admin", "developer"]),
+  joinedAt: z.string().datetime(),
+});
+
+export const InvitationSchema = z.object({
+  role: z.enum(["admin", "developer"]),
+  id: z.string().uuid(),
+  email: z.string().email(),
+  createdAt: z.string().datetime(),
+  expireAt: z.string().datetime(),
+});
+
+export const MemberPatchRequestSchema = z.object({
+  role: z.enum(["admin", "developer"]),
+});
+
+export const InvitationPostRequestSchema = z.object({
+  email: z.string().email(),
+  role: z.enum(["admin", "developer"]),
+});
+
+export const MembersResponseSchema = ClickHouseBaseResponseSchema.extend({
+  result: z.array(MemberSchema),
+});
+
+export const MemberResponseSchema = ClickHouseBaseResponseSchema.extend({
+  result: MemberSchema,
+});
+
+export const InvitationsResponseSchema = ClickHouseBaseResponseSchema.extend({
+  result: z.array(InvitationSchema),
+});
+
+export const InvitationResponseSchema = ClickHouseBaseResponseSchema.extend({
+  result: InvitationSchema,
+});
+
 // Type exports
 export type Organization = z.infer<typeof OrganizationSchema>;
 export type Activity = z.infer<typeof ActivitySchema>;
@@ -276,5 +318,18 @@ export type PrivateEndpointConfigResponse = z.infer<
 export type ClickHouseErrorResponse = z.infer<
   typeof ClickHouseErrorResponseSchema
 >;
+export type Member = z.infer<typeof MemberSchema>;
+export type Invitation = z.infer<typeof InvitationSchema>;
+export type MemberPatchRequest = z.infer<typeof MemberPatchRequestSchema>;
+export type InvitationPostRequest = z.infer<
+  typeof InvitationPostRequestSchema
+>;
+export type MembersResponse = z.infer<typeof MembersResponseSchema>;
+export type MemberResponse = z.infer<typeof MemberResponseSchema>;
+export type InvitationsResponse = z.infer<typeof InvitationsResponseSchema>;
+export type InvitationResponse = z.infer<typeof InvitationResponseSchema>;
 export type ClickPipesResponse = z.infer<typeof ClickPipesResponseSchema>;
 export type ClickPipeResponse = z.infer<typeof ClickPipeResponseSchema>;
+export type ClickHouseBaseResponse = z.infer<
+  typeof ClickHouseBaseResponseSchema
+>;

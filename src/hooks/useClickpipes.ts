@@ -43,7 +43,8 @@ export function useCreateClickpipe(
   const { mutate: globalMutate } = useSWRConfig();
 
   const createClickpipe = async (clickpipeData: unknown): Promise<ClickPipe> => {
-    const { keyId, keySecret, baseUrl = "https://api.clickhouse.cloud" } = config;
+    const { keyId, keySecret, baseUrl = "https://api.clickhouse.cloud" } =
+      config;
     const auth = btoa(`${keyId}:${keySecret}`);
     const response = await fetch(
       `${baseUrl}/v1/organizations/${organizationId}/services/${serviceId}/clickpipes`,
@@ -77,7 +78,8 @@ export function useUpdateClickpipe(
   const { mutate: globalMutate } = useSWRConfig();
 
   const updateClickpipe = async (updateData: unknown): Promise<ClickPipe> => {
-    const { keyId, keySecret, baseUrl = "https://api.clickhouse.cloud" } = config;
+    const { keyId, keySecret, baseUrl = "https://api.clickhouse.cloud" } =
+      config;
     const auth = btoa(`${keyId}:${keySecret}`);
     const response = await fetch(
       `${baseUrl}/v1/organizations/${organizationId}/services/${serviceId}/clickpipes/${clickPipeId}`,
@@ -153,8 +155,11 @@ export function useClickpipeScaling(
 ) {
   const { mutate: globalMutate } = useSWRConfig();
 
-  const updateClickpipeScaling = async (scalingData: unknown): Promise<ClickPipe> => {
-    const { keyId, keySecret, baseUrl = "https://api.clickhouse.cloud" } = config;
+  const updateClickpipeScaling = async (
+    scalingData: unknown
+  ): Promise<ClickPipe> => {
+    const { keyId, keySecret, baseUrl = "https://api.clickhouse.cloud" } =
+      config;
     const auth = btoa(`${keyId}:${keySecret}`);
     const response = await fetch(
       `${baseUrl}/v1/organizations/${organizationId}/services/${serviceId}/clickpipes/${clickPipeId}/scaling`,
