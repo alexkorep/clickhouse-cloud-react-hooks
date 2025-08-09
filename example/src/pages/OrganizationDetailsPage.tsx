@@ -5,12 +5,15 @@ import { useParams, Link } from "react-router-dom";
 import {
   useOrganization,
   useUpdateOrganization,
+  useOrganizationPrometheusMetrics,
+  useServicePrometheusMetrics,
   useApiKeys,
   useCreateApiKey,
   useUpdateApiKey,
   useDeleteApiKey,
   type ApiKey,
   ClickHouseAPIError,
+  ClickHouseConfig,
   useOrganizationMembers,
   useUpdateOrganizationMember,
   useDeleteOrganizationMember,
@@ -22,6 +25,38 @@ import {
 } from "clickhouse-cloud-react-hooks";
 import { useAtomValue } from "jotai";
 import { configAtom } from "../configAtoms";
+
+function ServiceMetrics({
+  organizationId,
+  serviceId,
+  config,
+  filtered,
+}: {
+  organizationId: string;
+  serviceId: string;
+  config: ClickHouseConfig;
+  filtered: boolean;
+}) {
+  const { data, error, isLoading } = useServicePrometheusMetrics(
+    organizationId,
+    serviceId,
+    config,
+    filtered
+  );
+  if (isLoading) {
+    return <div>Loading service metrics...</div>;
+  }
+  if (error) {
+    return (
+      <div className="error">
+        {error instanceof ClickHouseAPIError
+          ? `ClickHouse API Error: ${error.error}`
+          : `Error: ${(error as Error).message}`}
+      </div>
+    );
+  }
+  return <pre>{data}</pre>;
+}
 
 const OrganizationDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -209,6 +244,20 @@ const OrganizationDetailsPage: React.FC = () => {
   const [updateError, setUpdateError] = useState<string | null>(null);
   const [updateSuccess, setUpdateSuccess] = useState(false);
 
+  const [filterOrgMetrics, setFilterOrgMetrics] = useState(false);
+  const {
+    data: orgMetrics,
+    error: orgMetricsError,
+    isLoading: orgMetricsLoading,
+  } = useOrganizationPrometheusMetrics(
+    id || "",
+    config || { keyId: "", keySecret: "" },
+    filterOrgMetrics
+  );
+
+  const [serviceIdInput, setServiceIdInput] = useState("");
+  const [serviceId, setServiceId] = useState<string | null>(null);
+  const [filterServiceMetrics, setFilterServiceMetrics] = useState(false);
   function ApiKeyItem({ apiKey }: { apiKey: ApiKey }) {
     const { updateApiKey } = useUpdateApiKey(
       id || "",
@@ -531,6 +580,63 @@ const OrganizationDetailsPage: React.FC = () => {
               </li>
             ))}
           </ul>
+        )}
+      </div>
+      <div>
+        <h3>Organization Prometheus Metrics</h3>
+        <label>
+          <input
+            type="checkbox"
+            checked={filterOrgMetrics}
+            onChange={(e) => setFilterOrgMetrics(e.target.checked)}
+            style={{ marginRight: "0.5em" }}
+          />
+          Filter metrics
+        </label>
+        {orgMetricsLoading ? (
+          <div>Loading metrics...</div>
+        ) : orgMetricsError ? (
+          <div className="error">
+            {orgMetricsError instanceof ClickHouseAPIError
+              ? `ClickHouse API Error: ${orgMetricsError.error}`
+              : `Error: ${(orgMetricsError as Error).message}`}
+          </div>
+        ) : (
+          <pre>{orgMetrics}</pre>
+        )}
+      </div>
+      <div>
+        <h3>Service Prometheus Metrics</h3>
+        <input
+          type="text"
+          placeholder="Service ID"
+          value={serviceIdInput}
+          onChange={(e) => setServiceIdInput(e.target.value)}
+          style={{ marginRight: "0.5em" }}
+        />
+        <label style={{ marginRight: "0.5em" }}>
+          <input
+            type="checkbox"
+            checked={filterServiceMetrics}
+            onChange={(e) => setFilterServiceMetrics(e.target.checked)}
+            style={{ marginRight: "0.25em" }}
+          />
+          Filter
+        </label>
+        <button
+          onClick={() => setServiceId(serviceIdInput)}
+          disabled={serviceIdInput.trim() === ""}
+          style={{ marginRight: "0.5em" }}
+        >
+          Load Metrics
+        </button>
+        {serviceId && config && (
+          <ServiceMetrics
+            organizationId={id || ""}
+            serviceId={serviceId}
+            config={config}
+            filtered={filterServiceMetrics}
+          />
         )}
       </div>
       <div className="mt-1">
