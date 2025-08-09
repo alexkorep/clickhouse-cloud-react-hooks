@@ -1,20 +1,28 @@
-.mr-sm {
+.mb-05 {
+  margin-bottom: 0.5em;
+}
+
+.mb-1 {
+  margin-bottom: 1em;
+}
+
+.mr-05 {
   margin-right: 0.5em;
 }
 
-.error-spacing {
+.ml-05 {
+  margin-left: 0.5em;
+}
+
+.mt-05 {
   margin-top: 0.5em;
+}
+
+.mt-1 {
+  margin-top: 1em;
 }
 
 .success-message {
   color: green;
   margin-top: 0.5em;
-}
-
-.link-container {
-  margin-top: 1em;
-}
-
-.link-container a:not(:last-child) {
-  margin-right: 1em;
 }

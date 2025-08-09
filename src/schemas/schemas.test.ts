@@ -1,9 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { 
-  OrganizationSchema, 
+  OrganizationSchema,
   OrganizationsResponseSchema,
   ActivitySchema,
-  ActivitiesResponseSchema,
   UsageCostSchema,
   ClickHouseErrorResponseSchema
 } from './schemas';
