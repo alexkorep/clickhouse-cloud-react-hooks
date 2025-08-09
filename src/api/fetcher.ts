@@ -26,7 +26,8 @@ export class ClickHouseAPIError extends Error {
 export async function fetcher<T>(
   url: string,
   config: ClickHouseConfig,
-  schema?: z.ZodSchema<T>
+  schema?: z.ZodSchema<T>,
+  responseType: "json" | "text" = "json"
 ): Promise<T> {
   const { keyId, keySecret, baseUrl = DEFAULT_BASE_URL } = config;
   const auth = btoa(`${keyId}:${keySecret}`);
@@ -39,17 +40,30 @@ export async function fetcher<T>(
     },
   });
 
-  const responseData = await res.json();
+  const responseData =
+    responseType === "text" ? await res.text() : await res.json();
 
   if (!res.ok) {
-    // Try to parse as ClickHouse error response
-    try {
-      const errorResponse = ClickHouseErrorResponseSchema.parse(responseData);
-      throw new ClickHouseAPIError(errorResponse.status, errorResponse.error);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (parseError) {
-      // Fallback to generic error
-      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    if (responseType === "text") {
+      try {
+        const errorResponse = ClickHouseErrorResponseSchema.parse(
+          JSON.parse(responseData as string)
+        );
+        throw new ClickHouseAPIError(errorResponse.status, errorResponse.error);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (parseError) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+    } else {
+      try {
+        const errorResponse = ClickHouseErrorResponseSchema.parse(
+          responseData
+        );
+        throw new ClickHouseAPIError(errorResponse.status, errorResponse.error);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (parseError) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
     }
   }
 
