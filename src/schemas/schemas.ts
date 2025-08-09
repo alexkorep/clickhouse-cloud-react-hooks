@@ -133,23 +133,6 @@ export const ActivitySchema = z.object({
   serviceId: z.string().optional(),
 });
 
-// Invitation schemas
-export const InvitationSchema = z.object({
-  role: z.enum(["admin", "developer"]),
-  id: z.string().uuid(),
-  email: z.string().email(),
-  createdAt: z.string().datetime(),
-  expireAt: z.string().datetime(),
-});
-
-export const InvitationsResponseSchema = ClickHouseBaseResponseSchema.extend({
-  result: z.array(InvitationSchema),
-});
-
-export const InvitationResponseSchema = ClickHouseBaseResponseSchema.extend({
-  result: InvitationSchema,
-});
-
 // API Key schemas
 export const IpAccessListEntrySchema = z.object({
   source: z.string(),
@@ -244,10 +227,51 @@ export const PrivateEndpointConfigResponseSchema =
     result: OrganizationCloudRegionPrivateEndpointConfigSchema,
   });
 
+// User management schemas
+export const MemberSchema = z.object({
+  userId: z.string(),
+  name: z.string(),
+  email: z.string().email(),
+  role: z.enum(["admin", "developer"]),
+  joinedAt: z.string().datetime(),
+});
+
+export const InvitationSchema = z.object({
+  role: z.enum(["admin", "developer"]),
+  id: z.string().uuid(),
+  email: z.string().email(),
+  createdAt: z.string().datetime(),
+  expireAt: z.string().datetime(),
+});
+
+export const MemberPatchRequestSchema = z.object({
+  role: z.enum(["admin", "developer"]),
+});
+
+export const InvitationPostRequestSchema = z.object({
+  email: z.string().email(),
+  role: z.enum(["admin", "developer"]),
+});
+
+export const MembersResponseSchema = ClickHouseBaseResponseSchema.extend({
+  result: z.array(MemberSchema),
+});
+
+export const MemberResponseSchema = ClickHouseBaseResponseSchema.extend({
+  result: MemberSchema,
+});
+
+export const InvitationsResponseSchema = ClickHouseBaseResponseSchema.extend({
+  result: z.array(InvitationSchema),
+});
+
+export const InvitationResponseSchema = ClickHouseBaseResponseSchema.extend({
+  result: InvitationSchema,
+});
+
 // Type exports
 export type Organization = z.infer<typeof OrganizationSchema>;
 export type Activity = z.infer<typeof ActivitySchema>;
-export type Invitation = z.infer<typeof InvitationSchema>;
 export type ApiKey = z.infer<typeof ApiKeySchema>;
 export type UsageCost = z.infer<typeof UsageCostSchema>;
 export type UsageCostRecord = z.infer<typeof UsageCostRecordSchema>;
@@ -268,12 +292,23 @@ export type OrganizationsResponse = z.infer<typeof OrganizationsResponseSchema>;
 export type OrganizationResponse = z.infer<typeof OrganizationResponseSchema>;
 export type ActivitiesResponse = z.infer<typeof ActivitiesResponseSchema>;
 export type ActivityResponse = z.infer<typeof ActivityResponseSchema>;
-export type InvitationsResponse = z.infer<typeof InvitationsResponseSchema>;
-export type InvitationResponse = z.infer<typeof InvitationResponseSchema>;
 export type UsageCostResponse = z.infer<typeof UsageCostResponseSchema>;
 export type PrivateEndpointConfigResponse = z.infer<
   typeof PrivateEndpointConfigResponseSchema
 >;
 export type ClickHouseErrorResponse = z.infer<
   typeof ClickHouseErrorResponseSchema
+>;
+export type Member = z.infer<typeof MemberSchema>;
+export type Invitation = z.infer<typeof InvitationSchema>;
+export type MemberPatchRequest = z.infer<typeof MemberPatchRequestSchema>;
+export type InvitationPostRequest = z.infer<
+  typeof InvitationPostRequestSchema
+>;
+export type MembersResponse = z.infer<typeof MembersResponseSchema>;
+export type MemberResponse = z.infer<typeof MemberResponseSchema>;
+export type InvitationsResponse = z.infer<typeof InvitationsResponseSchema>;
+export type InvitationResponse = z.infer<typeof InvitationResponseSchema>;
+export type ClickHouseBaseResponse = z.infer<
+  typeof ClickHouseBaseResponseSchema
 >;

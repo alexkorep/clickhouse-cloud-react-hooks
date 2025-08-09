@@ -38,7 +38,9 @@ export function useUpdateOrganization(
 ) {
   const { mutate: globalMutate } = useSWRConfig();
 
-  const updateOrganization = async (updateData: any): Promise<Organization> => {
+  const updateOrganization = async (
+    updateData: Partial<Organization>
+  ): Promise<Organization> => {
     const {
       keyId,
       keySecret,
