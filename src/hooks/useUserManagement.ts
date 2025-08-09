@@ -6,12 +6,14 @@ import {
   MemberResponseSchema,
   InvitationsResponseSchema,
   InvitationResponseSchema,
+  ClickHouseBaseResponseSchema,
+} from "../schemas/schemas";
+import type {
   MemberPatchRequest,
   InvitationPostRequest,
-  type Member,
-  type Invitation,
-  ClickHouseBaseResponseSchema,
-  type ClickHouseBaseResponse,
+  Member,
+  Invitation,
+  ClickHouseBaseResponse,
 } from "../schemas/schemas";
 
 export function useOrganizationMembers(
