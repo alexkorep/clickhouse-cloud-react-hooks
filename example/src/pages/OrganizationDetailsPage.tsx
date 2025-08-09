@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../App.css";
+import "./OrganizationDetailsPage.css";
 import { useParams, Link } from "react-router-dom";
 import {
   useOrganization,
@@ -10,6 +11,14 @@ import {
   useDeleteApiKey,
   type ApiKey,
   ClickHouseAPIError,
+  useOrganizationMembers,
+  useUpdateOrganizationMember,
+  useDeleteOrganizationMember,
+  useOrganizationInvitations,
+  useCreateOrganizationInvitation,
+  useDeleteOrganizationInvitation,
+  type Member,
+  type Invitation,
 } from "clickhouse-cloud-react-hooks";
 import { useAtomValue } from "jotai";
 import { configAtom } from "../configAtoms";
@@ -42,6 +51,147 @@ const OrganizationDetailsPage: React.FC = () => {
     config || { keyId: "", keySecret: "" }
   );
 
+  const {
+    data: members,
+    error: membersError,
+    isLoading: membersLoading,
+    mutate: mutateMembers,
+  } = useOrganizationMembers(id || "", config || { keyId: "", keySecret: "" });
+
+  const {
+    data: invitations,
+    error: invitationsError,
+    isLoading: invitationsLoading,
+    mutate: mutateInvitations,
+  } = useOrganizationInvitations(
+    id || "",
+    config || { keyId: "", keySecret: "" }
+  );
+
+  const { createInvitation } = useCreateOrganizationInvitation(
+    id || "",
+    config || { keyId: "", keySecret: "" }
+  );
+
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState<"admin" | "developer">(
+    "developer"
+  );
+  const [inviteLoading, setInviteLoading] = useState(false);
+  const [inviteError, setInviteError] = useState<string | null>(null);
+
+  function MemberItem({ member }: { member: Member }) {
+    const { updateMember } = useUpdateOrganizationMember(
+      id || "",
+      member.userId,
+      config || { keyId: "", keySecret: "" }
+    );
+    const { deleteMember } = useDeleteOrganizationMember(
+      id || "",
+      member.userId,
+      config || { keyId: "", keySecret: "" }
+    );
+    const [role, setRole] = useState<"admin" | "developer">(member.role);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    return (
+      <li key={member.userId} className="mb-05">
+        <span className="mr-05">{member.email}</span>
+        <select
+          value={role}
+          onChange={(e) => setRole(e.target.value as "admin" | "developer")}
+          disabled={loading}
+          className="mr-05"
+        >
+          <option value="admin">admin</option>
+          <option value="developer">developer</option>
+        </select>
+        <button
+          onClick={async () => {
+            setLoading(true);
+            setError(null);
+            try {
+              await updateMember({ role });
+              mutateMembers();
+            } catch (err: unknown) {
+              setError(
+                err && typeof err === "object" && "message" in err
+                  ? String((err as { message?: unknown }).message)
+                  : "Failed to update member"
+              );
+            } finally {
+              setLoading(false);
+            }
+          }}
+          disabled={loading}
+          className="mr-05"
+        >
+          {loading ? "Saving..." : "Save"}
+        </button>
+        <button
+          onClick={async () => {
+            setLoading(true);
+            setError(null);
+            try {
+              await deleteMember();
+              mutateMembers();
+            } catch (err: unknown) {
+              setError(
+                err && typeof err === "object" && "message" in err
+                  ? String((err as { message?: unknown }).message)
+                  : "Failed to delete member"
+              );
+            } finally {
+              setLoading(false);
+            }
+          }}
+          disabled={loading}
+        >
+          Delete
+        </button>
+        {error && <div className="error">Error: {error}</div>}
+      </li>
+    );
+  }
+
+  function InvitationItem({ invitation }: { invitation: Invitation }) {
+    const { deleteInvitation } = useDeleteOrganizationInvitation(
+      id || "",
+      invitation.id,
+      config || { keyId: "", keySecret: "" }
+    );
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    return (
+      <li key={invitation.id} className="mb-05">
+        <span className="mr-05">
+          {invitation.email} - {invitation.role}
+        </span>
+        <button
+          onClick={async () => {
+            setLoading(true);
+            setError(null);
+            try {
+              await deleteInvitation();
+              mutateInvitations();
+            } catch (err: unknown) {
+              setError(
+                err && typeof err === "object" && "message" in err
+                  ? String((err as { message?: unknown }).message)
+                  : "Failed to delete invitation"
+              );
+            } finally {
+              setLoading(false);
+            }
+          }}
+          disabled={loading}
+        >
+          Delete
+        </button>
+        {error && <div className="error">Error: {error}</div>}
+      </li>
+    );
+  } 
   // State for creating API keys
   const [newKeyName, setNewKeyName] = useState("");
   const [newKeyRoles, setNewKeyRoles] = useState("developer");
@@ -72,12 +222,12 @@ const OrganizationDetailsPage: React.FC = () => {
     );
 
     return (
-      <li key={apiKey.id} style={{ marginBottom: "0.5em" }}>
+      <li key={apiKey.id} className="mb-05">
         <span>
           <strong>{apiKey.name}</strong> ({apiKey.state})
         </span>
         <button
-          style={{ marginLeft: "0.5em" }}
+          className="ml-05"
           onClick={async () => {
             await updateApiKey({
               state: apiKey.state === "enabled" ? "disabled" : "enabled",
@@ -88,7 +238,7 @@ const OrganizationDetailsPage: React.FC = () => {
           Toggle State
         </button>
         <button
-          style={{ marginLeft: "0.5em" }}
+          className="ml-05"
           onClick={async () => {
             await deleteApiKey();
             mutateKeys();
@@ -151,8 +301,7 @@ const OrganizationDetailsPage: React.FC = () => {
           mutate();
           setUpdateSuccess(false);
         }}
-        className="refresh-button"
-        style={{ marginBottom: "1em" }}
+        className="refresh-button mb-1"
         disabled={isValidating}
       >
         {isValidating ? "Loading..." : "Refresh"}
@@ -180,7 +329,7 @@ const OrganizationDetailsPage: React.FC = () => {
             setUpdateLoading(false);
           }
         }}
-        style={{ marginBottom: "1em" }}
+        className="mb-1"
       >
         <label>
           <strong>Name:</strong>{" "}
@@ -190,10 +339,10 @@ const OrganizationDetailsPage: React.FC = () => {
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
               disabled={updateLoading}
-              style={{ marginRight: "0.5em" }}
+              className="mr-05"
             />
           ) : (
-            <span style={{ marginRight: "0.5em" }}>{organization.name}</span>
+            <span className="mr-05">{organization.name}</span>
           )}
         </label>
         {isEditing ? (
@@ -201,7 +350,7 @@ const OrganizationDetailsPage: React.FC = () => {
             <button
               type="submit"
               disabled={updateLoading || editName.trim() === ""}
-              style={{ marginRight: "0.5em" }}
+              className="mr-05"
             >
               {updateLoading ? "Saving..." : "Save"}
             </button>
@@ -228,14 +377,10 @@ const OrganizationDetailsPage: React.FC = () => {
           </button>
         )}
         {updateError && (
-          <div className="error" style={{ marginTop: "0.5em" }}>
-            Error: {updateError}
-          </div>
+          <div className="error mt-05">Error: {updateError}</div>
         )}
         {updateSuccess && (
-          <div style={{ color: "green", marginTop: "0.5em" }}>
-            Organization updated!
-          </div>
+          <div className="success-message">Organization updated!</div>
         )}
       </form>
 
@@ -272,6 +417,95 @@ const OrganizationDetailsPage: React.FC = () => {
         )}
       </div>
       <div>
+        <strong>Members:</strong>
+        {membersLoading ? (
+          <div>Loading members...</div>
+        ) : membersError ? (
+          <div className="error">Error loading members</div>
+        ) : !members || members.length === 0 ? (
+          <span> None</span>
+        ) : (
+          <ul>
+            {members.map((m) => (
+              <MemberItem key={m.userId} member={m} />
+            ))}
+          </ul>
+        )}
+      </div>
+      <div>
+        <strong>Invitations:</strong>
+        {invitationsLoading ? (
+          <div>Loading invitations...</div>
+        ) : invitationsError ? (
+          <div className="error">Error loading invitations</div>
+        ) : (
+          <>
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setInviteLoading(true);
+                setInviteError(null);
+                try {
+                  await createInvitation({
+                    email: inviteEmail,
+                    role: inviteRole,
+                  });
+                  setInviteEmail("");
+                  mutateInvitations();
+                } catch (err: unknown) {
+                  setInviteError(
+                    err && typeof err === "object" && "message" in err
+                      ? String((err as { message?: unknown }).message)
+                      : "Failed to create invitation"
+                  );
+                } finally {
+                  setInviteLoading(false);
+                }
+              }}
+              className="mb-1"
+            >
+              <input
+                type="email"
+                value={inviteEmail}
+                onChange={(e) => setInviteEmail(e.target.value)}
+                placeholder="Email"
+                disabled={inviteLoading}
+                className="mr-05"
+              />
+              <select
+                value={inviteRole}
+                onChange={(e) =>
+                  setInviteRole(e.target.value as "admin" | "developer")
+                }
+                disabled={inviteLoading}
+                className="mr-05"
+              >
+                <option value="developer">developer</option>
+                <option value="admin">admin</option>
+              </select>
+              <button
+                type="submit"
+                disabled={inviteLoading || inviteEmail.trim() === ""}
+              >
+                {inviteLoading ? "Inviting..." : "Invite"}
+              </button>
+              {inviteError && (
+                <div className="error mt-05">Error: {inviteError}</div>
+              )}
+            </form>
+            {(!invitations || invitations.length === 0) ? (
+              <span>No invitations</span>
+            ) : (
+              <ul>
+                {invitations.map((inv) => (
+                  <InvitationItem key={inv.id} invitation={inv} />
+                ))}
+              </ul>
+            )}
+          </>
+        )}
+      </div>
+      <div>
         <strong>BYOC Config:</strong>
         {organization.byocConfig.length === 0 ? (
           <span> None</span>
@@ -299,7 +533,7 @@ const OrganizationDetailsPage: React.FC = () => {
           </ul>
         )}
       </div>
-      <div style={{ marginTop: "1em" }}>
+      <div className="mt-1">
         <h3>API Keys</h3>
         {keysLoading ? (
           <div>Loading API keys...</div>
@@ -340,7 +574,7 @@ const OrganizationDetailsPage: React.FC = () => {
               setCreateLoading(false);
             }
           }}
-          style={{ marginTop: "1em" }}
+          className="mt-1"
         >
           <div>
             <input
@@ -348,14 +582,14 @@ const OrganizationDetailsPage: React.FC = () => {
               placeholder="Key name"
               value={newKeyName}
               onChange={(e) => setNewKeyName(e.target.value)}
-              style={{ marginRight: "0.5em" }}
+              className="mr-05"
             />
             <input
               type="text"
               placeholder="Roles (comma separated)"
               value={newKeyRoles}
               onChange={(e) => setNewKeyRoles(e.target.value)}
-              style={{ marginRight: "0.5em" }}
+              className="mr-05"
             />
             <button
               type="submit"
@@ -365,12 +599,10 @@ const OrganizationDetailsPage: React.FC = () => {
             </button>
           </div>
           {createError && (
-            <div className="error" style={{ marginTop: "0.5em" }}>
-              Error: {createError}
-            </div>
+            <div className="error mt-05">Error: {createError}</div>
           )}
           {createdKey && createdKey.keySecret && (
-            <div style={{ marginTop: "0.5em" }}>
+            <div className="mt-05">
               <div>
                 <strong>Key ID:</strong> {createdKey.keyId}
               </div>
