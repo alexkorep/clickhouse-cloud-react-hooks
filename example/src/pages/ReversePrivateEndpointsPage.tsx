@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useAtomValue } from "jotai";
+import type { ClickHouseConfig } from "clickhouse-cloud-react-hooks";
 import { configAtom } from "../configAtoms";
 import {
   useClickpipesReversePrivateEndpoints,
@@ -7,25 +8,19 @@ import {
   useCreateClickpipesReversePrivateEndpoint,
   useDeleteClickpipesReversePrivateEndpoint,
 } from "clickhouse-cloud-react-hooks";
+import "./ReversePrivateEndpointsPage.css";
 
-const ReversePrivateEndpointsPage: React.FC = () => {
-  const config = useAtomValue(configAtom);
+const ReversePrivateEndpointsContent: React.FC<{ config: ClickHouseConfig }> = ({
+  config,
+}) => {
   const [organizationId, setOrganizationId] = useState("");
   const [serviceId, setServiceId] = useState("");
-  const [reversePrivateEndpointId, setReversePrivateEndpointId] =
-    useState("");
+  const [reversePrivateEndpointId, setReversePrivateEndpointId] = useState("");
   const [description, setDescription] = useState("");
-  const [type, setType] = useState("VPC_ENDPOINT_SERVICE");
+  const [type, setType] = useState<
+    "VPC_ENDPOINT_SERVICE" | "VPC_RESOURCE" | "MSK_MULTI_VPC"
+  >("VPC_ENDPOINT_SERVICE");
   const [createResult, setCreateResult] = useState<string | null>(null);
-
-  if (!config) {
-    return (
-      <div>
-        <h2>Not configured</h2>
-        <p>Please configure API credentials on the Configuration page.</p>
-      </div>
-    );
-  }
 
   const {
     data: endpoints,
@@ -65,23 +60,23 @@ const ReversePrivateEndpointsPage: React.FC = () => {
     );
 
   return (
-    <div style={{ padding: "1rem" }}>
+    <div className="reverse-private-endpoints-page">
       <h2>Reverse Private Endpoints</h2>
-      <div style={{ marginBottom: "1rem" }}>
-        <label style={{ display: "block", marginBottom: "0.5rem" }}>
+      <div className="rpe-section">
+        <label className="rpe-label">
           Organization ID:
           <input
             value={organizationId}
             onChange={(e) => setOrganizationId(e.target.value)}
-            style={{ marginLeft: "0.5rem" }}
+            className="rpe-input"
           />
         </label>
-        <label style={{ display: "block", marginBottom: "0.5rem" }}>
+        <label className="rpe-label">
           Service ID:
           <input
             value={serviceId}
             onChange={(e) => setServiceId(e.target.value)}
-            style={{ marginLeft: "0.5rem" }}
+            className="rpe-input"
           />
         </label>
       </div>
@@ -109,7 +104,7 @@ const ReversePrivateEndpointsPage: React.FC = () => {
             try {
               const result = await createReversePrivateEndpoint({
                 description,
-                type: type as any,
+                type,
               });
               setCreateResult(JSON.stringify(result, null, 2));
               setDescription("");
@@ -129,7 +124,7 @@ const ReversePrivateEndpointsPage: React.FC = () => {
               <input
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                style={{ marginLeft: "0.5rem" }}
+                className="rpe-input"
               />
             </label>
           </div>
@@ -138,8 +133,8 @@ const ReversePrivateEndpointsPage: React.FC = () => {
               Type:
               <select
                 value={type}
-                onChange={(e) => setType(e.target.value)}
-                style={{ marginLeft: "0.5rem" }}
+                onChange={(e) => setType(e.target.value as typeof type)}
+                className="rpe-input"
               >
                 <option value="VPC_ENDPOINT_SERVICE">VPC_ENDPOINT_SERVICE</option>
                 <option value="VPC_RESOURCE">VPC_RESOURCE</option>
@@ -147,15 +142,11 @@ const ReversePrivateEndpointsPage: React.FC = () => {
               </select>
             </label>
           </div>
-          <button type="submit" style={{ marginTop: "0.5rem" }}>
+          <button type="submit" className="rpe-button-margin">
             Create
           </button>
         </form>
-        {createResult && (
-          <pre style={{ background: "#f4f4f4", padding: "0.5rem" }}>
-            {createResult}
-          </pre>
-        )}
+        {createResult && <pre className="rpe-pre">{createResult}</pre>}
       </div>
       <hr />
       <div>
@@ -165,7 +156,7 @@ const ReversePrivateEndpointsPage: React.FC = () => {
           <input
             value={reversePrivateEndpointId}
             onChange={(e) => setReversePrivateEndpointId(e.target.value)}
-            style={{ marginLeft: "0.5rem" }}
+            className="rpe-input"
           />
         </label>
         <button
@@ -178,23 +169,31 @@ const ReversePrivateEndpointsPage: React.FC = () => {
               // ignore
             }
           }}
-          style={{ marginLeft: "0.5rem" }}
+          className="rpe-button-inline"
         >
           Delete
         </button>
         {endpointLoading && <div>Loading endpoint...</div>}
-        {endpointError && (
-          <div className="error">Failed to load endpoint</div>
-        )}
+        {endpointError && <div className="error">Failed to load endpoint</div>}
         {endpoint && (
-          <pre style={{ background: "#f4f4f4", padding: "0.5rem" }}>
-            {JSON.stringify(endpoint, null, 2)}
-          </pre>
+          <pre className="rpe-pre">{JSON.stringify(endpoint, null, 2)}</pre>
         )}
       </div>
     </div>
   );
 };
 
-export default ReversePrivateEndpointsPage;
+const ReversePrivateEndpointsPage: React.FC = () => {
+  const config = useAtomValue(configAtom);
+  if (!config) {
+    return (
+      <div>
+        <h2>Not configured</h2>
+        <p>Please configure API credentials on the Configuration page.</p>
+      </div>
+    );
+  }
+  return <ReversePrivateEndpointsContent config={config} />;
+};
 
+export default ReversePrivateEndpointsPage;

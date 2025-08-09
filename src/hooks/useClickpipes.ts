@@ -22,7 +22,7 @@ export function useCreateClickpipe(
   serviceId: string,
   config: ClickHouseConfig
 ) {
-  const createClickpipe = async (clickpipeData: any) => {
+  const createClickpipe = async (clickpipeData: unknown) => {
     const {
       keyId,
       keySecret,
@@ -69,7 +69,7 @@ export function useUpdateClickpipe(
   clickPipeId: string,
   config: ClickHouseConfig
 ) {
-  const updateClickpipe = async (updateData: any) => {
+  const updateClickpipe = async (updateData: unknown) => {
     const {
       keyId,
       keySecret,
@@ -130,7 +130,7 @@ export function useClickpipeScaling(
   clickPipeId: string,
   config: ClickHouseConfig
 ) {
-  const updateClickpipeScaling = async (scalingData: any) => {
+  const updateClickpipeScaling = async (scalingData: unknown) => {
     const {
       keyId,
       keySecret,

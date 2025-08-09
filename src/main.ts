@@ -6,6 +6,7 @@ export * from "./hooks/useServices";
 export * from "./hooks/useBackups";
 export * from "./hooks/useUserManagement";
 export * from "./hooks/useClickpipesReversePrivateEndpoints";
+export * from "./hooks/usePrometheusMetrics";
 
 // Export schemas and types
 export * from "./schemas/schemas";
