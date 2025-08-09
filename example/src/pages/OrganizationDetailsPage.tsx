@@ -404,6 +404,7 @@ const OrganizationDetailsPage: React.FC = () => {
             filtered={filterServiceMetrics}
           />
         )}
+      </div>
       <div style={{ marginTop: "1em" }}>
         <h3>API Keys</h3>
         {keysLoading ? (
