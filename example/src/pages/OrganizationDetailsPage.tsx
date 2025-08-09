@@ -241,7 +241,7 @@ const OrganizationDetailsPage: React.FC = () => {
         {error && <div className="error">Error: {error}</div>}
       </li>
     );
-  }
+  } 
 
   const [newServiceName, setNewServiceName] = useState("");
   const [newServiceProvider, setNewServiceProvider] = useState("");
