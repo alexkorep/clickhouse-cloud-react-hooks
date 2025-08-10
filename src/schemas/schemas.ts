@@ -186,6 +186,55 @@ export const OrganizationCloudRegionPrivateEndpointConfigSchema = z.object({
   endpointServiceId: z.string(),
 });
 
+// Reverse Private Endpoint schemas
+export const CreateReversePrivateEndpointSchema = z.object({
+  description: z.string(),
+  type: z.enum(["VPC_ENDPOINT_SERVICE", "VPC_RESOURCE", "MSK_MULTI_VPC"]),
+  vpcEndpointServiceName: z.string().nullable().optional(),
+  vpcResourceConfigurationId: z.string().nullable().optional(),
+  vpcResourceShareArn: z.string().nullable().optional(),
+  mskClusterArn: z.string().nullable().optional(),
+  mskAuthentication: z
+    .enum(["SASL_IAM", "SASL_SCRAM"])
+    .nullable()
+    .optional(),
+});
+
+export const ReversePrivateEndpointSchema = z.object({
+  description: z.string(),
+  type: z.enum(["VPC_ENDPOINT_SERVICE", "VPC_RESOURCE", "MSK_MULTI_VPC"]),
+  vpcEndpointServiceName: z.string().nullable(),
+  vpcResourceConfigurationId: z.string().nullable(),
+  vpcResourceShareArn: z.string().nullable(),
+  mskClusterArn: z.string().nullable(),
+  mskAuthentication: z.enum(["SASL_IAM", "SASL_SCRAM"]).nullable(),
+  id: z.string().uuid(),
+  serviceId: z.string().uuid(),
+  endpointId: z.string(),
+  dnsNames: z.array(z.string()),
+  privateDnsNames: z.array(z.string()),
+  status: z.enum([
+    "Unknown",
+    "Provisioning",
+    "Deleting",
+    "Ready",
+    "Failed",
+    "PendingAcceptance",
+    "Rejected",
+    "Expired",
+  ]),
+});
+
+export const ReversePrivateEndpointsResponseSchema =
+  ClickHouseBaseResponseSchema.extend({
+    result: z.array(ReversePrivateEndpointSchema),
+  });
+
+export const ReversePrivateEndpointResponseSchema =
+  ClickHouseBaseResponseSchema.extend({
+    result: ReversePrivateEndpointSchema,
+  });
+
 // Response schemas
 export const ApiKeysResponseSchema = ClickHouseBaseResponseSchema.extend({
   result: z.array(ApiKeySchema),
@@ -283,6 +332,12 @@ export type ByocConfig = z.infer<typeof ByocConfigSchema>;
 export type OrganizationCloudRegionPrivateEndpointConfig = z.infer<
   typeof OrganizationCloudRegionPrivateEndpointConfigSchema
 >;
+export type CreateReversePrivateEndpoint = z.infer<
+  typeof CreateReversePrivateEndpointSchema
+>;
+export type ReversePrivateEndpoint = z.infer<
+  typeof ReversePrivateEndpointSchema
+>;
 
 // Response types
 export type ApiKeysResponse = z.infer<typeof ApiKeysResponseSchema>;
@@ -311,4 +366,10 @@ export type InvitationsResponse = z.infer<typeof InvitationsResponseSchema>;
 export type InvitationResponse = z.infer<typeof InvitationResponseSchema>;
 export type ClickHouseBaseResponse = z.infer<
   typeof ClickHouseBaseResponseSchema
+>;
+export type ReversePrivateEndpointsResponse = z.infer<
+  typeof ReversePrivateEndpointsResponseSchema
+>;
+export type ReversePrivateEndpointResponse = z.infer<
+  typeof ReversePrivateEndpointResponseSchema
 >;

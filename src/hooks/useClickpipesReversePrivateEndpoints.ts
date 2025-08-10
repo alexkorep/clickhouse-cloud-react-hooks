@@ -1,20 +1,25 @@
-import useSWR from "swr";
-import { fetcher } from "../api/fetcher";
 import type { ClickHouseConfig } from "../api/fetcher";
+import { useClickHouseSWR } from "./useClickHouseSWR";
+import {
+  ReversePrivateEndpointsResponseSchema,
+  ReversePrivateEndpointResponseSchema,
+  ClickHouseBaseResponseSchema,
+  type ReversePrivateEndpoint,
+  type ReversePrivateEndpointsResponse,
+  type ReversePrivateEndpointResponse,
+  type CreateReversePrivateEndpoint,
+} from "../schemas/schemas";
 
 export function useClickpipesReversePrivateEndpoints(
   organizationId: string,
   serviceId: string,
   config: ClickHouseConfig
 ) {
-  const { data, error, isLoading } = useSWR(
-    [
-      `/v1/organizations/${organizationId}/services/${serviceId}/clickpipesReversePrivateEndpoints`,
-      config,
-    ],
-    ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
+  return useClickHouseSWR<ReversePrivateEndpointsResponse>(
+    `/v1/organizations/${organizationId}/services/${serviceId}/clickpipesReversePrivateEndpoints`,
+    config,
+    ReversePrivateEndpointsResponseSchema
   );
-  return { data, error, isLoading };
 }
 
 export function useCreateClickpipesReversePrivateEndpoint(
@@ -22,12 +27,10 @@ export function useCreateClickpipesReversePrivateEndpoint(
   serviceId: string,
   config: ClickHouseConfig
 ) {
-  const createReversePrivateEndpoint = async (endpointData: unknown) => {
-    const {
-      keyId,
-      keySecret,
-      baseUrl = "https://api.clickhouse.cloud",
-    } = config;
+  const createReversePrivateEndpoint = async (
+    endpointData: CreateReversePrivateEndpoint
+  ): Promise<ReversePrivateEndpoint> => {
+    const { keyId, keySecret, baseUrl = "https://api.clickhouse.cloud" } = config;
     const auth = btoa(`${keyId}:${keySecret}`);
     const response = await fetch(
       `${baseUrl}/v1/organizations/${organizationId}/services/${serviceId}/clickpipesReversePrivateEndpoints`,
@@ -41,7 +44,9 @@ export function useCreateClickpipesReversePrivateEndpoint(
       }
     );
     if (!response.ok) throw new Error(await response.text());
-    return response.json();
+    const responseData = await response.json();
+    const validated = ReversePrivateEndpointResponseSchema.parse(responseData);
+    return validated.result;
   };
   return { createReversePrivateEndpoint };
 }
@@ -52,14 +57,11 @@ export function useClickpipesReversePrivateEndpoint(
   reversePrivateEndpointId: string,
   config: ClickHouseConfig
 ) {
-  const { data, error, isLoading } = useSWR(
-    [
-      `/v1/organizations/${organizationId}/services/${serviceId}/clickpipesReversePrivateEndpoints/${reversePrivateEndpointId}`,
-      config,
-    ],
-    ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
+  return useClickHouseSWR<ReversePrivateEndpointResponse>(
+    `/v1/organizations/${organizationId}/services/${serviceId}/clickpipesReversePrivateEndpoints/${reversePrivateEndpointId}`,
+    config,
+    ReversePrivateEndpointResponseSchema
   );
-  return { data, error, isLoading };
 }
 
 export function useDeleteClickpipesReversePrivateEndpoint(
@@ -69,11 +71,7 @@ export function useDeleteClickpipesReversePrivateEndpoint(
   config: ClickHouseConfig
 ) {
   const deleteReversePrivateEndpoint = async () => {
-    const {
-      keyId,
-      keySecret,
-      baseUrl = "https://api.clickhouse.cloud",
-    } = config;
+    const { keyId, keySecret, baseUrl = "https://api.clickhouse.cloud" } = config;
     const auth = btoa(`${keyId}:${keySecret}`);
     const response = await fetch(
       `${baseUrl}/v1/organizations/${organizationId}/services/${serviceId}/clickpipesReversePrivateEndpoints/${reversePrivateEndpointId}`,
@@ -86,7 +84,8 @@ export function useDeleteClickpipesReversePrivateEndpoint(
       }
     );
     if (!response.ok) throw new Error(await response.text());
-    return response.json();
+    const responseData = await response.json();
+    return ClickHouseBaseResponseSchema.parse(responseData);
   };
   return { deleteReversePrivateEndpoint };
 }
