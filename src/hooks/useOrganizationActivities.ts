@@ -12,7 +12,13 @@ export function useOrganizationActivities(
   organizationId: string,
   config: ClickHouseConfig
 ) {
-  const { data, error, isLoading } = useSWR(
+  const {
+    data,
+    error,
+    isLoading,
+    isValidating,
+    mutate,
+  } = useSWR(
     [`/v1/organizations/${organizationId}/activities`, config],
     ([url, cfg]: [string, ClickHouseConfig]) =>
       fetcher<ActivitiesResponse>(url, cfg, ActivitiesResponseSchema)
@@ -21,6 +27,8 @@ export function useOrganizationActivities(
     data: data?.result,
     error,
     isLoading,
+    isValidating,
+    mutate,
     response: data,
   };
 }

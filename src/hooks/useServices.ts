@@ -3,11 +3,11 @@ import { fetcher } from "../api/fetcher";
 import type { ClickHouseConfig } from "../api/fetcher";
 
 export function useServices(organizationId: string, config: ClickHouseConfig) {
-  const { data, error, isLoading } = useSWR(
+  const { data, error, isLoading, isValidating, mutate } = useSWR(
     [`/v1/organizations/${organizationId}/services`, config],
     ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
   );
-  return { data, error, isLoading };
+  return { data, error, isLoading, isValidating, mutate };
 }
 
 export function useService(

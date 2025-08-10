@@ -7,6 +7,8 @@ import ConfigurationPage from "./pages/ConfigurationPage";
 import OrganizationDetailsPage from "./pages/OrganizationDetailsPage";
 import OrganizationUsageCostPage from "./pages/OrganizationUsageCostPage";
 import OrganizationPrivateEndpointConfigPage from "./pages/OrganizationPrivateEndpointConfigPage";
+import ActivityDetailsPage from "./pages/ActivityDetailsPage";
+import ServiceDetailsPage from "./pages/ServiceDetailsPage";
 
 function App() {
   return (
@@ -32,6 +34,14 @@ function App() {
             <Route
               path="/org/:id/private-endpoint-config"
               element={<OrganizationPrivateEndpointConfigPage />}
+            />
+            <Route
+              path="/org/:id/activities/:activityId"
+              element={<ActivityDetailsPage />}
+            />
+            <Route
+              path="/org/:orgId/service/:serviceId"
+              element={<ServiceDetailsPage />}
             />
           </Routes>
         </main>
