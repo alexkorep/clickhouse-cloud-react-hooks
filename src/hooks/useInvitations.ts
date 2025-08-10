@@ -1,8 +1,19 @@
-import { ClickHouseBaseResponseSchema, InvitationResponseSchema, InvitationsResponseSchema, type InvitationResponse, type InvitationsResponse } from "../schemas/schemas";
+import {
+  ClickHouseBaseResponseSchema,
+  InvitationResponseSchema,
+  InvitationsResponseSchema,
+  type InvitationResponse,
+  type InvitationsResponse,
+  type Invitation,
+  type InvitationPostRequest,
+} from "../schemas/schemas";
 import type { ClickHouseConfig } from "../api/fetcher";
 import { useClickHouseSWR } from "./useClickHouseSWR";
 
-export function useInvitations(organizationId: string, config: ClickHouseConfig) {
+export function useInvitations(
+  organizationId: string,
+  config: ClickHouseConfig
+) {
   return useClickHouseSWR<InvitationsResponse>(
     `/v1/organizations/${organizationId}/invitations`,
     config,
@@ -14,10 +25,9 @@ export function useCreateInvitation(
   organizationId: string,
   config: ClickHouseConfig
 ) {
-  const createInvitation = async (invitationData: {
-    email: string;
-    role: "admin" | "developer";
-  }) => {
+  const createInvitation = async (
+    invitationData: InvitationPostRequest
+  ): Promise<Invitation> => {
     const { keyId, keySecret, baseUrl = "https://api.clickhouse.cloud" } = config;
     const auth = btoa(`${keyId}:${keySecret}`);
     const response = await fetch(

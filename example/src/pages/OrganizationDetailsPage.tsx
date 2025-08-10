@@ -823,7 +823,7 @@ const OrganizationDetailsPage: React.FC = () => {
           <div className="error">Failed to load API keys</div>
         ) : (
           <ul>
-            {apiKeys?.map((k) => (
+            {(apiKeys as ApiKey[])?.map((k) => (
               <ApiKeyItem apiKey={k} key={k.id} />
             ))}
           </ul>
@@ -840,7 +840,7 @@ const OrganizationDetailsPage: React.FC = () => {
                 roles: newKeyRoles
                   .split(",")
                   .map((r) => r.trim())
-                  .filter(Boolean),
+                  .filter(Boolean) as ("admin" | "developer" | "query_endpoints")[],
               });
               setCreatedKey(result);
               setNewKeyName("");
