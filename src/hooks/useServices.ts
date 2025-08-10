@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import useSWR from "swr";
 import { fetcher } from "../api/fetcher";
 import type { ClickHouseConfig } from "../api/fetcher";
