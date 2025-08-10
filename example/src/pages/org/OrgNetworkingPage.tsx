@@ -3,41 +3,22 @@ import { useParams, Link } from "react-router-dom";
 import {
   useOrganizationPrivateEndpointConfig,
   ClickHouseAPIError,
+  type ClickHouseConfig,
 } from "clickhouse-cloud-react-hooks";
 import { useAtomValue } from "jotai";
-import { configAtom } from "../configAtoms";
+import { configAtom } from "../../configAtoms";
 
-const OrganizationPrivateEndpointConfigPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const config = useAtomValue(configAtom);
+const NetworkingContent: React.FC<{ orgId: string; config: ClickHouseConfig; }> = ({ orgId, config }) => {
   const [cloudProvider, setCloudProvider] = useState("");
   const [region, setRegion] = useState("");
-
   const { data, error, isLoading, isValidating, mutate } =
-    useOrganizationPrivateEndpointConfig(
-      id || "",
-      config || { keyId: "", keySecret: "" },
-      {
-        cloudProvider: cloudProvider || undefined,
-        region: region || undefined,
-      }
-    );
-
-  if (!config) {
-    return (
-      <div>
-        <h2>Not configured</h2>
-        <p>
-          Please go to the <Link to="/config">Configuration</Link> page and
-          enter your credentials.
-        </p>
-      </div>
-    );
-  }
-
+    useOrganizationPrivateEndpointConfig(orgId, config, {
+      cloudProvider: cloudProvider || undefined,
+      region: region || undefined,
+    });
   return (
     <section className="space-y-4">
-      <h2 className="text-2xl font-bold">Private Endpoint Config</h2>
+      <h2 className="text-xl font-semibold">Networking</h2>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -78,7 +59,7 @@ const OrganizationPrivateEndpointConfigPage: React.FC = () => {
               <small>Status: {error.status}</small>
             </div>
           ) : (
-            <div>Error: {error.message}</div>
+            <div>Error: {(error as Error).message}</div>
           )}
         </div>
       ) : data ? (
@@ -91,13 +72,27 @@ const OrganizationPrivateEndpointConfigPage: React.FC = () => {
         <div>No data</div>
       )}
       <p className="mt-4">
-        <Link to={`/org/${id}`} className="text-blue-600 hover:underline">
-          Back to details
+        <Link to="/reverse-private-endpoints" className="text-blue-600 hover:underline">
+          Manage Reverse Private Endpoints
         </Link>
       </p>
     </section>
   );
 };
 
-export default OrganizationPrivateEndpointConfigPage;
-
+const OrgNetworkingPage: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const config = useAtomValue(configAtom);
+  if (!config) {
+    return (
+      <div>
+        <h2>Not configured</h2>
+        <p>
+          Please go to the <Link to="/config">Configuration</Link> page and enter your credentials.
+        </p>
+      </div>
+    );
+  }
+  return <NetworkingContent orgId={id!} config={config} />;
+};
+export default OrgNetworkingPage;
