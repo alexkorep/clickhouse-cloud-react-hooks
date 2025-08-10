@@ -14,6 +14,12 @@ export function useCreateInvitation(
   organizationId: string,
   config: ClickHouseConfig
 ) {
+  const createInvitation = async (invitationData: unknown) => {
+    const {
+      keyId,
+      keySecret,
+      baseUrl = "https://api.clickhouse.cloud",
+    } = config;
   const createInvitation = async (invitationData: {
     email: string;
     role: "admin" | "developer";

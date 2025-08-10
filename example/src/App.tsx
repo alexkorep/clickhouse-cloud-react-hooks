@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import OrganizationListPage from "./pages/OrganizationListPage";
 import ConfigurationPage from "./pages/ConfigurationPage";
 import OrganizationDetailsPage from "./pages/OrganizationDetailsPage";
+import ActivityDetailsPage from "./pages/ActivityDetailsPage";
 import ServiceDetailsPage from "./pages/ServiceDetailsPage";
 
 function App() {
@@ -24,6 +25,10 @@ function App() {
             <Route path="/" element={<OrganizationListPage />} />
             <Route path="/config" element={<ConfigurationPage />} />
             <Route path="/org/:id" element={<OrganizationDetailsPage />} />
+            <Route
+              path="/org/:id/activities/:activityId"
+              element={<ActivityDetailsPage />}
+            />
             <Route
               path="/org/:orgId/service/:serviceId"
               element={<ServiceDetailsPage />}

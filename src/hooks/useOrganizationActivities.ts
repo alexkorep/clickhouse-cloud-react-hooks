@@ -1,6 +1,5 @@
-import useSWR from "swr";
-import { fetcher } from "../api/fetcher";
 import type { ClickHouseConfig } from "../api/fetcher";
+import { useClickHouseSWR } from "./useClickHouseSWR";
 import {
   ActivitiesResponseSchema,
   ActivityResponseSchema,
@@ -10,19 +9,21 @@ import {
 
 export function useOrganizationActivities(
   organizationId: string,
-  config: ClickHouseConfig
+  config: ClickHouseConfig,
+  params?: { fromDate?: string; toDate?: string }
 ) {
-  const { data, error, isLoading } = useSWR(
-    [`/v1/organizations/${organizationId}/activities`, config],
-    ([url, cfg]: [string, ClickHouseConfig]) =>
-      fetcher<ActivitiesResponse>(url, cfg, ActivitiesResponseSchema)
+  const queryParams = new URLSearchParams();
+  if (params?.fromDate) queryParams.append("from_date", params.fromDate);
+  if (params?.toDate) queryParams.append("to_date", params.toDate);
+  const queryString = queryParams.toString();
+  const url = `/v1/organizations/${organizationId}/activities${
+    queryString ? `?${queryString}` : ""
+  }`;
+  return useClickHouseSWR<ActivitiesResponse>(
+    url,
+    config,
+    ActivitiesResponseSchema
   );
-  return {
-    data: data?.result,
-    error,
-    isLoading,
-    response: data,
-  };
 }
 
 export function useOrganizationActivity(
@@ -30,15 +31,9 @@ export function useOrganizationActivity(
   activityId: string,
   config: ClickHouseConfig
 ) {
-  const { data, error, isLoading } = useSWR(
-    [`/v1/organizations/${organizationId}/activities/${activityId}`, config],
-    ([url, cfg]: [string, ClickHouseConfig]) =>
-      fetcher<ActivityResponse>(url, cfg, ActivityResponseSchema)
+  return useClickHouseSWR<ActivityResponse>(
+    `/v1/organizations/${organizationId}/activities/${activityId}`,
+    config,
+    ActivityResponseSchema
   );
-  return {
-    data: data?.result,
-    error,
-    isLoading,
-    response: data,
-  };
 }

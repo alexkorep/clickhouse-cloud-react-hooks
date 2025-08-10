@@ -24,6 +24,8 @@ import {
   useDeleteOrganizationInvitation,
   type Member,
   type Invitation,
+  useOrganizationActivities,
+  type Activity,
 } from "clickhouse-cloud-react-hooks";
 import { useAtomValue } from "jotai";
 import { configAtom } from "../configAtoms";
@@ -67,9 +69,20 @@ const OrganizationDetailsPage: React.FC = () => {
     data: organization,
     error: orgError,
     isLoading: orgLoading,
-    isValidating,
-    mutate,
-  } = useOrganization(id || "", config || { keyId: "", keySecret: "" });
+  isValidating,
+  mutate,
+} = useOrganization(id || "", config || { keyId: "", keySecret: "" });
+
+  const {
+    data: activities,
+    error: activitiesError,
+    isLoading: activitiesLoading,
+    isValidating: activitiesValidating,
+    mutate: refreshActivities,
+  } = useOrganizationActivities(
+    id || "",
+    config || { keyId: "", keySecret: "" }
+  );
 
   const { updateOrganization } = useUpdateOrganization(
     id || "",
@@ -605,6 +618,37 @@ const OrganizationDetailsPage: React.FC = () => {
           </ul>
         )}
       </div>
+      <div>
+        <h3>Activities</h3>
+        <button
+          onClick={() => refreshActivities()}
+          className="refresh-button"
+          style={{ marginBottom: "1em" }}
+          disabled={activitiesValidating}
+        >
+          {activitiesValidating ? "Loading..." : "Refresh"}
+        </button>
+        {activitiesLoading ? (
+          <div>Loading activities...</div>
+        ) : activitiesError ? (
+          <div className="error">
+            {activitiesError instanceof ClickHouseAPIError ? (
+              <div>
+                <strong>ClickHouse API Error:</strong> {activitiesError.error}
+                <br />
+                <small>Status: {activitiesError.status}</small>
+              </div>
+            ) : (
+              <div>Error: {activitiesError.message}</div>
+            )}
+          </div>
+        ) : activities && activities.length > 0 ? (
+          <ul>
+            {activities.map((act: Activity) => (
+              <li key={act.id}>
+                <Link to={`/org/${id}/activities/${act.id}`}>
+                  {act.type} - {new Date(act.createdAt).toLocaleString()}
+                </Link>
       <section className="mt-1">
         <h3>Services</h3>
         <button
@@ -631,6 +675,9 @@ const OrganizationDetailsPage: React.FC = () => {
             ))}
           </ul>
         ) : (
+          <div>No activities found</div>
+        )}
+      </div>
           <div>No services found</div>
         )}
         <form
