@@ -9,7 +9,6 @@ import {
   ClickHouseAPIError,
 } from "clickhouse-cloud-react-hooks";
 import { configAtom } from "../configAtoms";
-import "../App.css";
 
 const ServiceBackupsPage: React.FC = () => {
   const { id, serviceId } = useParams<{ id: string; serviceId: string }>();
@@ -74,11 +73,13 @@ const ServiceBackupsPage: React.FC = () => {
   }
 
   return (
-    <section className="backups-section">
-      <h2>Service Backups</h2>
-      <Link to={`/org/${id}`}>Back to Organization</Link>
+    <section className="space-y-4">
+      <h2 className="text-2xl font-bold">Service Backups</h2>
+      <Link to={`/org/${id}`} className="text-blue-600 hover:underline">
+        Back to Organization
+      </Link>
 
-      <h3>Backup Configuration</h3>
+      <h3 className="text-xl font-semibold">Backup Configuration</h3>
       {configLoading ? (
         <div>Loading configuration...</div>
       ) : configError ? (
@@ -112,38 +113,39 @@ const ServiceBackupsPage: React.FC = () => {
             }
           }}
         >
-          <div>
+          <div className="mb-2">
             <label>
               Period (hours):{" "}
               <input
                 type="number"
                 value={period}
                 onChange={(e) => setPeriod(e.target.value)}
+                className="input ml-2"
               />
             </label>
           </div>
-          <div>
+          <div className="mb-2">
             <label>
               Retention (hours):{" "}
               <input
                 type="number"
                 value={retention}
                 onChange={(e) => setRetention(e.target.value)}
+                className="input ml-2"
               />
             </label>
           </div>
-          <button type="submit" disabled={updating}>
+          <button type="submit" disabled={updating} className="btn">
             {updating ? "Saving..." : "Save"}
           </button>
           {updateError && <div className="error">Error: {updateError}</div>}
         </form>
       ) : null}
 
-      <h3>Backups</h3>
+      <h3 className="text-xl font-semibold">Backups</h3>
       <button
         onClick={() => mutateBackups()}
-        className="refresh-button"
-        style={{ marginBottom: "1em" }}
+        className="btn mb-4"
         disabled={isValidating}
       >
         {isValidating ? "Loading..." : "Refresh"}

@@ -14,22 +14,27 @@ import ReversePrivateEndpointsPage from "./pages/ReversePrivateEndpointsPage";
 function App() {
   return (
     <Router>
-      <div className="App">
-        <header className="App-header">
-          <h1>ClickHouse Cloud React Hooks Example</h1>
-          <p>This example demonstrates ClickHouse Cloud API responses.</p>
+      <div className="min-h-screen bg-gray-50 text-gray-900">
+        <header className="bg-blue-800 text-white p-6 mb-8">
+          <h1 className="text-3xl font-bold mb-2">ClickHouse Cloud React Hooks Example</h1>
+          <p className="opacity-90">This example demonstrates ClickHouse Cloud API responses.</p>
         </header>
-        <nav style={{ padding: "1rem", borderBottom: "1px solid #eee" }}>
-          <Link to="/" style={{ marginRight: "1rem" }}>Organizations</Link>
-          <Link to="/clickpipes" style={{ marginRight: "1rem" }}>
+        <nav className="p-4 border-b mb-6 flex space-x-4">
+          <Link to="/" className="text-blue-600 hover:underline">Organizations</Link>
+          <Link to="/clickpipes" className="text-blue-600 hover:underline">
             ClickPipes
           </Link>
-          <Link to="/config" style={{ marginRight: "1rem" }}>
+          <Link to="/config" className="text-blue-600 hover:underline">
             Configuration
           </Link>
-          <Link to="/reverse-private-endpoints">Reverse Private Endpoints</Link>
+          <Link
+            to="/reverse-private-endpoints"
+            className="text-blue-600 hover:underline"
+          >
+            Reverse Private Endpoints
+          </Link>
         </nav>
-        <main>
+        <main className="p-4 max-w-4xl mx-auto">
           <Routes>
             <Route path="/" element={<OrganizationListPage />} />
             <Route path="/config" element={<ConfigurationPage />} />

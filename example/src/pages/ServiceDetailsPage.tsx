@@ -119,18 +119,18 @@ const ServiceDetailsPage: React.FC = () => {
   }
 
   return (
-    <section className="service-details-section">
-      <h2>Service Details</h2>
+    <section className="space-y-4">
+      <h2 className="text-2xl font-bold">Service Details</h2>
       <p>
         <strong>ID:</strong> {service.id}
       </p>
       <p>
         <strong>Name:</strong> {service.name}
       </p>
-      <button
+      <button className="btn"
         onClick={() => serviceMutate()}
         className="refresh-button"
-        style={{ marginBottom: "1em" }}
+        className="mb-4"
       >
         Refresh
       </button>
@@ -158,22 +158,22 @@ const ServiceDetailsPage: React.FC = () => {
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
         />
-        <button type="submit" disabled={!newName}>
+        <button className="btn" type="submit" disabled={!newName}>
           Save
         </button>
       </form>
 
-      <div style={{ marginTop: "1em" }}>
+      <div className="mt-4">
         <h3>State</h3>
-        <button onClick={() => updateServiceState({ command: "start" })}>
+        <button className="btn" onClick={() => updateServiceState({ command: "start" })}>
           Start
         </button>
-        <button onClick={() => updateServiceState({ command: "stop" })}>
+        <button className="btn" onClick={() => updateServiceState({ command: "stop" })}>
           Stop
         </button>
       </div>
 
-      <div style={{ marginTop: "1em" }}>
+      <div className="mt-4">
         <h3>Password</h3>
         <form
           onSubmit={async (e) => {
@@ -196,20 +196,20 @@ const ServiceDetailsPage: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="New password"
           />
-          <button type="submit" disabled={!password}>
+          <button className="btn" type="submit" disabled={!password}>
             Update
           </button>
         </form>
       </div>
 
-      <div style={{ marginTop: "1em" }}>
+      <div className="mt-4">
         <h3>Replica Scaling</h3>
         <textarea
           value={replicaScaling}
           onChange={(e) => setReplicaScaling(e.target.value)}
           rows={3}
         />
-        <button
+        <button className="btn"
           onClick={async () => {
             try {
               await updateReplicaScaling(JSON.parse(replicaScaling));
@@ -222,14 +222,14 @@ const ServiceDetailsPage: React.FC = () => {
         </button>
       </div>
 
-      <div style={{ marginTop: "1em" }}>
+      <div className="mt-4">
         <h3>Service Scaling</h3>
         <textarea
           value={scaling}
           onChange={(e) => setScaling(e.target.value)}
           rows={3}
         />
-        <button
+        <button className="btn"
           onClick={async () => {
             try {
               await updateServiceScaling(JSON.parse(scaling));
@@ -242,7 +242,7 @@ const ServiceDetailsPage: React.FC = () => {
         </button>
       </div>
 
-      <div style={{ marginTop: "1em" }}>
+      <div className="mt-4">
         <h3>Query Endpoint</h3>
         {queryEndpoint ? (
           <pre>{JSON.stringify(queryEndpoint, null, 2)}</pre>
@@ -254,7 +254,7 @@ const ServiceDetailsPage: React.FC = () => {
           onChange={(e) => setQueryEndpointData(e.target.value)}
           rows={3}
         />
-        <button
+        <button className="btn"
           onClick={async () => {
             try {
               await createQueryEndpoint(JSON.parse(queryEndpointData));
@@ -266,7 +266,7 @@ const ServiceDetailsPage: React.FC = () => {
         >
           Create
         </button>
-        <button
+        <button className="btn"
           onClick={async () => {
             try {
               await deleteQueryEndpoint();
@@ -280,12 +280,12 @@ const ServiceDetailsPage: React.FC = () => {
         </button>
       </div>
 
-      <div style={{ marginTop: "1em" }}>
+      <div className="mt-4">
         <h3>Prometheus Metrics</h3>
         {metrics ? <pre>{metrics}</pre> : <div>No metrics</div>}
       </div>
 
-      <div style={{ marginTop: "1em" }}>
+      <div className="mt-4">
         <h3>Private Endpoint Config</h3>
         {peConfig ? (
           <pre>{JSON.stringify(peConfig, null, 2)}</pre>
@@ -297,7 +297,7 @@ const ServiceDetailsPage: React.FC = () => {
           onChange={(e) => setPrivateEndpointData(e.target.value)}
           rows={3}
         />
-        <button
+        <button className="btn"
           onClick={async () => {
             try {
               await createPrivateEndpoint(JSON.parse(privateEndpointData));
@@ -310,9 +310,9 @@ const ServiceDetailsPage: React.FC = () => {
         </button>
       </div>
 
-      <div style={{ marginTop: "1em" }}>
+      <div className="mt-4">
         <button
-          className="delete-button"
+          className="btn btn-danger"
           onClick={async () => {
             try {
               await deleteService();
@@ -327,9 +327,7 @@ const ServiceDetailsPage: React.FC = () => {
       </div>
 
       {error && (
-        <div className="error" style={{ marginTop: "0.5em" }}>
-          Error: {error}
-        </div>
+        <div className="error mt-2">Error: {error}</div>
       )}
 
       <Link to={`/org/${orgId}`}>Back to Organization</Link>

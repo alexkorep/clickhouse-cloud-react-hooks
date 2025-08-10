@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "../App.css";
 import { useParams, Link } from "react-router-dom";
 import {
   useOrganizationUsageCost,
@@ -34,34 +33,34 @@ const OrganizationUsageCostPage: React.FC = () => {
   }
 
   return (
-    <section className="usage-cost-section">
-      <h2>Usage Cost</h2>
+    <section className="space-y-4">
+      <h2 className="text-2xl font-bold">Usage Cost</h2>
       <form
         onSubmit={(e) => {
           e.preventDefault();
           mutate();
         }}
-        className="form-inline"
+        className="flex flex-wrap items-center gap-4 mb-4"
       >
-        <label>
+        <label className="flex items-center">
           Start Date:
           <input
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="input-inline"
+            className="input ml-2 mr-4"
           />
         </label>
-        <label>
+        <label className="flex items-center">
           End Date:
           <input
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="input-inline"
+            className="input ml-2 mr-4"
           />
         </label>
-        <button type="submit" disabled={isValidating}>
+        <button type="submit" disabled={isValidating} className="btn">
           {isValidating ? "Loading..." : "Refresh"}
         </button>
       </form>
@@ -100,8 +99,10 @@ const OrganizationUsageCostPage: React.FC = () => {
       ) : (
         <div>No data</div>
       )}
-      <p className="back-link">
-        <Link to={`/org/${id}`}>Back to details</Link>
+      <p className="mt-4">
+        <Link to={`/org/${id}`} className="text-blue-600 hover:underline">
+          Back to details
+        </Link>
       </p>
     </section>
   );

@@ -1,5 +1,4 @@
 import React from "react";
-import "../App.css";
 import { useParams, Link } from "react-router-dom";
 import {
   useOrganizationActivity,
@@ -60,10 +59,14 @@ const ActivityDetailsPage: React.FC = () => {
   }
 
   return (
-    <section className="activity-details-section">
-      <h2>Activity Details</h2>
-      <pre>{JSON.stringify(activity, null, 2)}</pre>
-      <Link to={`/org/${id}`}>Back to Organization</Link>
+    <section className="space-y-4">
+      <h2 className="text-2xl font-bold">Activity Details</h2>
+      <pre className="bg-gray-100 p-4 rounded overflow-auto">
+        {JSON.stringify(activity, null, 2)}
+      </pre>
+      <Link to={`/org/${id}`} className="text-blue-600 hover:underline">
+        Back to Organization
+      </Link>
     </section>
   );
 };
