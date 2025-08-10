@@ -21,7 +21,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "publish": "npm run build && npm run test && npm publish",
+    "publish": "yarn build && yarn test && yarn publish",
     "example": "cd example && yarn dev",
     "example:install": "cd example && yarn install",
     "example:build": "cd example && yarn build"
