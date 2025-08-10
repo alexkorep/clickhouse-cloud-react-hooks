@@ -12,7 +12,7 @@ const ActivityDetailsPage: React.FC = () => {
   const { id, activityId } = useParams<{ id: string; activityId: string }>();
   const config = useAtomValue(configAtom);
   const {
-    data: activity,
+    data,
     error,
     isLoading,
   } = useOrganizationActivity(
@@ -20,6 +20,8 @@ const ActivityDetailsPage: React.FC = () => {
     activityId || "",
     config || { keyId: "", keySecret: "" }
   );
+
+  const activity = data;
 
   if (!config) {
     return (
@@ -60,38 +62,10 @@ const ActivityDetailsPage: React.FC = () => {
   return (
     <section className="activity-details-section">
       <h2>Activity Details</h2>
-      <p>
-        <strong>ID:</strong> {activity.id}
-      </p>
-      <p>
-        <strong>Type:</strong> {activity.type}
-      </p>
-      <p>
-        <strong>Created:</strong> {new Date(activity.createdAt).toLocaleString()}
-      </p>
-      <p>
-        <strong>Actor Type:</strong> {activity.actorType}
-      </p>
-      <p>
-        <strong>Actor ID:</strong> {activity.actorId}
-      </p>
-      <p>
-        <strong>Actor Details:</strong> {activity.actorDetails}
-      </p>
-      {activity.actorIpAddress && (
-        <p>
-          <strong>Actor IP:</strong> {activity.actorIpAddress}
-        </p>
-      )}
-      {activity.serviceId && (
-        <p>
-          <strong>Service ID:</strong> {activity.serviceId}
-        </p>
-      )}
+      <pre>{JSON.stringify(activity, null, 2)}</pre>
       <Link to={`/org/${id}`}>Back to Organization</Link>
     </section>
   );
 };
 
 export default ActivityDetailsPage;
-

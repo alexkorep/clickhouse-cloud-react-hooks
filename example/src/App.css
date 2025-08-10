@@ -271,6 +271,34 @@
   font-weight: 500;
 }
 
+/* Navigation */
+.main-nav {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.main-nav a:not(:last-child) {
+  margin-right: 1rem;
+}
+
+/* Common Spacing */
+.refresh-button {
+  margin-bottom: 1em;
+}
+
+.form-inline {
+  margin-bottom: 1em;
+}
+
+.input-inline {
+  margin-left: 0.5em;
+  margin-right: 1em;
+}
+
+.back-link {
+  margin-top: 1em;
+}
+
 /* Error Styles */
 .error {
   background-color: #f8d7da;

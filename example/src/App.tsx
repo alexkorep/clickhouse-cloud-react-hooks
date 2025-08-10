@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import OrganizationListPage from "./pages/OrganizationListPage";
 import ConfigurationPage from "./pages/ConfigurationPage";
 import OrganizationDetailsPage from "./pages/OrganizationDetailsPage";
+import OrganizationUsageCostPage from "./pages/OrganizationUsageCostPage";
+import OrganizationPrivateEndpointConfigPage from "./pages/OrganizationPrivateEndpointConfigPage";
 import ClickpipesPage from "./pages/ClickpipesPage";
 import ActivityDetailsPage from "./pages/ActivityDetailsPage";
 import ServiceDetailsPage from "./pages/ServiceDetailsPage";
@@ -33,6 +35,14 @@ function App() {
             <Route path="/config" element={<ConfigurationPage />} />
             <Route path="/clickpipes" element={<ClickpipesPage />} />
             <Route path="/org/:id" element={<OrganizationDetailsPage />} />
+            <Route
+              path="/org/:id/usage-cost"
+              element={<OrganizationUsageCostPage />}
+            />
+            <Route
+              path="/org/:id/private-endpoint-config"
+              element={<OrganizationPrivateEndpointConfigPage />}
+            />
             <Route
               path="/org/:id/service/:serviceId/backups"
               element={<ServiceBackupsPage />}
