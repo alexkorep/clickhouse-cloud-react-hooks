@@ -167,7 +167,12 @@ describe("useDeleteServiceBackup", () => {
   });
 
   function HookTest({ onResult }: { onResult: (r: ReturnType<typeof useDeleteServiceBackup>) => void }) {
-    const result = useDeleteServiceBackup(organizationId, serviceId, config);
+    const result = useDeleteServiceBackup(
+      organizationId,
+      serviceId,
+      backupId,
+      config
+    );
     React.useEffect(() => {
       onResult(result);
     }, [result, onResult]);
@@ -178,7 +183,7 @@ describe("useDeleteServiceBackup", () => {
     let hookResult: ReturnType<typeof useDeleteServiceBackup> | undefined;
     render(<HookTest onResult={(r) => (hookResult = r)} />);
     await waitFor(() => expect(hookResult).toBeDefined());
-    await hookResult!.deleteBackup(backupId);
+    await hookResult!.deleteBackup();
     expect(global.fetch).toHaveBeenCalledWith(
       `${config.baseUrl}/v1/organizations/${organizationId}/services/${serviceId}/backups/${backupId}`,
       expect.objectContaining({ method: "DELETE" })
@@ -196,6 +201,6 @@ describe("useDeleteServiceBackup", () => {
     let hookResult: ReturnType<typeof useDeleteServiceBackup> | undefined;
     render(<HookTest onResult={(r) => (hookResult = r)} />);
     await waitFor(() => expect(hookResult).toBeDefined());
-    await expect(hookResult!.deleteBackup(backupId)).rejects.toThrow("Not found");
+    await expect(hookResult!.deleteBackup()).rejects.toThrow("Not found");
   });
 });

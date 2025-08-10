@@ -1,43 +1,23 @@
-import useSWR from "swr";
-import { fetcher } from "../api/fetcher";
 import type { ClickHouseConfig } from "../api/fetcher";
+import {
+  useOrgPrometheus,
+  useServicePrometheus,
+} from "./resources/prometheus";
 
-// Fetch organization-level Prometheus metrics
-export function useOrganizationPrometheusMetrics(
+export const useOrganizationPrometheusMetrics = (
   organizationId: string,
   config: ClickHouseConfig,
   filteredMetrics?: boolean
-) {
-  const query =
-    filteredMetrics !== undefined
-      ? `?filtered_metrics=${filteredMetrics}`
-      : "";
-  const { data, error, isLoading } = useSWR(
-    [`/v1/organizations/${organizationId}/prometheus${query}`, config],
-    ([url, cfg]: [string, ClickHouseConfig]) =>
-      fetcher<string>(url, cfg, undefined, "text")
-  );
-  return { data, error, isLoading };
-}
+) => useOrgPrometheus({ organizationId, filteredMetrics }, config);
 
-// Fetch service-level Prometheus metrics
-export function useServicePrometheusMetrics(
+export const useServicePrometheusMetrics = (
   organizationId: string,
   serviceId: string,
   config: ClickHouseConfig,
   filteredMetrics?: boolean
-) {
-  const query =
-    filteredMetrics !== undefined
-      ? `?filtered_metrics=${filteredMetrics}`
-      : "";
-  const { data, error, isLoading } = useSWR(
-    [
-      `/v1/organizations/${organizationId}/services/${serviceId}/prometheus${query}`,
-      config,
-    ],
-    ([url, cfg]: [string, ClickHouseConfig]) =>
-      fetcher<string>(url, cfg, undefined, "text")
+) =>
+  useServicePrometheus(
+    { organizationId, serviceId, filteredMetrics },
+    config
   );
-  return { data, error, isLoading };
-}
+

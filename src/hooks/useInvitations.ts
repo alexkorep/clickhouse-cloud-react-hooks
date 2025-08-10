@@ -1,94 +1,32 @@
-import {
-  ClickHouseBaseResponseSchema,
-  InvitationResponseSchema,
-  InvitationsResponseSchema,
-  type InvitationResponse,
-  type InvitationsResponse,
-  type Invitation,
-  type InvitationPostRequest,
-} from "../schemas/schemas";
 import type { ClickHouseConfig } from "../api/fetcher";
-import { useClickHouseSWR } from "./useClickHouseSWR";
+import { invitationsHooks } from "./resources/invitations";
+import type { InvitationPostRequest } from "../schemas/schemas";
 
-export function useInvitations(
+export const useInvitations = (
   organizationId: string,
   config: ClickHouseConfig
-) {
-  return useClickHouseSWR<InvitationsResponse>(
-    `/v1/organizations/${organizationId}/invitations`,
-    config,
-    InvitationsResponseSchema
-  );
-}
+) => invitationsHooks.useList({ organizationId }, config);
 
-export function useCreateInvitation(
-  organizationId: string,
-  config: ClickHouseConfig
-) {
-  const createInvitation = async (
-    invitationData: InvitationPostRequest
-  ): Promise<Invitation> => {
-    const {
-      keyId,
-      keySecret,
-      baseUrl = "https://api.clickhouse.cloud",
-    } = config;
-    const auth = btoa(`${keyId}:${keySecret}`);
-    const response = await fetch(
-      `${baseUrl}/v1/organizations/${organizationId}/invitations`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Basic ${auth}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(invitationData),
-      }
-    );
-    if (!response.ok) throw new Error(await response.text());
-    const responseData = await response.json();
-    const validated = InvitationResponseSchema.parse(responseData);
-    return validated.result;
-  };
-
-  return { createInvitation };
-}
-
-export function useInvitation(
+export const useInvitation = (
   organizationId: string,
   invitationId: string,
   config: ClickHouseConfig
-) {
-  return useClickHouseSWR<InvitationResponse>(
-    `/v1/organizations/${organizationId}/invitations/${invitationId}`,
-    config,
-    InvitationResponseSchema
-  );
-}
+) => invitationsHooks.useOne({ organizationId, invitationId }, config);
 
-export function useDeleteInvitation(
+export const useCreateInvitation = (
+  organizationId: string,
+  config: ClickHouseConfig
+) => {
+  const create = invitationsHooks.useCreate({ organizationId }, config);
+  return { createInvitation: (body: InvitationPostRequest) => create(body) };
+};
+
+export const useDeleteInvitation = (
   organizationId: string,
   invitationId: string,
   config: ClickHouseConfig
-) {
-  const deleteInvitation = async () => {
-    const { keyId, keySecret, baseUrl = "https://api.clickhouse.cloud" } = config;
-    const auth = btoa(`${keyId}:${keySecret}`);
-    const response = await fetch(
-      `${baseUrl}/v1/organizations/${organizationId}/invitations/${invitationId}`,
-      {
-        method: "DELETE",
-        headers: {
-          Authorization: `Basic ${auth}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    if (!response.ok) throw new Error(await response.text());
-    const responseData = await response.json();
-    const validated = ClickHouseBaseResponseSchema.parse(responseData);
-    return validated;
-  };
+) => {
+  const del = invitationsHooks.useDelete({ organizationId, invitationId }, config);
+  return { deleteInvitation: () => del() };
+};
 
-  return { deleteInvitation };
-}
