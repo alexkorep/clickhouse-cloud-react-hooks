@@ -1,321 +1,329 @@
 # ClickHouse Cloud React Hooks
 
-A collection of reusable React hooks to interact with the ClickHouse Cloud API: https://clickhouse.com/docs/cloud/manage/api/api-overview
+A collection of reusable React hooks for the ClickHouse Cloud API: [https://clickhouse.com/docs/cloud/manage/api/api-overview](https://clickhouse.com/docs/cloud/manage/api/api-overview)
 
-## Roadmap
-
-The project is under active development and aims to cover the following ClickHouse Cloud API endpoints.
-
-### src/hooks/useOrganizations.ts
-
-- [x] `GET /v1/organizations` — `useOrganizations`  
-       _Returns a list with a single organization associated with the API key in the request._
-- [x] `GET /v1/organizations/{organizationId}` — `useOrganization`  
-       _Returns details of a single organization. In order to get the details, the auth key must belong to the organization._
-- [x] `PATCH /v1/organizations/{organizationId}` — `useUpdateOrganization`  
-       _Updates organization fields. Requires ADMIN auth key role._
-- [ ] `GET /v1/organizations/{organizationId}/privateEndpointConfig` — `useOrganizationPrivateEndpointConfig`
-      _Information required to set up a private endpoint for region within cloud provider for an organization._
-- [ ] `GET /v1/organizations/{organizationId}/usageCost` — `useOrganizationUsageCost`
-      _Returns a grand total and a list of daily, per-entity organization usage cost records for the organization in the queried time period (maximum 31 days)._
-
-### src/hooks/useOrganizationActivities.ts
-
-- [!] `GET /v1/organizations/{organizationId}/activities` — `useOrganizationActivities`  
-   _Returns a list of all organization activities._
-- [!] `GET /v1/organizations/{organizationId}/activities/{activityId}` — `useOrganizationActivity`
-  _Returns a single organization activity by ID._
-
-### src/hooks/usePrometheusMetrics.ts
-
-- [ ] `GET /v1/organizations/{organizationId}/prometheus` — `useOrganizationPrometheusMetrics`  
-       _Returns prometheus metrics for all services in an organization._
-
-### src/hooks/useServices.ts
-
-- [ ] `GET /v1/organizations/{organizationId}/services` — `useServices`  
-       _Returns a list of all services in the organization._
-- [ ] `POST /v1/organizations/{organizationId}/services` — `useCreateService`  
-       _Creates a new service in the organization, and returns the current service state and a password to access the service. The service is started asynchronously._
-- [ ] `GET /v1/organizations/{organizationId}/services/{serviceId}` — `useService`  
-       _Returns a service that belongs to the organization._
-- [ ] `PATCH /v1/organizations/{organizationId}/services/{serviceId}` — `useUpdateService`  
-       _Updates basic service details like service name or IP access list._
-- [ ] `DELETE /v1/organizations/{organizationId}/services/{serviceId}` — `useDeleteService`  
-       _Deletes the service. The service must be in stopped state and is deleted asynchronously after this method call._
-- [!] `GET /v1/organizations/{organizationId}/services/{serviceId}/privateEndpointConfig` — `useServicePrivateEndpointConfig`  
-   _Information required to set up a private endpoint._
-- [!] `GET /v1/organizations/{organizationId}/services/{serviceId}/serviceQueryEndpoint` — `useServiceQueryEndpoint`  
-   _Get the service query endpoint for a given instance. Experimental feature._
-- [!] `DELETE /v1/organizations/{organizationId}/services/{serviceId}/serviceQueryEndpoint` — `useServiceQueryEndpoint`  
-   _Delete the service query endpoint for a given instance. Experimental feature._
-- [!] `POST /v1/organizations/{organizationId}/services/{serviceId}/serviceQueryEndpoint` — `useServiceQueryEndpoint`  
-   _Upsert the service query endpoint for a given instance. Experimental feature._
-- [!] `PATCH /v1/organizations/{organizationId}/services/{serviceId}/state` — `useUpdateServiceState`  
-   _Starts or stops service._
-- [!] `PATCH /v1/organizations/{organizationId}/services/{serviceId}/scaling` — `useUpdateServiceTier`  
-   _Updates minimum and maximum total memory limits and idle mode scaling behavior for the service. Deprecated._
-- [!] `PATCH /v1/organizations/{organizationId}/services/{serviceId}/replicaScaling` — `useServiceReplicaScaling`  
-   _Updates minimum and maximum memory limits per replica and idle mode scaling behavior for the service._
-- [!] `PATCH /v1/organizations/{organizationId}/services/{serviceId}/password` — `useResetServicePassword`  
-   _Sets a new password for the service._
-- [!] `POST /v1/organizations/{organizationId}/services/{serviceId}/privateEndpoint` — `useCreateServicePrivateEndpoint`  
-   _Create a new private endpoint. The private endpoint will be associated with this service and organization._
-
-### src/hooks/usePrometheusMetrics.ts
-
-- [ ] `GET /v1/organizations/{organizationId}/services/{serviceId}/prometheus` — `useServicePrometheusMetrics`  
-       _Returns prometheus metrics for a service._
-
-### src/hooks/useBackups.ts
-
-- [ ] `GET /v1/organizations/{organizationId}/services/{serviceId}/backups` — `useServiceBackups`  
-       _Returns a list of all backups for the service. The most recent backups comes first in the list._
-- [ ] `GET /v1/organizations/{organizationId}/services/{serviceId}/backups/{backupId}` — `useServiceBackup`  
-       _Returns a single backup info._
-- [ ] `DELETE /v1/organizations/{organizationId}/services/{serviceId}/backups/{backupId}` — `useDeleteServiceBackup`  
-       _Deletes a backup._
-- [ ] `GET /v1/organizations/{organizationId}/services/{serviceId}/backupConfiguration` — `useServiceBackupConfiguration`  
-       _Returns the service backup configuration._
-- [ ] `PATCH /v1/organizations/{organizationId}/services/{serviceId}/backupConfiguration` — `useUpdateServiceBackupConfiguration`  
-       _Updates service backup configuration. Requires ADMIN auth key role. Setting the properties with null value will reset the properties to their default values._
-
-### src/hooks/useApiKeys.ts
-
-- [ ] `GET /v1/organizations/{organizationId}/keys` — `useApiKeys`  
-       _Returns a list of all keys in the organization._
-- [ ] `POST /v1/organizations/{organizationId}/keys` — `useCreateApiKey`  
-       _Creates new API key._
-- [ ] `GET /v1/organizations/{organizationId}/keys/{keyId}` — `useApiKey`  
-       _Returns a single key details._
-- [ ] `PATCH /v1/organizations/{organizationId}/keys/{keyId}` — `useUpdateApiKey`  
-       _Updates API key properties._
-- [ ] `DELETE /v1/organizations/{organizationId}/keys/{keyId}` — `useDeleteApiKey`
-       _Deletes API key. Only a key not used to authenticate the active request can be deleted._
-
-### src/hooks/useInvitations.ts
-
-- [ ] `GET /v1/organizations/{organizationId}/invitations` — `useInvitations`  
-       _Returns list of all organization invitations._
-- [ ] `POST /v1/organizations/{organizationId}/invitations` — `useCreateInvitation`  
-       _Creates organization invitation._
-- [ ] `GET /v1/organizations/{organizationId}/invitations/{invitationId}` — `useInvitation`  
-       _Returns details for a single organization invitation._
-- [ ] `DELETE /v1/organizations/{organizationId}/invitations/{invitationId}` — `useDeleteInvitation`  
-       _Deletes a single organization invitation._
-
-### src/hooks/useClickpipesReversePrivateEndpoints.ts
-
-- [!] `GET /v1/organizations/{organizationId}/services/{serviceId}/clickpipesReversePrivateEndpoints` — `useClickpipesReversePrivateEndpoints`  
-   _Returns a list of reverse private endpoints for the specified service._
-- [!] `POST /v1/organizations/{organizationId}/services/{serviceId}/clickpipesReversePrivateEndpoints` — `useCreateClickpipesReversePrivateEndpoint`  
-   _Create a new reverse private endpoint._
-- [!] `GET /v1/organizations/{organizationId}/services/{serviceId}/clickpipesReversePrivateEndpoints/{reversePrivateEndpointId}` — `useClickpipesReversePrivateEndpoint`  
-   _Returns the reverse private endpoint with the specified ID._
-- [!] `DELETE /v1/organizations/{organizationId}/services/{serviceId}/clickpipesReversePrivateEndpoints/{reversePrivateEndpointId}` — `useDeleteClickpipesReversePrivateEndpoint`  
-   _Delete the reverse private endpoint with the specified ID._
-
-### src/hooks/useClickpipes.ts
-
-- [ ] `GET /v1/organizations/{organizationId}/services/{serviceId}/clickpipes` — `useClickpipes`  
-       _Returns a list of ClickPipes._
-- [ ] `POST /v1/organizations/{organizationId}/services/{serviceId}/clickpipes` — `useCreateClickpipe`  
-       _Create a new ClickPipe._
-- [ ] `GET /v1/organizations/{organizationId}/services/{serviceId}/clickpipes/{clickPipeId}` — `useClickpipe`  
-       _Returns the specified ClickPipe._
-- [ ] `PATCH /v1/organizations/{organizationId}/services/{serviceId}/clickpipes/{clickPipeId}` — `useUpdateClickpipe`  
-       _Update the specified ClickPipe._
-- [ ] `DELETE /v1/organizations/{organizationId}/services/{serviceId}/clickpipes/{clickPipeId}` — `useDeleteClickpipe`  
-       _Delete the specified ClickPipe._
-- [!] `PATCH /v1/organizations/{organizationId}/services/{serviceId}/clickpipes/{clickPipeId}/scaling` — `useUpdateClickpipeTier`  
-   _Change scaling settings for the specified ClickPipe._
-- [!] `PATCH /v1/organizations/{organizationId}/services/{serviceId}/clickpipes/{clickPipeId}/state` — `useUpdateClickpipeState`  
-   _Start, stop or resync ClickPipe._
+- **Type-safe** responses (validated with Zod; schemas exported)
+- **SWR**-powered caching & revalidation
+- **Tiny config surface** (`keyId`, `keySecret`, optional `baseUrl`)
+- **Unified API** for list/read/mutate across resources
 
 ## Installation
 
 ```bash
 npm install clickhouse-cloud-react-hooks
-```
-
-or
-
-```bash
+# or
 yarn add clickhouse-cloud-react-hooks
 ```
 
-## Usage
+### Requirements
 
-### Basic Example
+- React 18+
+- Works with any bundler (Vite, CRA, Next.js, etc.)
+
+> **Note (Vite):** environment vars must be prefixed with `VITE_...` (e.g. `VITE_CLICKHOUSE_KEY_ID`). In CRA they’re usually `REACT_APP_...`.
+
+---
+
+## Quick start
 
 ```tsx
 import {
   useOrganizations,
   type ClickHouseConfig,
   type Organization,
-  ClickHouseAPIError,
 } from "clickhouse-cloud-react-hooks";
 
-const OrganizationsList = () => {
+export function OrganizationsList() {
   const config: ClickHouseConfig = {
-    keyId: process.env.REACT_APP_CLICKHOUSE_KEY_ID!,
-    keySecret: process.env.REACT_APP_CLICKHOUSE_KEY_SECRET!,
+    keyId: import.meta.env.VITE_CLICKHOUSE_KEY_ID!,
+    keySecret: import.meta.env.VITE_CLICKHOUSE_KEY_SECRET!,
+    // baseUrl: "https://api.clickhouse.cloud", // default
   };
 
-  const { data: organizations, error, isLoading } = useOrganizations(config);
+  const { data, error, isLoading } = useOrganizations(config);
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    if (error instanceof ClickHouseAPIError) {
-      return (
-        <div>
-          ClickHouse API Error: {error.error} (Status: {error.status})
-        </div>
-      );
-    }
-    return <div>Error: {error.message}</div>;
-  }
+  if (isLoading) return <div>Loading…</div>;
+  if (error)
+    return <div>Failed: {String((error as Error).message || error)}</div>;
 
   return (
-    <div>
-      <h1>Organizations</h1>
-      <ul>
-        {organizations?.map((org: Organization) => (
-          <li key={org.id}>
-            <h3>{org.name}</h3>
-            <p>Created: {new Date(org.createdAt).toLocaleDateString()}</p>
-            <p>ID: {org.id}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <ul>
+      {data?.map((org: Organization) => (
+        <li key={org.id}>
+          {org.name} — created {new Date(org.createdAt).toLocaleDateString()}
+        </li>
+      ))}
+    </ul>
   );
-};
-
-export default OrganizationsList;
+}
 ```
 
-### Advanced Usage with Activities
+### Common pattern for mutations
+
+All mutation hooks return a callable you can `await`:
 
 ```tsx
-import {
-  useOrganizationActivities,
-  type Activity,
-  type ClickHouseConfig,
-} from "clickhouse-cloud-react-hooks";
+import { useUpdateOrganization } from "clickhouse-cloud-react-hooks";
 
-const ActivityLog = ({ organizationId }: { organizationId: string }) => {
-  const config: ClickHouseConfig = {
-    keyId: process.env.REACT_APP_CLICKHOUSE_KEY_ID!,
-    keySecret: process.env.REACT_APP_CLICKHOUSE_KEY_SECRET!,
-  };
+function RenameOrg({ organizationId }: { organizationId: string }) {
+  const config = { keyId: "...", keySecret: "..." };
+  const { updateOrganization } = useUpdateOrganization(organizationId, config);
 
-  const {
-    data: activities,
-    error,
-    isLoading,
-  } = useOrganizationActivities(organizationId, config);
+  async function onRename() {
+    try {
+      const updated = await updateOrganization({ name: "New name" });
+      console.log("Updated:", updated);
+    } catch (err) {
+      // Most mutations throw a regular Error with server text
+      alert((err as Error).message);
+    }
+  }
 
-  if (isLoading) return <div>Loading activities...</div>;
-  if (error) return <div>Error: {error.message}</div>;
-
-  return (
-    <div>
-      <h2>Recent Activities</h2>
-      <ul>
-        {activities?.map((activity: Activity) => (
-          <li key={activity.id}>
-            <strong>{activity.type}</strong> - {activity.actorType}
-            <small>
-              {" "}
-              ({new Date(activity.createdAt).toLocaleDateString()})
-            </small>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-};
+  return <button onClick={onRename}>Rename</button>;
+}
 ```
 
-## Available Hooks
+---
 
-### Organizations
+## Endpoint coverage (✅ implemented)
 
-- `useOrganizations(config)` - Fetch all organizations
-- `useOrganization(organizationId, config)` - Fetch single organization
-- `useUpdateOrganization(organizationId, config)` - Update organization
-- `useOrganizationActivities(organizationId, config)` - Fetch organization activities
-- `useOrganizationActivity(organizationId, activityId, config)` - Fetch single activity
-- `useOrganizationUsageCost(organizationId, config, params?)` - Fetch usage costs
-- `useOrganizationPrivateEndpointConfig(organizationId, config, params?)` - Fetch private endpoint config
+### Organizations & org-level data
+
+- ✅ `GET /v1/organizations` — `useOrganizations`
+- ✅ `GET /v1/organizations/{organizationId}` — `useOrganization`
+- ✅ `PATCH /v1/organizations/{organizationId}` — `useUpdateOrganization`
+- ✅ `GET /v1/organizations/{organizationId}/privateEndpointConfig` — `useOrganizationPrivateEndpointConfig`
+- ✅ `GET /v1/organizations/{organizationId}/usageCost` — `useOrganizationUsageCost`
+
+### Organization activities
+
+- ✅ `GET /v1/organizations/{organizationId}/activities` — `useOrganizationActivities`
+- ✅ `GET /v1/organizations/{organizationId}/activities/{activityId}` — `useOrganizationActivity`
+
+### Prometheus (text responses)
+
+- ✅ `GET /v1/organizations/{organizationId}/prometheus` — `useOrganizationPrometheusMetrics`
+- ✅ `GET /v1/organizations/{organizationId}/services/{serviceId}/prometheus` — `useServicePrometheusMetrics`
 
 ### Services
 
-- `useServices(organizationId, config)` - Manage services
-- (Additional service hooks to be documented)
-
-### API Keys
-
-- `useApiKeys(organizationId, config)` - Manage API keys
-- (Additional API key hooks to be documented)
+- ✅ `GET /v1/organizations/{organizationId}/services` — `useServices`
+- ✅ `POST /v1/organizations/{organizationId}/services` — `useCreateService`
+- ✅ `GET /v1/organizations/{organizationId}/services/{serviceId}` — `useService`
+- ✅ `PATCH /v1/organizations/{organizationId}/services/{serviceId}` — `useUpdateService`
+- ✅ `DELETE /v1/organizations/{organizationId}/services/{serviceId}` — `useDeleteService`
+- ✅ `GET /v1/organizations/{organizationId}/services/{serviceId}/privateEndpointConfig` — `useServicePrivateEndpointConfig`
+- ✅ `GET|POST|DELETE /serviceQueryEndpoint` — `useServiceQueryEndpoint` (query + create + delete in one hook)
+- ✅ `PATCH /services/{serviceId}/state` — `useServiceState`
+- ✅ `PATCH /services/{serviceId}/scaling` — `useServiceScaling` (total memory / idle scaling)
+- ✅ `PATCH /services/{serviceId}/replicaScaling` — `useServiceReplicaScaling` (per-replica memory / idle scaling)
+- ✅ `PATCH /services/{serviceId}/password` — `useServicePassword`
+- ✅ `POST /services/{serviceId}/privateEndpoint` — `useCreateServicePrivateEndpoint`
 
 ### Backups
 
-- `useBackups(organizationId, serviceId, config)` - Manage backups
-- (Additional backup hooks to be documented)
+- ✅ `GET /services/{serviceId}/backups` — `useServiceBackups`
+- ✅ `GET /services/{serviceId}/backups/{backupId}` — `useServiceBackup`
+- ✅ `DELETE /services/{serviceId}/backups/{backupId}` — `useDeleteServiceBackup`
+- ✅ `GET /services/{serviceId}/backupConfiguration` — `useServiceBackupConfiguration`
+- ✅ `PATCH /services/{serviceId}/backupConfiguration` — `useUpdateServiceBackupConfiguration`
+
+### API Keys
+
+- ✅ `GET /v1/organizations/{organizationId}/keys` — `useApiKeys`
+- ✅ `POST /v1/organizations/{organizationId}/keys` — `useCreateApiKey`
+- ✅ `GET /v1/organizations/{organizationId}/keys/{keyId}` — `useApiKey`
+- ✅ `PATCH /v1/organizations/{organizationId}/keys/{keyId}` — `useUpdateApiKey`
+- ✅ `DELETE /v1/organizations/{organizationId}/keys/{keyId}` — `useDeleteApiKey`
+
+### Invitations (org)
+
+- ✅ `GET /v1/organizations/{organizationId}/invitations` — `useInvitations` / `useOrganizationInvitations`
+- ✅ `POST /v1/organizations/{organizationId}/invitations` — `useCreateInvitation` / `useCreateOrganizationInvitation`
+- ✅ `GET /v1/organizations/{organizationId}/invitations/{invitationId}` — `useInvitation` / `useOrganizationInvitation`
+- ✅ `DELETE /v1/organizations/{organizationId}/invitations/{invitationId}` — `useDeleteInvitation` / `useDeleteOrganizationInvitation`
+
+### User management (members)
+
+- ✅ `GET /v1/organizations/{organizationId}/members` — `useOrganizationMembers`
+- ✅ `GET /v1/organizations/{organizationId}/members/{userId}` — `useOrganizationMember`
+- ✅ `PATCH /v1/organizations/{organizationId}/members/{userId}` — `useUpdateOrganizationMember`
+- ✅ `DELETE /v1/organizations/{organizationId}/members/{userId}` — `useDeleteOrganizationMember`
 
 ### ClickPipes
 
-- `useClickpipes(organizationId, serviceId, config)` - Manage ClickPipes
-- (Additional ClickPipe hooks to be documented)
+- ✅ `GET /services/{serviceId}/clickpipes` — `useClickpipes`
+- ✅ `POST /services/{serviceId}/clickpipes` — `useCreateClickpipe`
+- ✅ `GET /services/{serviceId}/clickpipes/{clickPipeId}` — `useClickpipe`
+- ✅ `PATCH /services/{serviceId}/clickpipes/{clickPipeId}` — `useUpdateClickpipe`
+- ✅ `DELETE /services/{serviceId}/clickpipes/{clickPipeId}` — `useDeleteClickpipe`
+- ✅ `PATCH /clickpipes/{clickPipeId}/scaling` — `useClickpipeScaling`
+- ✅ `PATCH /clickpipes/{clickPipeId}/state` — `useClickpipeState`
 
-### User Management
+### ClickPipes Reverse Private Endpoints
 
-- `useUserManagement(organizationId, config)` - Manage users and roles
-- (Additional user management hooks to be documented)
+- ✅ `GET /clickpipesReversePrivateEndpoints` — `useClickpipesReversePrivateEndpoints`
+- ✅ `POST /clickpipesReversePrivateEndpoints` — `useCreateClickpipesReversePrivateEndpoint`
+- ✅ `GET /clickpipesReversePrivateEndpoints/{endpointId}` — `useClickpipesReversePrivateEndpoint`
+- ✅ `DELETE /clickpipesReversePrivateEndpoints/{endpointId}` — `useDeleteClickpipesReversePrivateEndpoint`
 
-## Configuration
+---
 
-### ClickHouse Config
+## Available hooks (by module)
 
-```typescript
-type ClickHouseConfig = {
-  keyId: string; // Your ClickHouse API Key ID
-  keySecret: string; // Your ClickHouse API Key Secret
-  baseUrl?: string; // Optional: Custom API base URL (defaults to https://api.clickhouse.cloud)
-};
+### Organizations
+
+- `useOrganizations(config)`
+- `useOrganization(organizationId, config)`
+- `useUpdateOrganization(organizationId, config)`
+- `useOrganizationActivities(organizationId, config, { fromDate?, toDate? })`
+- `useOrganizationActivity(organizationId, activityId, config)`
+- `useOrganizationUsageCost(organizationId, config, { startDate?, endDate? })`
+- `useOrganizationPrivateEndpointConfig(organizationId, config, { cloudProvider?, region? })`
+
+### Services
+
+- `useServices(organizationId, config)`
+- `useService(organizationId, serviceId, config)`
+- `useCreateService(organizationId, config)` → `{ createService(body) }`
+- `useUpdateService(organizationId, serviceId, config)` → `{ updateService(body) }`
+- `useDeleteService(organizationId, serviceId, config)` → `{ deleteService() }`
+- `useServiceState(organizationId, serviceId, config)` → `{ updateServiceState(body) }`
+- `useServiceScaling(organizationId, serviceId, config)` → `{ updateServiceScaling(body) }`
+- `useServiceReplicaScaling(organizationId, serviceId, config)` → `{ updateServiceScaling(body) }`
+- `useServicePassword(organizationId, serviceId, config)` → `{ updateServicePassword({ newPassword }) }`
+- `useServicePrivateEndpointConfig(organizationId, serviceId, config)`
+- `useServiceQueryEndpoint(organizationId, serviceId, config)` → `{ data, createQueryEndpoint(body), deleteQueryEndpoint() }`
+- `useServicePrometheus(organizationId, serviceId, config, { filteredMetrics? })`
+
+### Backups
+
+- `useServiceBackups(organizationId, serviceId, config)`
+- `useServiceBackup(organizationId, serviceId, backupId, config)`
+- `useServiceBackupConfiguration(organizationId, serviceId, config)`
+- `useUpdateServiceBackupConfiguration(organizationId, serviceId, config)` → `{ updateBackupConfiguration(body) }`
+- `useDeleteServiceBackup(organizationId, serviceId, backupId, config)` → `{ deleteBackup() }`
+
+### API Keys
+
+- `useApiKeys(organizationId, config)`
+- `useApiKey(organizationId, keyId, config)`
+- `useCreateApiKey(organizationId, config)` → `{ createApiKey(body) }`
+- `useUpdateApiKey(organizationId, keyId, config)` → `{ updateApiKey(body) }`
+- `useDeleteApiKey(organizationId, keyId, config)` → `{ deleteApiKey() }`
+
+### Invitations (org)
+
+- `useInvitations(organizationId, config)` / `useOrganizationInvitations(...)`
+- `useInvitation(organizationId, invitationId, config)` / `useOrganizationInvitation(...)`
+- `useCreateInvitation(organizationId, config)` / `useCreateOrganizationInvitation(...)`
+- `useDeleteInvitation(organizationId, invitationId, config)` / `useDeleteOrganizationInvitation(...)`
+
+### User management (members)
+
+- `useOrganizationMembers(organizationId, config)`
+- `useOrganizationMember(organizationId, userId, config)`
+- `useUpdateOrganizationMember(organizationId, userId, config)` → `{ updateMember(body) }`
+- `useDeleteOrganizationMember(organizationId, userId, config)` → `{ deleteMember() }`
+
+### ClickPipes
+
+- `useClickpipes(organizationId, serviceId, config)`
+- `useClickpipe(organizationId, serviceId, clickPipeId, config)`
+- `useCreateClickpipe(organizationId, serviceId, config)` → `{ createClickpipe(body) }`
+- `useUpdateClickpipe(organizationId, serviceId, clickPipeId, config)` → `{ updateClickpipe(body) }`
+- `useDeleteClickpipe(organizationId, serviceId, clickPipeId, config)` → `{ deleteClickpipe() }`
+- `useClickpipeScaling(organizationId, serviceId, clickPipeId, config)` → `{ updateClickpipeScaling(body) }`
+- `useClickpipeState(organizationId, serviceId, clickPipeId, config)` → `{ updateClickpipeState(body) }`
+
+### ClickPipes Reverse Private Endpoints
+
+- `useClickpipesReversePrivateEndpoints(organizationId, serviceId, config)`
+- `useClickpipesReversePrivateEndpoint(organizationId, serviceId, endpointId, config)`
+- `useCreateClickpipesReversePrivateEndpoint(organizationId, serviceId, config)` → `{ createReversePrivateEndpoint(body) }`
+- `useDeleteClickpipesReversePrivateEndpoint(organizationId, serviceId, endpointId, config)` → `{ deleteReversePrivateEndpoint() }`
+
+### Prometheus (text)
+
+- `useOrganizationPrometheusMetrics(organizationId, config, filteredMetrics?)`
+- `useServicePrometheusMetrics(organizationId, serviceId, config, filteredMetrics?)`
+
+---
+
+## Error handling & validation
+
+- **Validation**: When a Zod schema is wired for an endpoint, responses are parsed:
+
+  - If validation **succeeds**, `data` is `response.result` (typed).
+  - If validation **fails**, the hook **logs a warning** and returns the unvalidated data (fallback).
+
+- **Errors**:
+
+  - Most hooks use an internal fetcher (`authedJson`) and will throw a **plain `Error`** with the server’s message on non-2xx.
+  - The lower-level `useClickHouseSWR` wrapper (exported) uses a different fetcher that may throw a `ClickHouseAPIError` when the server returns a structured error.
+
+- **SWR**:
+
+  - All hooks return `{ data, error, isLoading, isValidating, mutate }` (when applicable).
+  - Mutations trigger **cache invalidation** for relevant keys automatically.
+
+---
+
+## Extra: Prometheus example (text endpoint)
+
+```tsx
+import { useServicePrometheusMetrics } from "clickhouse-cloud-react-hooks";
+
+function Prom({ orgId, serviceId }: { orgId: string; serviceId: string }) {
+  const cfg = { keyId: "...", keySecret: "..." };
+  const { data, error, isLoading } = useServicePrometheusMetrics(
+    orgId,
+    serviceId,
+    cfg,
+    true // filteredMetrics
+  );
+
+  if (isLoading) return <pre>Loading…</pre>;
+  if (error) return <pre>Error: {(error as Error).message}</pre>;
+
+  return <pre>{data}</pre>; // plain text exposition format
+}
 ```
+
+---
+
+## Types & schemas
+
+Everything in `src/schemas/schemas.ts` is exported, including:
+
+- **Entity types** (e.g., `Organization`, `Service`, `ClickPipe`, `Backup`, …)
+- **Response types** (e.g., `OrganizationResponse`, `ServicesResponse`, …)
+- **Request types** for mutations (e.g., `InvitationPostRequest`, `MemberPatchRequest`, …)
+- **Schemas** themselves (Zod objects) if you need them downstream
+
+---
 
 ## Development
 
-To run the example application:
-
 ```bash
-# Install dependencies
+# Install deps
 yarn
 
-# Navigate to the example directory
-cd example
-
-# Install example dependencies
-yarn
-
-# Start the development server
-yarn dev
+# Run tests (Vitest)
+yarn test
 ```
 
-## Contributing
+The library lives under `src/` and has comprehensive tests in `src/hooks/tests/`.
+If you add a new endpoint, prefer using the internal meta-factory (`createResourceHooks`) for consistency and automatic invalidation.
+
+### Contributing
 
 Contributions are welcome! Please:
 
 1. Fork the repository
 2. Create a feature branch
-3. Add tests for new functionality
-4. Ensure all existing tests pass
+3. Add tests
+4. Ensure all tests pass (`yarn test`)
 5. Submit a pull request
 
 ## License
