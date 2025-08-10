@@ -6,6 +6,7 @@ import OrganizationListPage from "./pages/OrganizationListPage";
 import ConfigurationPage from "./pages/ConfigurationPage";
 import OrganizationDetailsPage from "./pages/OrganizationDetailsPage";
 import ActivityDetailsPage from "./pages/ActivityDetailsPage";
+import ServiceDetailsPage from "./pages/ServiceDetailsPage";
 
 function App() {
   return (
@@ -27,6 +28,10 @@ function App() {
             <Route
               path="/org/:id/activities/:activityId"
               element={<ActivityDetailsPage />}
+            />
+            <Route
+              path="/org/:orgId/service/:serviceId"
+              element={<ServiceDetailsPage />}
             />
           </Routes>
         </main>
