@@ -1,11 +1,13 @@
-
-
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import OrganizationListPage from "./pages/OrganizationListPage";
 import ConfigurationPage from "./pages/ConfigurationPage";
 import OrganizationDetailsPage from "./pages/OrganizationDetailsPage";
 import ClickpipesPage from "./pages/ClickpipesPage";
+import ActivityDetailsPage from "./pages/ActivityDetailsPage";
+import ServiceDetailsPage from "./pages/ServiceDetailsPage";
+import ServiceBackupsPage from "./pages/ServiceBackupsPage";
+import ReversePrivateEndpointsPage from "./pages/ReversePrivateEndpointsPage";
 
 function App() {
   return (
@@ -20,7 +22,10 @@ function App() {
           <Link to="/clickpipes" style={{ marginRight: "1rem" }}>
             ClickPipes
           </Link>
-          <Link to="/config">Configuration</Link>
+          <Link to="/config" style={{ marginRight: "1rem" }}>
+            Configuration
+          </Link>
+          <Link to="/reverse-private-endpoints">Reverse Private Endpoints</Link>
         </nav>
         <main>
           <Routes>
@@ -28,6 +33,22 @@ function App() {
             <Route path="/config" element={<ConfigurationPage />} />
             <Route path="/clickpipes" element={<ClickpipesPage />} />
             <Route path="/org/:id" element={<OrganizationDetailsPage />} />
+            <Route
+              path="/org/:id/service/:serviceId/backups"
+              element={<ServiceBackupsPage />}
+            />
+            <Route
+              path="/org/:id/activities/:activityId"
+              element={<ActivityDetailsPage />}
+            />
+            <Route
+              path="/org/:orgId/service/:serviceId"
+              element={<ServiceDetailsPage />}
+            />
+            <Route
+              path="/reverse-private-endpoints"
+              element={<ReversePrivateEndpointsPage />}
+            />
           </Routes>
         </main>
       </div>

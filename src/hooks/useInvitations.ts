@@ -1,23 +1,33 @@
-import useSWR from "swr";
-import { fetcher } from "../api/fetcher";
+import {
+  ClickHouseBaseResponseSchema,
+  InvitationResponseSchema,
+  InvitationsResponseSchema,
+  type InvitationResponse,
+  type InvitationsResponse,
+  type Invitation,
+  type InvitationPostRequest,
+} from "../schemas/schemas";
 import type { ClickHouseConfig } from "../api/fetcher";
+import { useClickHouseSWR } from "./useClickHouseSWR";
 
 export function useInvitations(
   organizationId: string,
   config: ClickHouseConfig
 ) {
-  const { data, error, isLoading } = useSWR(
-    [`/v1/organizations/${organizationId}/invitations`, config],
-    ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
+  return useClickHouseSWR<InvitationsResponse>(
+    `/v1/organizations/${organizationId}/invitations`,
+    config,
+    InvitationsResponseSchema
   );
-  return { data, error, isLoading };
 }
 
 export function useCreateInvitation(
   organizationId: string,
   config: ClickHouseConfig
 ) {
-  const createInvitation = async (invitationData: unknown) => {
+  const createInvitation = async (
+    invitationData: InvitationPostRequest
+  ): Promise<Invitation> => {
     const {
       keyId,
       keySecret,
@@ -36,8 +46,11 @@ export function useCreateInvitation(
       }
     );
     if (!response.ok) throw new Error(await response.text());
-    return response.json();
+    const responseData = await response.json();
+    const validated = InvitationResponseSchema.parse(responseData);
+    return validated.result;
   };
+
   return { createInvitation };
 }
 
@@ -46,11 +59,11 @@ export function useInvitation(
   invitationId: string,
   config: ClickHouseConfig
 ) {
-  const { data, error, isLoading } = useSWR(
-    [`/v1/organizations/${organizationId}/invitations/${invitationId}`, config],
-    ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
+  return useClickHouseSWR<InvitationResponse>(
+    `/v1/organizations/${organizationId}/invitations/${invitationId}`,
+    config,
+    InvitationResponseSchema
   );
-  return { data, error, isLoading };
 }
 
 export function useDeleteInvitation(
@@ -59,11 +72,7 @@ export function useDeleteInvitation(
   config: ClickHouseConfig
 ) {
   const deleteInvitation = async () => {
-    const {
-      keyId,
-      keySecret,
-      baseUrl = "https://api.clickhouse.cloud",
-    } = config;
+    const { keyId, keySecret, baseUrl = "https://api.clickhouse.cloud" } = config;
     const auth = btoa(`${keyId}:${keySecret}`);
     const response = await fetch(
       `${baseUrl}/v1/organizations/${organizationId}/invitations/${invitationId}`,
@@ -76,7 +85,10 @@ export function useDeleteInvitation(
       }
     );
     if (!response.ok) throw new Error(await response.text());
-    return response.json();
+    const responseData = await response.json();
+    const validated = ClickHouseBaseResponseSchema.parse(responseData);
+    return validated;
   };
+
   return { deleteInvitation };
 }
