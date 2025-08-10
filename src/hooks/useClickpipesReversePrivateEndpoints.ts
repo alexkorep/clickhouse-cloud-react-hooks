@@ -30,8 +30,7 @@ export function useCreateClickpipesReversePrivateEndpoint(
   const createReversePrivateEndpoint = async (
     endpointData: CreateReversePrivateEndpoint
   ): Promise<ReversePrivateEndpoint> => {
-    const { keyId, keySecret, baseUrl = "https://api.clickhouse.cloud" } =
-      config;
+    const { keyId, keySecret, baseUrl = "https://api.clickhouse.cloud" } = config;
     const auth = btoa(`${keyId}:${keySecret}`);
     const response = await fetch(
       `${baseUrl}/v1/organizations/${organizationId}/services/${serviceId}/clickpipesReversePrivateEndpoints`,
@@ -72,8 +71,7 @@ export function useDeleteClickpipesReversePrivateEndpoint(
   config: ClickHouseConfig
 ) {
   const deleteReversePrivateEndpoint = async () => {
-    const { keyId, keySecret, baseUrl = "https://api.clickhouse.cloud" } =
-      config;
+    const { keyId, keySecret, baseUrl = "https://api.clickhouse.cloud" } = config;
     const auth = btoa(`${keyId}:${keySecret}`);
     const response = await fetch(
       `${baseUrl}/v1/organizations/${organizationId}/services/${serviceId}/clickpipesReversePrivateEndpoints/${reversePrivateEndpointId}`,

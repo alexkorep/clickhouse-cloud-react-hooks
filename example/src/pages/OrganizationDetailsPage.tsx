@@ -5,6 +5,8 @@ import { useParams, Link } from "react-router-dom";
 import {
   useOrganization,
   useUpdateOrganization,
+  useServices,
+  useCreateService,
   useOrganizationPrometheusMetrics,
   useServicePrometheusMetrics,
   useApiKeys,
@@ -22,6 +24,8 @@ import {
   useDeleteOrganizationInvitation,
   type Member,
   type Invitation,
+  useOrganizationActivities,
+  type Activity,
 } from "clickhouse-cloud-react-hooks";
 import { useAtomValue } from "jotai";
 import { configAtom } from "../configAtoms";
@@ -65,11 +69,35 @@ const OrganizationDetailsPage: React.FC = () => {
     data: organization,
     error: orgError,
     isLoading: orgLoading,
-    isValidating,
-    mutate,
-  } = useOrganization(id || "", config || { keyId: "", keySecret: "" });
+  isValidating,
+  mutate,
+} = useOrganization(id || "", config || { keyId: "", keySecret: "" });
+
+  const {
+    data: activities,
+    error: activitiesError,
+    isLoading: activitiesLoading,
+    isValidating: activitiesValidating,
+    mutate: refreshActivities,
+  } = useOrganizationActivities(
+    id || "",
+    config || { keyId: "", keySecret: "" }
+  );
 
   const { updateOrganization } = useUpdateOrganization(
+    id || "",
+    config || { keyId: "", keySecret: "" }
+  );
+
+  const {
+    data: services,
+    error: servicesError,
+    isLoading: servicesLoading,
+    isValidating: servicesValidating,
+    mutate: servicesMutate,
+  } = useServices(id || "", config || { keyId: "", keySecret: "" });
+
+  const { createService } = useCreateService(
     id || "",
     config || { keyId: "", keySecret: "" }
   );
@@ -227,6 +255,14 @@ const OrganizationDetailsPage: React.FC = () => {
       </li>
     );
   } 
+
+  const [newServiceName, setNewServiceName] = useState("");
+  const [newServiceProvider, setNewServiceProvider] = useState("");
+  const [newServiceRegion, setNewServiceRegion] = useState("");
+  const [newServiceTier, setNewServiceTier] = useState("");
+  const [createServiceError, setCreateServiceError] = useState<string | null>(
+    null
+  );
   // State for creating API keys
   const [newKeyName, setNewKeyName] = useState("");
   const [newKeyRoles, setNewKeyRoles] = useState("developer");
@@ -583,10 +619,149 @@ const OrganizationDetailsPage: React.FC = () => {
         )}
       </div>
       <div>
-        <h3>Organization Prometheus Metrics</h3>
-        <label>
-          <input
-            type="checkbox"
+        <h3>Activities</h3>
+        <button
+          onClick={() => refreshActivities()}
+          className="refresh-button"
+          style={{ marginBottom: "1em" }}
+          disabled={activitiesValidating}
+        >
+          {activitiesValidating ? "Loading..." : "Refresh"}
+        </button>
+        {activitiesLoading ? (
+          <div>Loading activities...</div>
+        ) : activitiesError ? (
+          <div className="error">
+            {activitiesError instanceof ClickHouseAPIError ? (
+              <div>
+                <strong>ClickHouse API Error:</strong> {activitiesError.error}
+                <br />
+                <small>Status: {activitiesError.status}</small>
+              </div>
+            ) : (
+              <div>Error: {activitiesError.message}</div>
+            )}
+          </div>
+        ) : activities && activities.length > 0 ? (
+            <ul>
+              {activities.map((act: Activity) => (
+                <li key={act.id}>
+                  <Link to={`/org/${id}/activities/${act.id}`}>
+                    {act.type} - {new Date(act.createdAt).toLocaleString()}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div>No activities found</div>
+          )}
+        </div>
+        <section className="mt-1">
+          <h3>Services</h3>
+          <button
+            onClick={() => servicesMutate()}
+            className="refresh-button mb-1"
+            disabled={servicesValidating}
+          >
+            {servicesValidating ? "Loading..." : "Refresh"}
+          </button>
+          {servicesLoading ? (
+            <div>Loading services...</div>
+          ) : servicesError ? (
+            <div className="error">
+              {servicesError instanceof ClickHouseAPIError
+                ? servicesError.error
+                : String(servicesError)}
+            </div>
+          ) : services && services.length > 0 ? (
+            <ul>
+              {services.map((svc) => (
+                <li key={svc.id}>
+                  <Link to={`/org/${id}/service/${svc.id}`}>{svc.name}</Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div>No services found</div>
+          )}
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              setCreateServiceError(null);
+              try {
+                await createService({
+                  name: newServiceName,
+                  provider: newServiceProvider,
+                  region: newServiceRegion,
+                  tier: newServiceTier,
+                });
+                setNewServiceName("");
+                setNewServiceProvider("");
+                setNewServiceRegion("");
+                setNewServiceTier("");
+                servicesMutate();
+              } catch (err: unknown) {
+                setCreateServiceError(
+                  err && typeof err === "object" && "message" in err
+                    ? String((err as { message?: unknown }).message)
+                    : "Failed to create service"
+                );
+              }
+            }}
+            className="mt-1"
+          >
+            <h4>Create Service</h4>
+            <div>
+              <input
+                type="text"
+                placeholder="Name"
+                value={newServiceName}
+                onChange={(e) => setNewServiceName(e.target.value)}
+                className="mr-05"
+              />
+              <input
+                type="text"
+                placeholder="Provider"
+                value={newServiceProvider}
+                onChange={(e) => setNewServiceProvider(e.target.value)}
+                className="mr-05"
+              />
+              <input
+                type="text"
+                placeholder="Region"
+                value={newServiceRegion}
+                onChange={(e) => setNewServiceRegion(e.target.value)}
+                className="mr-05"
+              />
+              <input
+                type="text"
+                placeholder="Tier"
+                value={newServiceTier}
+                onChange={(e) => setNewServiceTier(e.target.value)}
+                className="mr-05"
+              />
+              <button
+                type="submit"
+                disabled={
+                  !newServiceName ||
+                  !newServiceProvider ||
+                  !newServiceRegion ||
+                  !newServiceTier
+                }
+              >
+                Create
+              </button>
+            </div>
+            {createServiceError && (
+              <div className="error mt-05">Error: {createServiceError}</div>
+            )}
+          </form>
+        </section>
+        <div>
+          <h3>Organization Prometheus Metrics</h3>
+          <label>
+            <input
+              type="checkbox"
             checked={filterOrgMetrics}
             onChange={(e) => setFilterOrgMetrics(e.target.checked)}
             style={{ marginRight: "0.5em" }}
