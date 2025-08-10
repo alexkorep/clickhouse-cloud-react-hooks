@@ -133,6 +133,39 @@ export const ActivitySchema = z.object({
   serviceId: z.string().optional(),
 });
 
+// Backup schemas
+export const BackupConfigurationSchema = z.object({
+  backupPeriodInHours: z.number().optional(),
+  backupRetentionPeriodInHours: z.number().optional(),
+  backupStartTime: z.string().optional(),
+});
+
+export const BackupSchema = z.object({
+  id: z.string(),
+  status: z.enum(["done", "error", "in_progress"]),
+  serviceId: z.string(),
+  startedAt: z.string().datetime(),
+  finishedAt: z.string().datetime().optional(),
+  sizeInBytes: z.number().optional(),
+  durationInSeconds: z.number().optional(),
+  type: z.enum(["full", "incremental"]),
+  backupName: z.string().optional(),
+  bucket: z.any().optional(),
+});
+
+export const BackupsResponseSchema = ClickHouseBaseResponseSchema.extend({
+  result: z.array(BackupSchema),
+});
+
+export const BackupResponseSchema = ClickHouseBaseResponseSchema.extend({
+  result: BackupSchema,
+});
+
+export const BackupConfigurationResponseSchema =
+  ClickHouseBaseResponseSchema.extend({
+    result: BackupConfigurationSchema,
+  });
+
 // API Key schemas
 export const IpAccessListEntrySchema = z.object({
   source: z.string(),
@@ -332,6 +365,8 @@ export type ByocConfig = z.infer<typeof ByocConfigSchema>;
 export type OrganizationCloudRegionPrivateEndpointConfig = z.infer<
   typeof OrganizationCloudRegionPrivateEndpointConfigSchema
 >;
+export type BackupConfiguration = z.infer<typeof BackupConfigurationSchema>;
+export type Backup = z.infer<typeof BackupSchema>;
 export type CreateReversePrivateEndpoint = z.infer<
   typeof CreateReversePrivateEndpointSchema
 >;
@@ -350,6 +385,11 @@ export type ActivityResponse = z.infer<typeof ActivityResponseSchema>;
 export type UsageCostResponse = z.infer<typeof UsageCostResponseSchema>;
 export type PrivateEndpointConfigResponse = z.infer<
   typeof PrivateEndpointConfigResponseSchema
+>;
+export type BackupsResponse = z.infer<typeof BackupsResponseSchema>;
+export type BackupResponse = z.infer<typeof BackupResponseSchema>;
+export type BackupConfigurationResponse = z.infer<
+  typeof BackupConfigurationResponseSchema
 >;
 export type ClickHouseErrorResponse = z.infer<
   typeof ClickHouseErrorResponseSchema

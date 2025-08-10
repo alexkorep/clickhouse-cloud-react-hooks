@@ -5,6 +5,7 @@ import ConfigurationPage from "./pages/ConfigurationPage";
 import OrganizationDetailsPage from "./pages/OrganizationDetailsPage";
 import ActivityDetailsPage from "./pages/ActivityDetailsPage";
 import ServiceDetailsPage from "./pages/ServiceDetailsPage";
+import ServiceBackupsPage from "./pages/ServiceBackupsPage";
 import ReversePrivateEndpointsPage from "./pages/ReversePrivateEndpointsPage";
 
 function App() {
@@ -16,7 +17,9 @@ function App() {
           <p>This example demonstrates ClickHouse Cloud API responses.</p>
         </header>
         <nav style={{ padding: "1rem", borderBottom: "1px solid #eee" }}>
-          <Link to="/" style={{ marginRight: "1rem" }}>Organizations</Link>
+          <Link to="/" style={{ marginRight: "1rem" }}>
+            Organizations
+          </Link>
           <Link to="/config" style={{ marginRight: "1rem" }}>
             Configuration
           </Link>
@@ -27,6 +30,10 @@ function App() {
             <Route path="/" element={<OrganizationListPage />} />
             <Route path="/config" element={<ConfigurationPage />} />
             <Route path="/org/:id" element={<OrganizationDetailsPage />} />
+            <Route
+              path="/org/:id/service/:serviceId/backups"
+              element={<ServiceBackupsPage />}
+            />
             <Route
               path="/org/:id/activities/:activityId"
               element={<ActivityDetailsPage />}
