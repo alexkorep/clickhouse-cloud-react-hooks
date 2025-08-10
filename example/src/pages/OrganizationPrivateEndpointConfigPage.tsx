@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "../App.css";
 import { useParams, Link } from "react-router-dom";
 import {
   useOrganizationPrivateEndpointConfig,
@@ -37,34 +36,34 @@ const OrganizationPrivateEndpointConfigPage: React.FC = () => {
   }
 
   return (
-    <section className="private-endpoint-config-section">
-      <h2>Private Endpoint Config</h2>
+    <section className="space-y-4">
+      <h2 className="text-2xl font-bold">Private Endpoint Config</h2>
       <form
         onSubmit={(e) => {
           e.preventDefault();
           mutate();
         }}
-        className="form-inline"
+        className="flex flex-wrap items-center gap-4 mb-4"
       >
-        <label>
+        <label className="flex items-center">
           Cloud Provider:
           <input
             type="text"
             value={cloudProvider}
             onChange={(e) => setCloudProvider(e.target.value)}
-            className="input-inline"
+            className="input ml-2 mr-4"
           />
         </label>
-        <label>
+        <label className="flex items-center">
           Region:
           <input
             type="text"
             value={region}
             onChange={(e) => setRegion(e.target.value)}
-            className="input-inline"
+            className="input ml-2 mr-4"
           />
         </label>
-        <button type="submit" disabled={isValidating}>
+        <button type="submit" disabled={isValidating} className="btn">
           {isValidating ? "Loading..." : "Refresh"}
         </button>
       </form>
@@ -91,8 +90,10 @@ const OrganizationPrivateEndpointConfigPage: React.FC = () => {
       ) : (
         <div>No data</div>
       )}
-      <p className="back-link">
-        <Link to={`/org/${id}`}>Back to details</Link>
+      <p className="mt-4">
+        <Link to={`/org/${id}`} className="text-blue-600 hover:underline">
+          Back to details
+        </Link>
       </p>
     </section>
   );

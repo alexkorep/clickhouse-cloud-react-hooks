@@ -83,28 +83,30 @@ const ClickpipesPage: React.FC = () => {
   };
 
   return (
-    <section>
-      <h2>ClickPipes</h2>
-      <div style={{ marginBottom: "1em" }}>
-        <label>
+    <section className="space-y-4">
+      <h2 className="text-2xl font-bold">ClickPipes</h2>
+      <div className="mb-4">
+        <label className="mr-4">
           Organization ID:{" "}
           <input
             value={organizationId}
             onChange={(e) => setOrganizationId(e.target.value)}
+            className="input ml-2"
           />
         </label>
-        <label style={{ marginLeft: "1em" }}>
+        <label className="ml-4">
           Service ID:{" "}
           <input
             value={serviceId}
             onChange={(e) => setServiceId(e.target.value)}
+            className="input ml-2"
           />
         </label>
       </div>
       <button
         onClick={() => list.mutate()}
         disabled={list.isLoading}
-        style={{ marginBottom: "1em" }}
+        className="btn mb-4"
       >
         {list.isLoading ? "Loading..." : "Load ClickPipes"}
       </button>
@@ -121,63 +123,66 @@ const ClickpipesPage: React.FC = () => {
         </ul>
       )}
       <hr />
-      <div style={{ marginBottom: "1em" }}>
+      <div className="mb-4">
         <label>
           ClickPipe ID:{" "}
           <input
             value={clickPipeId}
             onChange={(e) => setClickPipeId(e.target.value)}
+            className="input ml-2"
           />
         </label>
       </div>
       <div>
-        <h3>Create ClickPipe</h3>
+        <h3 className="text-xl font-semibold">Create ClickPipe</h3>
         <textarea
           value={createData}
           onChange={(e) => setCreateData(e.target.value)}
           rows={4}
-          style={{ width: "100%" }}
+          className="w-full border rounded p-2"
         />
         <button
           onClick={() =>
             handle(() => createClickpipe(JSON.parse(createData)), "Created")
           }
-          style={{ marginTop: "0.5em" }}
+          className="btn mt-2"
         >
           Create
         </button>
       </div>
       <div>
-          <h3>Update ClickPipe</h3>
-          <textarea
-            value={updateData}
-            onChange={(e) => setUpdateData(e.target.value)}
-            rows={4}
-            style={{ width: "100%" }}
-          />
-          <button
-            onClick={() =>
-              handle(
-                () => updateClickpipe(JSON.parse(updateData)),
-                "Updated"
-              )
-            }
-            style={{ marginTop: "0.5em" }}
-          >
-            Update
-          </button>
+        <h3 className="text-xl font-semibold">Update ClickPipe</h3>
+        <textarea
+          value={updateData}
+          onChange={(e) => setUpdateData(e.target.value)}
+          rows={4}
+          className="w-full border rounded p-2"
+        />
+        <button
+          onClick={() =>
+            handle(
+              () => updateClickpipe(JSON.parse(updateData)),
+              "Updated"
+            )
+          }
+          className="btn mt-2"
+        >
+          Update
+        </button>
       </div>
       <div>
-        <h3>Delete ClickPipe</h3>
-        <button onClick={() => handle(deleteClickpipe, "Deleted")}>Delete</button>
+        <h3 className="text-xl font-semibold">Delete ClickPipe</h3>
+        <button onClick={() => handle(deleteClickpipe, "Deleted")} className="btn">
+          Delete
+        </button>
       </div>
       <div>
-        <h3>Update Scaling</h3>
+        <h3 className="text-xl font-semibold">Update Scaling</h3>
         <textarea
           value={scalingData}
           onChange={(e) => setScalingData(e.target.value)}
           rows={4}
-          style={{ width: "100%" }}
+          className="w-full border rounded p-2"
         />
         <button
           onClick={() =>
@@ -186,18 +191,19 @@ const ClickpipesPage: React.FC = () => {
               "Scaling Updated"
             )
           }
-          style={{ marginTop: "0.5em" }}
+          className="btn mt-2"
         >
           Update Scaling
         </button>
       </div>
       <div>
-        <h3>Update State</h3>
+        <h3 className="text-xl font-semibold">Update State</h3>
         <select
           value={stateCommand}
           onChange={(e) =>
             setStateCommand(e.target.value as "start" | "stop" | "resync")
           }
+          className="border rounded p-2"
         >
           <option value="start">start</option>
           <option value="stop">stop</option>
@@ -210,12 +216,12 @@ const ClickpipesPage: React.FC = () => {
               "State Updated"
             )
           }
-          style={{ marginLeft: "0.5em" }}
+          className="btn ml-2"
         >
           Update State
         </button>
       </div>
-      {message && <div style={{ marginTop: "1em" }}>{message}</div>}
+      {message && <div className="mt-4">{message}</div>}
     </section>
   );
 };

@@ -8,7 +8,6 @@ import {
   useCreateClickpipesReversePrivateEndpoint,
   useDeleteClickpipesReversePrivateEndpoint,
 } from "clickhouse-cloud-react-hooks";
-import "./ReversePrivateEndpointsPage.css";
 
 const ReversePrivateEndpointsContent: React.FC<{ config: ClickHouseConfig }> = ({
   config,
@@ -60,28 +59,28 @@ const ReversePrivateEndpointsContent: React.FC<{ config: ClickHouseConfig }> = (
     );
 
   return (
-    <div className="reverse-private-endpoints-page">
-      <h2>Reverse Private Endpoints</h2>
-      <div className="rpe-section">
-        <label className="rpe-label">
+    <div className="space-y-4">
+      <h2 className="text-2xl font-bold">Reverse Private Endpoints</h2>
+      <div className="flex flex-wrap gap-4 mb-4">
+        <label className="flex items-center">
           Organization ID:
           <input
             value={organizationId}
             onChange={(e) => setOrganizationId(e.target.value)}
-            className="rpe-input"
+            className="input ml-2 mr-4"
           />
         </label>
-        <label className="rpe-label">
+        <label className="flex items-center">
           Service ID:
           <input
             value={serviceId}
             onChange={(e) => setServiceId(e.target.value)}
-            className="rpe-input"
+            className="input ml-2 mr-4"
           />
         </label>
       </div>
       <div>
-        <h3>Existing Endpoints</h3>
+        <h3 className="text-xl font-semibold">Existing Endpoints</h3>
         {listLoading && <div>Loading...</div>}
         {listError && <div className="error">Failed to load endpoints</div>}
         {endpoints && (
@@ -93,11 +92,13 @@ const ReversePrivateEndpointsContent: React.FC<{ config: ClickHouseConfig }> = (
             ))}
           </ul>
         )}
-        <button onClick={() => listMutate()}>Refresh</button>
+        <button onClick={() => listMutate()} className="btn mt-2">
+          Refresh
+        </button>
       </div>
       <hr />
       <div>
-        <h3>Create Endpoint</h3>
+        <h3 className="text-xl font-semibold">Create Endpoint</h3>
         <form
           onSubmit={async (e) => {
             e.preventDefault();
@@ -119,22 +120,22 @@ const ReversePrivateEndpointsContent: React.FC<{ config: ClickHouseConfig }> = (
           }}
         >
           <div>
-            <label>
+            <label className="flex items-center mb-2">
               Description:
               <input
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="rpe-input"
+                className="input ml-2"
               />
             </label>
           </div>
           <div>
-            <label>
+            <label className="flex items-center mb-2">
               Type:
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value as typeof type)}
-                className="rpe-input"
+                className="input ml-2"
               >
                 <option value="VPC_ENDPOINT_SERVICE">VPC_ENDPOINT_SERVICE</option>
                 <option value="VPC_RESOURCE">VPC_RESOURCE</option>
@@ -142,21 +143,25 @@ const ReversePrivateEndpointsContent: React.FC<{ config: ClickHouseConfig }> = (
               </select>
             </label>
           </div>
-          <button type="submit" className="rpe-button-margin">
+          <button type="submit" className="btn mt-2">
             Create
           </button>
         </form>
-        {createResult && <pre className="rpe-pre">{createResult}</pre>}
+        {createResult && (
+          <pre className="bg-gray-100 p-4 rounded overflow-auto mt-2">
+            {createResult}
+          </pre>
+        )}
       </div>
       <hr />
       <div>
-        <h3>Endpoint Details</h3>
-        <label>
+        <h3 className="text-xl font-semibold">Endpoint Details</h3>
+        <label className="flex items-center mb-2">
           Endpoint ID:
           <input
             value={reversePrivateEndpointId}
             onChange={(e) => setReversePrivateEndpointId(e.target.value)}
-            className="rpe-input"
+            className="input ml-2"
           />
         </label>
         <button
@@ -169,14 +174,16 @@ const ReversePrivateEndpointsContent: React.FC<{ config: ClickHouseConfig }> = (
               // ignore
             }
           }}
-          className="rpe-button-inline"
+          className="btn ml-2"
         >
           Delete
         </button>
         {endpointLoading && <div>Loading endpoint...</div>}
         {endpointError && <div className="error">Failed to load endpoint</div>}
         {endpoint && (
-          <pre className="rpe-pre">{JSON.stringify(endpoint, null, 2)}</pre>
+          <pre className="bg-gray-100 p-4 rounded overflow-auto mt-2">
+            {JSON.stringify(endpoint, null, 2)}
+          </pre>
         )}
       </div>
     </div>

@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "../App.css";
-import "./OrganizationDetailsPage.css";
 import { useParams, Link } from "react-router-dom";
 import {
   useOrganization,
@@ -160,12 +158,12 @@ const OrganizationDetailsPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     return (
       <li key={member.userId} className="mb-05">
-        <span className="mr-05">{member.email}</span>
+        <span className="mr-2">{member.email}</span>
         <select
           value={role}
           onChange={(e) => setRole(e.target.value as "admin" | "developer")}
           disabled={loading}
-          className="mr-05"
+          className="mr-2"
         >
           <option value="admin">admin</option>
           <option value="developer">developer</option>
@@ -188,7 +186,7 @@ const OrganizationDetailsPage: React.FC = () => {
             }
           }}
           disabled={loading}
-          className="mr-05"
+          className="mr-2"
         >
           {loading ? "Saving..." : "Save"}
         </button>
@@ -228,7 +226,7 @@ const OrganizationDetailsPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     return (
       <li key={invitation.id} className="mb-05">
-        <span className="mr-05">
+        <span className="mr-2">
           {invitation.email} - {invitation.role}
         </span>
         <button
@@ -425,10 +423,10 @@ const OrganizationDetailsPage: React.FC = () => {
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
               disabled={updateLoading}
-              className="mr-05"
+              className="mr-2"
             />
           ) : (
-            <span className="mr-05">{organization.name}</span>
+            <span className="mr-2">{organization.name}</span>
           )}
         </label>
         {isEditing ? (
@@ -436,7 +434,7 @@ const OrganizationDetailsPage: React.FC = () => {
             <button
               type="submit"
               disabled={updateLoading || editName.trim() === ""}
-              className="mr-05"
+              className="mr-2"
             >
               {updateLoading ? "Saving..." : "Save"}
             </button>
@@ -463,7 +461,7 @@ const OrganizationDetailsPage: React.FC = () => {
           </button>
         )}
         {updateError && (
-          <div className="error mt-05">Error: {updateError}</div>
+          <div className="error mt-2">Error: {updateError}</div>
         )}
         {updateSuccess && (
           <div className="success-message">Organization updated!</div>
@@ -556,7 +554,7 @@ const OrganizationDetailsPage: React.FC = () => {
                 onChange={(e) => setInviteEmail(e.target.value)}
                 placeholder="Email"
                 disabled={inviteLoading}
-                className="mr-05"
+                className="mr-2"
               />
               <select
                 value={inviteRole}
@@ -564,7 +562,7 @@ const OrganizationDetailsPage: React.FC = () => {
                   setInviteRole(e.target.value as "admin" | "developer")
                 }
                 disabled={inviteLoading}
-                className="mr-05"
+                className="mr-2"
               >
                 <option value="developer">developer</option>
                 <option value="admin">admin</option>
@@ -576,7 +574,7 @@ const OrganizationDetailsPage: React.FC = () => {
                 {inviteLoading ? "Inviting..." : "Invite"}
               </button>
               {inviteError && (
-                <div className="error mt-05">Error: {inviteError}</div>
+                <div className="error mt-2">Error: {inviteError}</div>
               )}
             </form>
             {!invitations || invitations.length === 0 ? (
@@ -624,7 +622,7 @@ const OrganizationDetailsPage: React.FC = () => {
         <button
           onClick={() => refreshActivities()}
           className="refresh-button"
-          style={{ marginBottom: "1em" }}
+          className="mb-4"
           disabled={activitiesValidating}
         >
           {activitiesValidating ? "Loading..." : "Refresh"}
@@ -657,7 +655,7 @@ const OrganizationDetailsPage: React.FC = () => {
           <div>No activities found</div>
         )}
       </div>
-      <section className="mt-1">
+      <section className="mt-4">
         <h3>Services</h3>
         <button
           onClick={() => servicesMutate()}
@@ -713,7 +711,7 @@ const OrganizationDetailsPage: React.FC = () => {
               );
             }
           }}
-          className="mt-1"
+          className="mt-4"
         >
           <h4>Create Service</h4>
           <div>
@@ -722,28 +720,28 @@ const OrganizationDetailsPage: React.FC = () => {
               placeholder="Name"
               value={newServiceName}
               onChange={(e) => setNewServiceName(e.target.value)}
-              className="mr-05"
+              className="mr-2"
             />
             <input
               type="text"
               placeholder="Provider"
               value={newServiceProvider}
               onChange={(e) => setNewServiceProvider(e.target.value)}
-              className="mr-05"
+              className="mr-2"
             />
             <input
               type="text"
               placeholder="Region"
               value={newServiceRegion}
               onChange={(e) => setNewServiceRegion(e.target.value)}
-              className="mr-05"
+              className="mr-2"
             />
             <input
               type="text"
               placeholder="Tier"
               value={newServiceTier}
               onChange={(e) => setNewServiceTier(e.target.value)}
-              className="mr-05"
+              className="mr-2"
             />
             <button
               type="submit"
@@ -758,7 +756,7 @@ const OrganizationDetailsPage: React.FC = () => {
             </button>
           </div>
           {createServiceError && (
-            <div className="error mt-05">Error: {createServiceError}</div>
+            <div className="error mt-2">Error: {createServiceError}</div>
           )}
         </form>
       </section>
@@ -769,7 +767,7 @@ const OrganizationDetailsPage: React.FC = () => {
             type="checkbox"
             checked={filterOrgMetrics}
             onChange={(e) => setFilterOrgMetrics(e.target.checked)}
-            style={{ marginRight: "0.5em" }}
+            className="mr-2"
           />
           Filter metrics
         </label>
@@ -792,21 +790,21 @@ const OrganizationDetailsPage: React.FC = () => {
           placeholder="Service ID"
           value={serviceIdInput}
           onChange={(e) => setServiceIdInput(e.target.value)}
-          style={{ marginRight: "0.5em" }}
+          className="mr-2"
         />
-        <label style={{ marginRight: "0.5em" }}>
+        <label className="mr-2">
           <input
             type="checkbox"
             checked={filterServiceMetrics}
             onChange={(e) => setFilterServiceMetrics(e.target.checked)}
-            style={{ marginRight: "0.25em" }}
+            className="mr-1"
           />
           Filter
         </label>
         <button
           onClick={() => setServiceId(serviceIdInput)}
           disabled={serviceIdInput.trim() === ""}
-          style={{ marginRight: "0.5em" }}
+          className="mr-2"
         >
           Load Metrics
         </button>
@@ -819,7 +817,7 @@ const OrganizationDetailsPage: React.FC = () => {
           />
         )}
       </div>
-      <div className="mt-1">
+      <div className="mt-4">
         <h3>API Keys</h3>
         {keysLoading ? (
           <div>Loading API keys...</div>
@@ -860,7 +858,7 @@ const OrganizationDetailsPage: React.FC = () => {
               setCreateLoading(false);
             }
           }}
-          className="mt-1"
+          className="mt-4"
         >
           <div>
             <input
@@ -868,14 +866,14 @@ const OrganizationDetailsPage: React.FC = () => {
               placeholder="Key name"
               value={newKeyName}
               onChange={(e) => setNewKeyName(e.target.value)}
-              className="mr-05"
+              className="mr-2"
             />
             <input
               type="text"
               placeholder="Roles (comma separated)"
               value={newKeyRoles}
               onChange={(e) => setNewKeyRoles(e.target.value)}
-              className="mr-05"
+              className="mr-2"
             />
             <button
               type="submit"
@@ -885,10 +883,10 @@ const OrganizationDetailsPage: React.FC = () => {
             </button>
           </div>
           {createError && (
-            <div className="error mt-05">Error: {createError}</div>
+            <div className="error mt-2">Error: {createError}</div>
           )}
           {createdKey && createdKey.keySecret && (
-            <div className="mt-05">
+            <div className="mt-2">
               <div>
                 <strong>Key ID:</strong> {createdKey.keyId}
               </div>

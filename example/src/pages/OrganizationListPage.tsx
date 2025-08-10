@@ -1,9 +1,12 @@
-import React from 'react';
-import { useOrganizations, ClickHouseAPIError, type Organization } from 'clickhouse-cloud-react-hooks';
-import { useAtom } from 'jotai';
-import { configAtom, keyIdAtom, keySecretAtom } from '../configAtoms';
-import "../App.css";
-import { Link } from 'react-router-dom';
+import React from "react";
+import {
+  useOrganizations,
+  ClickHouseAPIError,
+  type Organization,
+} from "clickhouse-cloud-react-hooks";
+import { useAtom } from "jotai";
+import { configAtom, keyIdAtom, keySecretAtom } from "../configAtoms";
+import { Link } from "react-router-dom";
 
 const OrganizationListPage: React.FC = () => {
   const [config] = useAtom(configAtom);
@@ -27,14 +30,10 @@ const OrganizationListPage: React.FC = () => {
   }
 
   return (
-    <section className="organizations-section">
-      <h2>Organizations</h2>
-      <button
-        onClick={() => mutate()}
-        className="refresh-button"
-        disabled={isValidating}
-      >
-        {isValidating ? 'Loading...' : 'Refresh'}
+    <section className="space-y-4">
+      <h2 className="text-2xl font-bold">Organizations</h2>
+      <button onClick={() => mutate()} className="btn" disabled={isValidating}>
+        {isValidating ? "Loading..." : "Refresh"}
       </button>
       {orgLoading ? (
         <div>Loading organizations...</div>
@@ -51,17 +50,24 @@ const OrganizationListPage: React.FC = () => {
           )}
         </div>
       ) : organizations && organizations.length > 0 ? (
-        <div>
+        <div className="space-y-4">
           {organizations.map((org: Organization) => (
-            <div key={org.id} className="organization-card">
-              <h3>{org.name}</h3>
+            <div key={org.id} className="card">
+              <h3 className="text-xl font-semibold">{org.name}</h3>
               <p>
-                <strong>ID:</strong> {org.id}
+                <span className="font-semibold">ID:</span> {org.id}
               </p>
               <p>
-                <strong>Created:</strong> {new Date(org.createdAt).toLocaleDateString()}
+                <span className="font-semibold">Created:</span> {new Date(
+                  org.createdAt
+                ).toLocaleDateString()}
               </p>
-              <Link to={`/org/${org.id}`}>Details</Link>
+              <Link
+                to={`/org/${org.id}`}
+                className="text-blue-600 hover:underline"
+              >
+                Details
+              </Link>
             </div>
           ))}
         </div>
@@ -70,12 +76,12 @@ const OrganizationListPage: React.FC = () => {
       )}
       <button
         onClick={() => {
-          setKeyId('');
-          setKeySecret('');
-          localStorage.removeItem('chc_keyId');
-          localStorage.removeItem('chc_keySecret');
+          setKeyId("");
+          setKeySecret("");
+          localStorage.removeItem("chc_keyId");
+          localStorage.removeItem("chc_keySecret");
         }}
-        className="reset-button"
+        className="btn btn-danger mt-8"
       >
         Back to start
       </button>
