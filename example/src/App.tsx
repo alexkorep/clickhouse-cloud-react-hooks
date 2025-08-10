@@ -5,6 +5,8 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import OrganizationListPage from "./pages/OrganizationListPage";
 import ConfigurationPage from "./pages/ConfigurationPage";
 import OrganizationDetailsPage from "./pages/OrganizationDetailsPage";
+import ActivityDetailsPage from "./pages/ActivityDetailsPage";
+import ServiceDetailsPage from "./pages/ServiceDetailsPage";
 import ServiceBackupsPage from "./pages/ServiceBackupsPage";
 
 function App() {
@@ -27,6 +29,14 @@ function App() {
             <Route
               path="/org/:id/service/:serviceId/backups"
               element={<ServiceBackupsPage />}
+            />
+            <Route
+              path="/org/:id/activities/:activityId"
+              element={<ActivityDetailsPage />}
+            />
+            <Route
+              path="/org/:orgId/service/:serviceId"
+              element={<ServiceDetailsPage />}
             />
           </Routes>
         </main>

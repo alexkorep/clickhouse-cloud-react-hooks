@@ -67,7 +67,9 @@ export function useUpdateOrganization(
 
     // Invalidate related cache entries
     await Promise.all([
-      `/v1/organizations:${config.baseUrl}:${config.keyId}`,
+      globalMutate(
+        `/v1/organizations:${config.baseUrl}:${config.keyId}`
+      ),
       globalMutate(
         `/v1/organizations/${organizationId}:${config.baseUrl}:${config.keyId}`
       ),
