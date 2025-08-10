@@ -22,21 +22,30 @@ type ActionSpec<TResp> = {
   asText?: boolean;
 };
 
-type ResourceSpec<TList, TItem> = {
+type ResourceSpec<
+  TList,
+  TItem,
+  TCreate = TItem,
+  TUpdate = TItem,
+  TActions extends Record<string, ActionSpec<any>> = Record<string, ActionSpec<any>>
+> = {
   list: ListSpec<TList>;
   item: ItemSpec<TItem>;
-  create?: ActionSpec<TItem>;
-  update?: ActionSpec<TItem>;
+  create?: ActionSpec<TCreate>;
+  update?: ActionSpec<TUpdate>;
   remove?: ActionSpec<any>;
-  actions?: Record<string, ActionSpec<any>>;
+  actions?: TActions;
   invalidate?: (ctx: any) => string[];
 };
 
 export function createResourceHooks<
   TList extends { result: any },
   TItem extends { result: any },
-  Ctx
->(spec: ResourceSpec<TList, TItem>) {
+  Ctx,
+  TCreate = TItem,
+  TUpdate = TItem,
+  TActions extends Record<string, ActionSpec<any>> = Record<string, ActionSpec<any>>
+>(spec: ResourceSpec<TList, TItem, TCreate, TUpdate, TActions>) {
   function useList(ctx: Ctx, cfg: ClickHouseConfig) {
     const url = spec.list.path(ctx);
     const { data, error, isLoading, isValidating, mutate } = useSWR(
@@ -76,17 +85,17 @@ export function createResourceHooks<
     };
   }
 
-  const useCreate = makeMutation(spec.create);
-  const useUpdate = makeMutation(spec.update);
+  const useCreate = makeMutation<TCreate>(spec.create);
+  const useUpdate = makeMutation<TUpdate>(spec.update);
   const useDelete = makeMutation(spec.remove);
 
   function useActions(ctx: Ctx, cfg: ClickHouseConfig) {
     const result: Record<string, any> = {};
     for (const [name, act] of Object.entries(spec.actions ?? {})) {
-      result[name] = makeMutation(act)(ctx, cfg);
+      result[name] = makeMutation(act as ActionSpec<any>)(ctx, cfg);
     }
     return result as {
-      [K in keyof typeof spec.actions]: ReturnType<ReturnType<typeof makeMutation>>;
+      [K in keyof TActions]: ReturnType<ReturnType<typeof makeMutation>>;
     };
   }
 
