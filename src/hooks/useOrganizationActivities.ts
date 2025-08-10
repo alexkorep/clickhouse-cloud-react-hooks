@@ -1,39 +1,16 @@
 import type { ClickHouseConfig } from "../api/fetcher";
-import { useClickHouseSWR } from "./useClickHouseSWR";
-import {
-  ActivitiesResponseSchema,
-  ActivityResponseSchema,
-  type ActivitiesResponse,
-  type ActivityResponse,
-} from "../schemas/schemas";
+import { organizationActivitiesHooks } from "./resources/organizationActivities";
 
-export function useOrganizationActivities(
+export const useOrganizationActivities = (
   organizationId: string,
   config: ClickHouseConfig,
   params?: { fromDate?: string; toDate?: string }
-) {
-  const queryParams = new URLSearchParams();
-  if (params?.fromDate) queryParams.append("from_date", params.fromDate);
-  if (params?.toDate) queryParams.append("to_date", params.toDate);
-  const queryString = queryParams.toString();
-  const url = `/v1/organizations/${organizationId}/activities${
-    queryString ? `?${queryString}` : ""
-  }`;
-  return useClickHouseSWR<ActivitiesResponse>(
-    url,
-    config,
-    ActivitiesResponseSchema
-  );
-}
+) => organizationActivitiesHooks.useList({ organizationId, ...params }, config);
 
-export function useOrganizationActivity(
+export const useOrganizationActivity = (
   organizationId: string,
   activityId: string,
   config: ClickHouseConfig
-) {
-  return useClickHouseSWR<ActivityResponse>(
-    `/v1/organizations/${organizationId}/activities/${activityId}`,
-    config,
-    ActivityResponseSchema
-  );
-}
+) =>
+  organizationActivitiesHooks.useOne({ organizationId, activityId }, config);
+

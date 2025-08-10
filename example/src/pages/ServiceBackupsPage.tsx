@@ -34,11 +34,28 @@ const ServiceBackupsPage: React.FC = () => {
     serviceId || "",
     config || { keyId: "", keySecret: "" }
   );
-  const { deleteBackup } = useDeleteServiceBackup(
-    id || "",
-    serviceId || "",
-    config || { keyId: "", keySecret: "" }
-  );
+  const DeleteButton: React.FC<{ backupId: string }> = ({ backupId }) => {
+    const { deleteBackup } = useDeleteServiceBackup(
+      id || "",
+      serviceId || "",
+      backupId,
+      config || { keyId: "", keySecret: "" }
+    );
+    return (
+      <button
+        onClick={async () => {
+          try {
+            await deleteBackup();
+            await mutateBackups();
+          } catch {
+            // ignore error
+          }
+        }}
+      >
+        Delete
+      </button>
+    );
+  };
 
   const [period, setPeriod] = useState("");
   const [retention, setRetention] = useState("");
@@ -165,18 +182,7 @@ const ServiceBackupsPage: React.FC = () => {
               <div>
                 <strong>{b.id}</strong> - {b.status}
               </div>
-              <button
-                onClick={async () => {
-                  try {
-                    await deleteBackup(b.id);
-                    await mutateBackups();
-                  } catch {
-                    // ignore error
-                  }
-                }}
-              >
-                Delete
-              </button>
+              <DeleteButton backupId={b.id} />
             </li>
           ))}
         </ul>
