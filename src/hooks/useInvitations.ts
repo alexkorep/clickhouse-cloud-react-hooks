@@ -18,7 +18,7 @@ export function useCreateInvitation(
   organizationId: string,
   config: ClickHouseConfig
 ) {
-  const createInvitation = async (invitationData: any) => {
+  const createInvitation = async (invitationData: unknown) => {
     const {
       keyId,
       keySecret,

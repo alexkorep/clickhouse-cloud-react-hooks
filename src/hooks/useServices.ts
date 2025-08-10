@@ -27,7 +27,7 @@ export function useCreateService(
   organizationId: string,
   config: ClickHouseConfig
 ) {
-  const createService = async (serviceData: any) => {
+  const createService = async (serviceData: unknown) => {
     const {
       keyId,
       keySecret,
@@ -57,7 +57,7 @@ export function useUpdateService(
   serviceId: string,
   config: ClickHouseConfig
 ) {
-  const updateService = async (updateData: any) => {
+  const updateService = async (updateData: unknown) => {
     const {
       keyId,
       keySecret,
@@ -148,7 +148,7 @@ export function useServiceReplicaScaling(
   serviceId: string,
   config: ClickHouseConfig
 ) {
-  const updateServiceScaling = async (scalingData: any) => {
+  const updateServiceScaling = async (scalingData: unknown) => {
     const {
       keyId,
       keySecret,
@@ -233,7 +233,7 @@ export function useServiceQueryEndpoint(
     ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
   );
 
-  const createQueryEndpoint = async (endpointData: any) => {
+  const createQueryEndpoint = async (endpointData: unknown) => {
     const {
       keyId,
       keySecret,
@@ -298,7 +298,7 @@ export function useCreateServicePrivateEndpoint(
   serviceId: string,
   config: ClickHouseConfig
 ) {
-  const createPrivateEndpoint = async (endpointData: any) => {
+  const createPrivateEndpoint = async (endpointData: unknown) => {
     const {
       keyId,
       keySecret,
@@ -327,7 +327,7 @@ export function useServiceScaling(
   serviceId: string,
   config: ClickHouseConfig
 ) {
-  const updateServiceScaling = async (scalingData: any) => {
+  const updateServiceScaling = async (scalingData: unknown) => {
     const {
       keyId,
       keySecret,

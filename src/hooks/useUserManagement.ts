@@ -1,17 +1,30 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import useSWR from "swr";
-import { fetcher } from "../api/fetcher";
+import { useSWRConfig } from "swr";
 import type { ClickHouseConfig } from "../api/fetcher";
+import { useClickHouseSWR } from "./useClickHouseSWR";
+import {
+  MembersResponseSchema,
+  MemberResponseSchema,
+  InvitationsResponseSchema,
+  InvitationResponseSchema,
+  ClickHouseBaseResponseSchema,
+} from "../schemas/schemas";
+import type {
+  MemberPatchRequest,
+  InvitationPostRequest,
+  Member,
+  Invitation,
+  ClickHouseBaseResponse,
+} from "../schemas/schemas";
 
 export function useOrganizationMembers(
   organizationId: string,
   config: ClickHouseConfig
 ) {
-  const { data, error, isLoading } = useSWR(
-    [`/v1/organizations/${organizationId}/members`, config],
-    ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
+  return useClickHouseSWR(
+    `/v1/organizations/${organizationId}/members`,
+    config,
+    MembersResponseSchema
   );
-  return { data, error, isLoading };
 }
 
 export function useOrganizationMember(
@@ -19,11 +32,11 @@ export function useOrganizationMember(
   userId: string,
   config: ClickHouseConfig
 ) {
-  const { data, error, isLoading } = useSWR(
-    [`/v1/organizations/${organizationId}/members/${userId}`, config],
-    ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
+  return useClickHouseSWR(
+    `/v1/organizations/${organizationId}/members/${userId}`,
+    config,
+    MemberResponseSchema
   );
-  return { data, error, isLoading };
 }
 
 export function useUpdateOrganizationMember(
@@ -31,7 +44,11 @@ export function useUpdateOrganizationMember(
   userId: string,
   config: ClickHouseConfig
 ) {
-  const updateMember = async (updateData: any) => {
+  const { mutate: globalMutate } = useSWRConfig();
+
+  const updateMember = async (
+    updateData: MemberPatchRequest
+  ): Promise<Member> => {
     const {
       keyId,
       keySecret,
@@ -50,7 +67,17 @@ export function useUpdateOrganizationMember(
       }
     );
     if (!response.ok) throw new Error(await response.text());
-    return response.json();
+    const responseData = await response.json();
+    const validated = MemberResponseSchema.parse(responseData);
+    await Promise.all([
+      globalMutate(
+        `/v1/organizations/${organizationId}/members:${config.baseUrl}:${config.keyId}`
+      ),
+      globalMutate(
+        `/v1/organizations/${organizationId}/members/${userId}:${config.baseUrl}:${config.keyId}`
+      ),
+    ]);
+    return validated.result;
   };
 
   return { updateMember };
@@ -61,7 +88,9 @@ export function useDeleteOrganizationMember(
   userId: string,
   config: ClickHouseConfig
 ) {
-  const deleteMember = async () => {
+  const { mutate: globalMutate } = useSWRConfig();
+
+  const deleteMember = async (): Promise<ClickHouseBaseResponse> => {
     const {
       keyId,
       keySecret,
@@ -79,7 +108,17 @@ export function useDeleteOrganizationMember(
       }
     );
     if (!response.ok) throw new Error(await response.text());
-    return response.json();
+    const responseData = await response.json();
+    const validated = ClickHouseBaseResponseSchema.parse(responseData);
+    await Promise.all([
+      globalMutate(
+        `/v1/organizations/${organizationId}/members:${config.baseUrl}:${config.keyId}`
+      ),
+      globalMutate(
+        `/v1/organizations/${organizationId}/members/${userId}:${config.baseUrl}:${config.keyId}`
+      ),
+    ]);
+    return validated;
   };
 
   return { deleteMember };
@@ -89,18 +128,22 @@ export function useOrganizationInvitations(
   organizationId: string,
   config: ClickHouseConfig
 ) {
-  const { data, error, isLoading } = useSWR(
-    [`/v1/organizations/${organizationId}/invitations`, config],
-    ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
+  return useClickHouseSWR(
+    `/v1/organizations/${organizationId}/invitations`,
+    config,
+    InvitationsResponseSchema
   );
-  return { data, error, isLoading };
 }
 
 export function useCreateOrganizationInvitation(
   organizationId: string,
   config: ClickHouseConfig
 ) {
-  const createInvitation = async (invitationData: any) => {
+  const { mutate: globalMutate } = useSWRConfig();
+
+  const createInvitation = async (
+    invitationData: InvitationPostRequest
+  ): Promise<Invitation> => {
     const {
       keyId,
       keySecret,
@@ -119,7 +162,14 @@ export function useCreateOrganizationInvitation(
       }
     );
     if (!response.ok) throw new Error(await response.text());
-    return response.json();
+    const responseData = await response.json();
+    const validated = InvitationResponseSchema.parse(responseData);
+    await Promise.all([
+      globalMutate(
+        `/v1/organizations/${organizationId}/invitations:${config.baseUrl}:${config.keyId}`
+      ),
+    ]);
+    return validated.result;
   };
 
   return { createInvitation };
@@ -130,11 +180,11 @@ export function useOrganizationInvitation(
   invitationId: string,
   config: ClickHouseConfig
 ) {
-  const { data, error, isLoading } = useSWR(
-    [`/v1/organizations/${organizationId}/invitations/${invitationId}`, config],
-    ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
+  return useClickHouseSWR(
+    `/v1/organizations/${organizationId}/invitations/${invitationId}`,
+    config,
+    InvitationResponseSchema
   );
-  return { data, error, isLoading };
 }
 
 export function useDeleteOrganizationInvitation(
@@ -142,7 +192,9 @@ export function useDeleteOrganizationInvitation(
   invitationId: string,
   config: ClickHouseConfig
 ) {
-  const deleteInvitation = async () => {
+  const { mutate: globalMutate } = useSWRConfig();
+
+  const deleteInvitation = async (): Promise<ClickHouseBaseResponse> => {
     const {
       keyId,
       keySecret,
@@ -160,8 +212,19 @@ export function useDeleteOrganizationInvitation(
       }
     );
     if (!response.ok) throw new Error(await response.text());
-    return response.json();
+    const responseData = await response.json();
+    const validated = ClickHouseBaseResponseSchema.parse(responseData);
+    await Promise.all([
+      globalMutate(
+        `/v1/organizations/${organizationId}/invitations:${config.baseUrl}:${config.keyId}`
+      ),
+      globalMutate(
+        `/v1/organizations/${organizationId}/invitations/${invitationId}:${config.baseUrl}:${config.keyId}`
+      ),
+    ]);
+    return validated;
   };
 
   return { deleteInvitation };
 }
+

@@ -54,7 +54,6 @@ export function useUpdateServiceBackupConfiguration(
   config: ClickHouseConfig
 ) {
   const { mutate: globalMutate } = useSWRConfig();
-
   const updateBackupConfiguration = async (
     configData: Partial<BackupConfiguration>
   ): Promise<BackupConfiguration> => {

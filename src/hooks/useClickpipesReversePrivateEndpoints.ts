@@ -23,7 +23,7 @@ export function useCreateClickpipesReversePrivateEndpoint(
   serviceId: string,
   config: ClickHouseConfig
 ) {
-  const createReversePrivateEndpoint = async (endpointData: any) => {
+  const createReversePrivateEndpoint = async (endpointData: unknown) => {
     const {
       keyId,
       keySecret,
