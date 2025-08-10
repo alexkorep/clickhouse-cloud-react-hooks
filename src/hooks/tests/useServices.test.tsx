@@ -26,7 +26,26 @@ const config = {
 };
 
 const orgId = "org1";
-const serviceId = "svc1";
+const serviceId = "123e4567-e89b-12d3-a456-426614174000";
+
+const mockService = {
+  id: serviceId,
+  name: "svc",
+  tier: "development" as const,
+  region: "us-east-1",
+  provider: "aws",
+  state: "running" as const,
+  release_channel: "stable" as const,
+  version: "v1",
+  max_replicas: 1,
+  min_replicas: 1,
+  replicas: 1,
+  endpoints: [{ host: "host", port: 8123, protocol: "https" }],
+  created_at: "2024-01-01T00:00:00.000Z",
+  updated_at: "2024-01-01T00:00:00.000Z",
+  last_used_at: "2024-01-01T00:00:00.000Z",
+  ip_access: [{ source: "0.0.0.0/0", description: "all" }],
+};
 
 describe("useServices hooks", () => {
   beforeEach(() => {
@@ -42,7 +61,11 @@ describe("useServices hooks", () => {
   }
 
   it("useServices fetches list", async () => {
-    const mockResponse = { status: 200, requestId: "r1", result: [{ id: "s1" }] };
+    const mockResponse = {
+      status: 200,
+  requestId: "123e4567-e89b-12d3-a456-426614174100",
+      result: [mockService],
+    };
     mockFetch({ response: mockResponse });
     let hookResult: ReturnType<typeof useServices> | undefined;
     render(<ServicesHookTest onResult={(r) => (hookResult = r)} />);
@@ -59,7 +82,11 @@ describe("useServices hooks", () => {
   }
 
   it("useService fetches details", async () => {
-    const mockResponse = { status: 200, requestId: "r1", result: { id: serviceId } };
+    const mockResponse = {
+      status: 200,
+      requestId: "123e4567-e89b-12d3-a456-426614174101",
+      result: mockService,
+    };
     mockFetch({ response: mockResponse });
     let hookResult: ReturnType<typeof useService> | undefined;
     render(<ServiceHookTest onResult={(r) => (hookResult = r)} />);
@@ -141,7 +168,11 @@ describe("useServices hooks", () => {
   }
 
   it("useServicePrivateEndpointConfig fetches data", async () => {
-    const mockResponse = { status: 200, requestId: "r1", result: { endpointServiceId: "e1" } };
+    const mockResponse = {
+      status: 200,
+      requestId: "123e4567-e89b-12d3-a456-426614174102",
+      result: { endpointServiceId: "e1" },
+    };
     mockFetch({ response: mockResponse });
     let hookResult: ReturnType<typeof useServicePrivateEndpointConfig> | undefined;
     render(<PrivateEndpointConfigHook onResult={(r) => (hookResult = r)} />);
@@ -158,7 +189,11 @@ describe("useServices hooks", () => {
   }
 
   it("useServiceQueryEndpoint fetches and manages endpoint", async () => {
-    const mockResponse = { status: 200, requestId: "r1", result: { id: "qe1" } };
+    const mockResponse = {
+      status: 200,
+      requestId: "123e4567-e89b-12d3-a456-426614174103",
+      result: { id: "qe1" },
+    };
     mockFetch({ response: mockResponse });
     let hookResult: ReturnType<typeof useServiceQueryEndpoint> | undefined;
     render(<QueryEndpointHook onResult={(r) => (hookResult = r)} />);
