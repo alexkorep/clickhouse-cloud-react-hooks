@@ -14,6 +14,7 @@ import {
   useUpdateApiKey,
   useDeleteApiKey,
   type ApiKey,
+  type Service,
   ClickHouseAPIError,
   ClickHouseConfig,
   useOrganizationMembers,
@@ -85,6 +86,19 @@ const OrganizationDetailsPage: React.FC = () => {
   );
 
   const { updateOrganization } = useUpdateOrganization(
+    id || "",
+    config || { keyId: "", keySecret: "" }
+  );
+
+  const {
+    data: services,
+    error: servicesError,
+    isLoading: servicesLoading,
+    isValidating: servicesValidating,
+    mutate: servicesMutate,
+  } = useServices(id || "", config || { keyId: "", keySecret: "" });
+
+  const { createService } = useCreateService(
     id || "",
     config || { keyId: "", keySecret: "" }
   );
@@ -241,19 +255,7 @@ const OrganizationDetailsPage: React.FC = () => {
         {error && <div className="error">Error: {error}</div>}
       </li>
     );
-  }
-  const {
-    data: services,
-    error: servicesError,
-    isLoading: servicesLoading,
-    isValidating: servicesValidating,
-    mutate: servicesMutate,
-  } = useServices(id || "", config || { keyId: "", keySecret: "" });
-
-  const { createService } = useCreateService(
-    id || "",
-    config || { keyId: "", keySecret: "" }
-  );
+  } 
 
   const [newServiceName, setNewServiceName] = useState("");
   const [newServiceProvider, setNewServiceProvider] = useState("");
@@ -262,7 +264,6 @@ const OrganizationDetailsPage: React.FC = () => {
   const [createServiceError, setCreateServiceError] = useState<string | null>(
     null
   );
-
   // State for creating API keys
   const [newKeyName, setNewKeyName] = useState("");
   const [newKeyRoles, setNewKeyRoles] = useState("developer");
@@ -511,7 +512,7 @@ const OrganizationDetailsPage: React.FC = () => {
           <span> None</span>
         ) : (
           <ul>
-            {members.map((m) => (
+            {members.map((m: Member) => (
               <MemberItem key={m.userId} member={m} />
             ))}
           </ul>
@@ -578,11 +579,11 @@ const OrganizationDetailsPage: React.FC = () => {
                 <div className="error mt-05">Error: {inviteError}</div>
               )}
             </form>
-            {(!invitations || invitations.length === 0) ? (
+            {!invitations || invitations.length === 0 ? (
               <span>No invitations</span>
             ) : (
               <ul>
-                {invitations.map((inv) => (
+                {invitations.map((inv: Invitation) => (
                   <InvitationItem key={inv.id} invitation={inv} />
                 ))}
               </ul>
@@ -618,19 +619,12 @@ const OrganizationDetailsPage: React.FC = () => {
           </ul>
         )}
       </div>
-      <div className="mt-1 mb-1">
-        <Link className="mr-05" to={`/org/${id}/usage-cost`}>
-          Usage Cost
-        </Link>
-        <Link to={`/org/${id}/private-endpoint-config`}>
-          Private Endpoint Config
-        </Link>
-      </div>
-      <section>
+      <div>
         <h3>Activities</h3>
         <button
           onClick={() => refreshActivities()}
-          className="refresh-button mb-1"
+          className="refresh-button"
+          style={{ marginBottom: "1em" }}
           disabled={activitiesValidating}
         >
           {activitiesValidating ? "Loading..." : "Refresh"}
@@ -662,7 +656,7 @@ const OrganizationDetailsPage: React.FC = () => {
         ) : (
           <div>No activities found</div>
         )}
-      </section>
+      </div>
       <section className="mt-1">
         <h3>Services</h3>
         <button
@@ -682,9 +676,13 @@ const OrganizationDetailsPage: React.FC = () => {
           </div>
         ) : services && services.length > 0 ? (
           <ul>
-            {services.map((svc) => (
+            {services.map((svc: Service) => (
               <li key={svc.id}>
                 <Link to={`/org/${id}/service/${svc.id}`}>{svc.name}</Link>
+                {" - "}
+                <Link to={`/org/${id}/service/${svc.id}/backups`}>
+                  Backups
+                </Link>
               </li>
             ))}
           </ul>
@@ -771,7 +769,7 @@ const OrganizationDetailsPage: React.FC = () => {
             type="checkbox"
             checked={filterOrgMetrics}
             onChange={(e) => setFilterOrgMetrics(e.target.checked)}
-            className="mr-05"
+            style={{ marginRight: "0.5em" }}
           />
           Filter metrics
         </label>
@@ -794,21 +792,21 @@ const OrganizationDetailsPage: React.FC = () => {
           placeholder="Service ID"
           value={serviceIdInput}
           onChange={(e) => setServiceIdInput(e.target.value)}
-          className="mr-05"
+          style={{ marginRight: "0.5em" }}
         />
-        <label className="mr-05">
+        <label style={{ marginRight: "0.5em" }}>
           <input
             type="checkbox"
             checked={filterServiceMetrics}
             onChange={(e) => setFilterServiceMetrics(e.target.checked)}
-            className="mr-05"
+            style={{ marginRight: "0.25em" }}
           />
           Filter
         </label>
         <button
           onClick={() => setServiceId(serviceIdInput)}
           disabled={serviceIdInput.trim() === ""}
-          className="mr-05"
+          style={{ marginRight: "0.5em" }}
         >
           Load Metrics
         </button>
@@ -829,7 +827,7 @@ const OrganizationDetailsPage: React.FC = () => {
           <div className="error">Failed to load API keys</div>
         ) : (
           <ul>
-            {apiKeys?.map((k) => (
+            {apiKeys?.map((k: ApiKey) => (
               <ApiKeyItem apiKey={k} key={k.id} />
             ))}
           </ul>
@@ -846,7 +844,7 @@ const OrganizationDetailsPage: React.FC = () => {
                 roles: newKeyRoles
                   .split(",")
                   .map((r) => r.trim())
-                  .filter(Boolean),
+                  .filter(Boolean) as ("admin" | "developer" | "query_endpoints")[],
               });
               setCreatedKey(result);
               setNewKeyName("");
@@ -901,9 +899,7 @@ const OrganizationDetailsPage: React.FC = () => {
           )}
         </form>
       </div>
-      <p className="back-link">
-        <Link to="/">Back to Organizations</Link>
-      </p>
+      <Link to="/">Back to Organizations</Link>
     </section>
   );
 };

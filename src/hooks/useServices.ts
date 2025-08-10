@@ -1,13 +1,20 @@
 import useSWR from "swr";
 import { fetcher } from "../api/fetcher";
+import { useClickHouseSWR } from "./useClickHouseSWR";
+import {
+  type ServicesResponse,
+  ServicesResponseSchema,
+  type ServiceResponse,
+  ServiceResponseSchema,
+} from "../schemas/schemas";
 import type { ClickHouseConfig } from "../api/fetcher";
 
 export function useServices(organizationId: string, config: ClickHouseConfig) {
-  const { data, error, isLoading, isValidating, mutate } = useSWR(
-    [`/v1/organizations/${organizationId}/services`, config],
-    ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
+  return useClickHouseSWR<ServicesResponse>(
+    `/v1/organizations/${organizationId}/services`,
+    config,
+    ServicesResponseSchema
   );
-  return { data, error, isLoading, isValidating, mutate };
 }
 
 export function useService(
@@ -15,11 +22,11 @@ export function useService(
   serviceId: string,
   config: ClickHouseConfig
 ) {
-  const { data, error, isLoading } = useSWR(
-    [`/v1/organizations/${organizationId}/services/${serviceId}`, config],
-    ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
+  return useClickHouseSWR<ServiceResponse>(
+    `/v1/organizations/${organizationId}/services/${serviceId}`,
+    config,
+    ServiceResponseSchema
   );
-  return { data, error, isLoading };
 }
 
 export function useCreateService(
@@ -209,14 +216,14 @@ export function useServicePrivateEndpointConfig(
   serviceId: string,
   config: ClickHouseConfig
 ) {
-  const { data, error, isLoading } = useSWR(
+  const { data, error, isLoading } = useSWR<any>(
     [
       `/v1/organizations/${organizationId}/services/${serviceId}/privateEndpointConfig`,
       config,
     ],
-    ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
+    ([url, cfg]: [string, ClickHouseConfig]) => fetcher<any>(url, cfg)
   );
-  return { data, error, isLoading };
+  return { data: data?.result, error, isLoading, response: data };
 }
 
 export function useServiceQueryEndpoint(
@@ -224,12 +231,12 @@ export function useServiceQueryEndpoint(
   serviceId: string,
   config: ClickHouseConfig
 ) {
-  const { data, error, isLoading } = useSWR(
+  const { data, error, isLoading } = useSWR<any>(
     [
       `/v1/organizations/${organizationId}/services/${serviceId}/serviceQueryEndpoint`,
       config,
     ],
-    ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
+    ([url, cfg]: [string, ClickHouseConfig]) => fetcher<any>(url, cfg)
   );
 
   const createQueryEndpoint = async (endpointData: unknown) => {
@@ -275,20 +282,37 @@ export function useServiceQueryEndpoint(
     return response.json();
   };
 
-  return { data, error, isLoading, createQueryEndpoint, deleteQueryEndpoint };
+  return {
+    data: data?.result,
+    error,
+    isLoading,
+    response: data,
+    createQueryEndpoint,
+    deleteQueryEndpoint,
+  };
 }
 
 export function useServicePrometheus(
   organizationId: string,
   serviceId: string,
-  config: ClickHouseConfig
+  config: ClickHouseConfig,
+  params?: { filteredMetrics?: boolean }
 ) {
+  const query = params?.filteredMetrics ? "?filtered_metrics=true" : "";
   const { data, error, isLoading } = useSWR(
-    [
-      `/v1/organizations/${organizationId}/services/${serviceId}/prometheus`,
-      config,
-    ],
-    ([url, cfg]: [string, ClickHouseConfig]) => fetcher(url, cfg)
+    [`/v1/organizations/${organizationId}/services/${serviceId}/prometheus${query}`, config],
+    async ([url, cfg]: [string, ClickHouseConfig]) => {
+      const { keyId, keySecret, baseUrl = "https://api.clickhouse.cloud" } = cfg;
+      const auth = btoa(`${keyId}:${keySecret}`);
+      const res = await fetch(`${baseUrl}${url}`, {
+        headers: {
+          Authorization: `Basic ${auth}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      return res.text();
+    }
   );
   return { data, error, isLoading };
 }
