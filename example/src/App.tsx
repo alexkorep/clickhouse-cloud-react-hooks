@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import OrganizationListPage from "./pages/OrganizationListPage";
 import ConfigurationPage from "./pages/ConfigurationPage";
 import OrganizationDetailsPage from "./pages/OrganizationDetailsPage";
+import ClickpipesPage from "./pages/ClickpipesPage";
 import ActivityDetailsPage from "./pages/ActivityDetailsPage";
 import ServiceDetailsPage from "./pages/ServiceDetailsPage";
 import ServiceBackupsPage from "./pages/ServiceBackupsPage";
@@ -17,8 +18,9 @@ function App() {
           <p>This example demonstrates ClickHouse Cloud API responses.</p>
         </header>
         <nav style={{ padding: "1rem", borderBottom: "1px solid #eee" }}>
-          <Link to="/" style={{ marginRight: "1rem" }}>
-            Organizations
+          <Link to="/" style={{ marginRight: "1rem" }}>Organizations</Link>
+          <Link to="/clickpipes" style={{ marginRight: "1rem" }}>
+            ClickPipes
           </Link>
           <Link to="/config" style={{ marginRight: "1rem" }}>
             Configuration
@@ -29,6 +31,7 @@ function App() {
           <Routes>
             <Route path="/" element={<OrganizationListPage />} />
             <Route path="/config" element={<ConfigurationPage />} />
+            <Route path="/clickpipes" element={<ClickpipesPage />} />
             <Route path="/org/:id" element={<OrganizationDetailsPage />} />
             <Route
               path="/org/:id/service/:serviceId/backups"

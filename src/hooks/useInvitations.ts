@@ -28,7 +28,11 @@ export function useCreateInvitation(
   const createInvitation = async (
     invitationData: InvitationPostRequest
   ): Promise<Invitation> => {
-    const { keyId, keySecret, baseUrl = "https://api.clickhouse.cloud" } = config;
+    const {
+      keyId,
+      keySecret,
+      baseUrl = "https://api.clickhouse.cloud",
+    } = config;
     const auth = btoa(`${keyId}:${keySecret}`);
     const response = await fetch(
       `${baseUrl}/v1/organizations/${organizationId}/invitations`,

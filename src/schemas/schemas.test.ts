@@ -4,8 +4,10 @@ import {
   OrganizationsResponseSchema,
   ActivitySchema,
   UsageCostSchema,
-  ClickHouseErrorResponseSchema
-} from "./schemas";
+  ClickHouseErrorResponseSchema,
+  ClickPipeSchema,
+  ClickPipesResponseSchema
+} from './schemas';
 
 describe("ClickHouse Schemas", () => {
   describe("OrganizationSchema", () => {
@@ -115,8 +117,42 @@ describe("ClickHouse Schemas", () => {
     });
   });
 
-  describe("ClickHouseErrorResponseSchema", () => {
-    it("should validate a valid error response", () => {
+  describe('ClickPipeSchema', () => {
+    it('should validate a valid clickpipe object', () => {
+      const validClickpipe = {
+        id: '550e8400-e29b-41d4-a716-446655440010',
+        serviceId: '550e8400-e29b-41d4-a716-446655440011',
+        name: 'Test Pipe',
+        state: 'running'
+      };
+
+      const result = ClickPipeSchema.safeParse(validClickpipe);
+      expect(result.success).toBe(true);
+    });
+  });
+
+  describe('ClickPipesResponseSchema', () => {
+    it('should validate a valid clickpipes response', () => {
+      const validResponse = {
+        status: 200,
+        requestId: '550e8400-e29b-41d4-a716-446655440099',
+        result: [
+          {
+            id: '550e8400-e29b-41d4-a716-446655440010',
+            serviceId: '550e8400-e29b-41d4-a716-446655440011',
+            name: 'Test Pipe',
+            state: 'running'
+          }
+        ]
+      };
+
+      const result = ClickPipesResponseSchema.safeParse(validResponse);
+      expect(result.success).toBe(true);
+    });
+  });
+
+  describe('ClickHouseErrorResponseSchema', () => {
+    it('should validate a valid error response', () => {
       const validErrorResponse = {
         status: 400,
         error: "Bad request: invalid parameters"

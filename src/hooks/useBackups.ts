@@ -57,7 +57,11 @@ export function useUpdateServiceBackupConfiguration(
   const updateBackupConfiguration = async (
     configData: Partial<BackupConfiguration>
   ): Promise<BackupConfiguration> => {
-    const { keyId, keySecret, baseUrl = "https://api.clickhouse.cloud" } = config;
+    const {
+      keyId,
+      keySecret,
+      baseUrl = "https://api.clickhouse.cloud",
+    } = config;
     const auth = btoa(`${keyId}:${keySecret}`);
     const response = await fetch(
       `${baseUrl}/v1/organizations/${organizationId}/services/${serviceId}/backupConfiguration`,

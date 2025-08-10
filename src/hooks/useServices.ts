@@ -1,13 +1,20 @@
 import useSWR from "swr";
 import { fetcher } from "../api/fetcher";
+import { useClickHouseSWR } from "./useClickHouseSWR";
+import {
+  type ServicesResponse,
+  ServicesResponseSchema,
+  type ServiceResponse,
+  ServiceResponseSchema,
+} from "../schemas/schemas";
 import type { ClickHouseConfig } from "../api/fetcher";
 
 export function useServices(organizationId: string, config: ClickHouseConfig) {
-  const { data, error, isLoading, isValidating, mutate } = useSWR<any>(
-    [`/v1/organizations/${organizationId}/services`, config],
-    ([url, cfg]: [string, ClickHouseConfig]) => fetcher<any>(url, cfg)
+  return useClickHouseSWR<ServicesResponse>(
+    `/v1/organizations/${organizationId}/services`,
+    config,
+    ServicesResponseSchema
   );
-  return { data: data?.result, error, isLoading, isValidating, mutate, response: data };
 }
 
 export function useService(
@@ -15,11 +22,11 @@ export function useService(
   serviceId: string,
   config: ClickHouseConfig
 ) {
-  const { data, error, isLoading, isValidating, mutate } = useSWR<any>(
-    [`/v1/organizations/${organizationId}/services/${serviceId}`, config],
-    ([url, cfg]: [string, ClickHouseConfig]) => fetcher<any>(url, cfg)
+  return useClickHouseSWR<ServiceResponse>(
+    `/v1/organizations/${organizationId}/services/${serviceId}`,
+    config,
+    ServiceResponseSchema
   );
-  return { data: data?.result, error, isLoading, isValidating, mutate, response: data };
 }
 
 export function useCreateService(

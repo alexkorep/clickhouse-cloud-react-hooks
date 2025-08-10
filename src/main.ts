@@ -8,6 +8,7 @@ export * from "./hooks/useUserManagement";
 export * from "./hooks/useClickpipesReversePrivateEndpoints";
 export * from "./hooks/usePrometheusMetrics";
 export * from "./hooks/useInvitations";
+export * from "./hooks/useOrganizationActivities";
 
 // Export schemas and types
 export * from "./schemas/schemas";
